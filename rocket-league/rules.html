@@ -1,0 +1,642 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rules & Regulations | PSD Esports</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        esports: {
+                            dark: '#0B0E14',
+                            card: '#151B26',
+                            yellow: '#FDB913',
+                            'yellow-text': '#FFD166',
+                            red: '#C8102E',
+                            'red-text': '#FF6B6B',
+                            blue: '#005696',
+                            'blue-text': '#4DABF7',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Rajdhani', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-panel { background: rgba(21, 27, 38, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .rule-card { background: #151B26; border: 1px solid rgba(255, 255, 255, 0.05); padding: 2rem; border-radius: 1rem; }
+        .section-anchor { scroll-margin-top: 2rem; }
+        .clip-slant { clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); }
+
+        .nav-link { border-left: 2px solid transparent; transition: all 0.3s; }
+        .nav-link:hover { border-left: 2px solid #FDB913; background: linear-gradient(90deg, rgba(253,185,19,0.1) 0%, transparent 100%); color: white; }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #0B0E14; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; border: 2px solid #0B0E14; }
+    </style>
+</head>
+
+<body class="bg-esports-dark text-gray-100 font-sans antialiased selection:bg-esports-blue">
+
+<!-- ── PSD ESPORTS SITE NAV ── -->
+<style>
+#psd-nav{position:sticky;top:0;z-index:1000;background:rgba(13,17,25,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.08);font-family:'Rajdhani',sans-serif;transition:background .3s,box-shadow .3s,border-color .3s;}
+  #psd-nav.nav-scrolled{background:rgba(9,12,18,.92);box-shadow:0 4px 32px rgba(0,0,0,.6);border-bottom-color:rgba(255,255,255,.05);}
+  #psd-nav.nav-scrolled .nav-inner{height:42px;}
+  #psd-nav.nav-scrolled .nav-link{height:42px;}
+#psd-nav .nav-inner{max-width:1280px;margin:0 auto;padding:0 1.25rem;display:flex;align-items:center;height:52px;transition:height .3s cubic-bezier(.4,0,.2,1);}
+#psd-nav .nav-brand{font-weight:900;font-size:1.1rem;letter-spacing:.08em;text-transform:uppercase;color:#fff;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:.5rem;margin-right:1.5rem;}
+#psd-nav .nav-brand span{background:linear-gradient(90deg,#FF6B6B,#FFD166,#4DABF7,#FF6B6B);background-size:250% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:brand-shift 5s linear infinite;}
+  @keyframes brand-shift{to{background-position:250% center}}
+#psd-nav .nav-links{display:flex;align-items:center;gap:.15rem;list-style:none;margin:0;padding:0;flex:1;}
+#psd-nav .nav-item{position:relative;}
+#psd-nav .nav-link{display:flex;align-items:center;gap:.3rem;padding:.4rem .75rem;font-weight:700;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;border-radius:6px 6px 0 0;transition:color .15s,background .15s;white-space:nowrap;cursor:pointer;background:none;border:none;height:52px;}
+#psd-nav .nav-link:hover,#psd-nav .nav-link.active{color:#fff;background:rgba(255,255,255,.06);}
+#psd-nav .nav-link.active{border-bottom:2px solid #FDB913;}
+#psd-nav .nav-chevron{font-size:.5rem;opacity:.55;transition:transform .2s;}
+#psd-nav .nav-item:hover .nav-chevron{transform:rotate(180deg);}
+#psd-nav .nav-dropdown{display:none;position:absolute;top:100%;left:0;min-width:190px;background:#151B26;border:1px solid rgba(255,255,255,.1);border-radius:0 8px 8px 8px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.8);}
+#psd-nav .nav-item:hover .nav-dropdown,#psd-nav .nav-item:focus-within .nav-dropdown{display:block;}
+#psd-nav .nav-dropdown a{display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;font-weight:700;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;transition:color .15s,background .15s;}
+#psd-nav .nav-dropdown a:hover{color:#fff;background:rgba(255,255,255,.07);}
+  #psd-nav .nav-dropdown a.active{color:#fff;background:rgba(255,255,255,.07);border-left:3px solid var(--dd-accent,#4DABF7);padding-left:calc(1rem - 3px);}
+  #psd-nav .nav-item.pl-item .nav-dropdown{--dd-accent:#4DABF7;}
+  #psd-nav .nav-item.jrpl-item .nav-dropdown{--dd-accent:#FF6B6B;}
+  #psd-nav .nav-link.child-active{color:#fff;background:rgba(255,255,255,.06);border-bottom:2px solid var(--child-accent,#FDB913);}
+#psd-nav .dd-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  #psd-nav .dd-game-header{padding:.45rem 1rem .25rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:#4b5563;border-top:1px solid rgba(255,255,255,.06);}
+  #psd-nav .dd-game-header:first-child{border-top:none;}
+#psd-nav .nav-right{margin-left:auto;display:flex;align-items:center;gap:.5rem;}
+#psd-nav .nav-pill{padding:.3rem .9rem;font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;border-radius:9999px;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s;}
+#psd-nav .pill-finals{background:rgba(255,215,0,.1);color:#FFD166;border:1px solid rgba(255,215,0,.22);}
+#psd-nav .pill-finals:hover,#psd-nav .pill-finals.active{background:rgba(255,215,0,.22);border-color:rgba(255,215,0,.5);}
+#psd-nav .pill-rules{background:rgba(77,171,247,.08);color:#4DABF7;border:1px solid rgba(77,171,247,.18);}
+#psd-nav .pill-rules:hover,#psd-nav .pill-rules.active{background:rgba(77,171,247,.18);}
+#psd-nav .pill-champs{background:rgba(255,215,0,.1);color:#FFD166;border:1px solid rgba(255,215,0,.22);}
+#psd-nav .pill-champs:hover,#psd-nav .pill-champs.active{background:rgba(255,215,0,.22);border-color:rgba(255,215,0,.5);}
+#psd-nav .pill-badges{background:rgba(167,139,250,.08);color:#c4b5fd;border:1px solid rgba(167,139,250,.18);}
+#psd-nav .pill-badges:hover,#psd-nav .pill-badges.active{background:rgba(167,139,250,.2);border-color:rgba(167,139,250,.45);}
+#psd-nav .nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:.5rem;background:none;border:none;margin-left:auto;}
+#psd-nav .nav-hamburger span{display:block;width:22px;height:2px;background:#9ca3af;border-radius:2px;transition:all .25s;}
+#psd-nav .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+#psd-nav .nav-hamburger.open span:nth-child(2){opacity:0;}
+#psd-nav .nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+#psd-nav-drawer{display:none;background:#0d1119;border-bottom:1px solid rgba(255,255,255,.08);padding:.75rem 1.25rem 1rem;}
+#psd-nav-drawer.open{display:block;}
+#psd-nav-drawer a{display:block;padding:.5rem .75rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;border-radius:6px;}
+#psd-nav-drawer a:hover,#psd-nav-drawer a.active{color:#fff;background:rgba(255,255,255,.06);}
+#psd-nav-drawer .drawer-section{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#4b5563;font-family:'Rajdhani',sans-serif;font-weight:700;padding:.5rem .75rem .2rem;margin-top:.4rem;}
+#psd-nav-drawer .drawer-indent{padding-left:1.5rem;}
+@media(max-width:900px){#psd-nav .nav-links,#psd-nav .nav-right{display:none;}#psd-nav .nav-hamburger{display:flex;}}
+</style>
+<nav id="psd-nav" aria-label="Site navigation">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-brand">PSD <span>Esports</span></a>
+    <ul class="nav-links" role="list">
+
+      <li class="nav-item pl-item">
+        <span class="nav-link" tabindex="0" role="button" aria-haspopup="true">Promise League <span class="nav-chevron">▼</span></span>
+        <div class="nav-dropdown" role="menu">
+          <div class="dd-game-header">🚀 Rocket League</div>
+          <a href="promise-league.html" data-page="promise-league"><span class="dd-dot" style="background:#4DABF7"></span>Standings</a>
+          <a href="promise-league-schedule.html" data-page="promise-league-schedule"><span class="dd-dot" style="background:#4DABF7"></span>Schedule</a>
+          <a href="promise-league-stats.html" data-page="promise-league-stats"><span class="dd-dot" style="background:#4DABF7"></span>Player Stats</a>
+        </div>
+      </li>
+      <li class="nav-item jrpl-item">
+        <span class="nav-link" tabindex="0" role="button" aria-haspopup="true">Jr Promise League <span class="nav-chevron">▼</span></span>
+        <div class="nav-dropdown" role="menu">
+          <div class="dd-game-header">🚀 Rocket League</div>
+          <a href="jr-promise-league.html" data-page="jr-promise-league"><span class="dd-dot" style="background:#FF6B6B"></span>Standings</a>
+          <a href="jr-promise-league-schedule.html" data-page="jr-promise-league-schedule"><span class="dd-dot" style="background:#FF6B6B"></span>Schedule</a>
+          <a href="jr-promise-league-stats.html" data-page="jr-promise-league-stats"><span class="dd-dot" style="background:#FF6B6B"></span>Player Stats</a>
+        </div>
+      </li>
+    </ul>
+    <div class="nav-right">
+      <a href="finals.html" class="nav-pill pill-finals" data-page="finals">🏆 Finals</a>
+      <a href="champions.html" class="nav-pill pill-champs" data-page="champions">🏅 Champions</a>
+      <a href="rules.html" class="nav-pill pill-rules" data-page="rules">Rules</a>
+
+    </div>
+    <button class="nav-hamburger" id="psd-hamburger" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div id="psd-nav-drawer" aria-hidden="true">
+  <a href="../index.html" data-page="index">Home</a>
+  <div class="drawer-section">Promise League</div>
+  <div class="drawer-section" style="font-size:.55rem;color:#374151;padding-top:.1rem">🚀 Rocket League</div>
+  <a href="promise-league.html" class="drawer-indent" data-page="promise-league">Standings</a>
+  <a href="promise-league-schedule.html" class="drawer-indent" data-page="promise-league-schedule">Schedule</a>
+  <a href="promise-league-stats.html" class="drawer-indent" data-page="promise-league-stats">Player Stats</a>
+  <div class="drawer-section">Jr Promise League</div>
+  <div class="drawer-section" style="font-size:.55rem;color:#374151;padding-top:.1rem">🚀 Rocket League</div>
+  <a href="jr-promise-league.html" class="drawer-indent" data-page="jr-promise-league">Standings</a>
+  <a href="jr-promise-league-schedule.html" class="drawer-indent" data-page="jr-promise-league-schedule">Schedule</a>
+  <a href="jr-promise-league-stats.html" class="drawer-indent" data-page="jr-promise-league-stats">Player Stats</a>
+  <div class="drawer-section">More</div>
+  <a href="finals.html" data-page="finals">🏆 Finals</a>
+  <a href="champions.html" data-page="champions">🏅 Champions</a>
+  <a href="rules.html" data-page="rules">Rules</a>
+
+</div>
+<script>
+(function(){
+  var page = location.pathname.split('/').pop().replace('.html','') || 'index';
+  document.querySelectorAll('[data-page]').forEach(function(el){
+    if(el.dataset.page === page) el.classList.add('active');
+  });
+  // highlight parent nav-link when a dropdown child is active
+  document.querySelectorAll('.nav-dropdown a.active').forEach(function(a){
+    var item = a.closest('.nav-item');
+    if(item){
+      var trigger = item.querySelector('.nav-link');
+      if(trigger){
+        var accent = getComputedStyle(item.querySelector('.nav-dropdown')).getPropertyValue('--dd-accent').trim()||'#FDB913';
+        trigger.classList.add('child-active');
+        trigger.style.setProperty('--child-accent', accent);
+      }
+    }
+  });
+  var btn = document.getElementById('psd-hamburger');
+  var drawer = document.getElementById('psd-nav-drawer');
+  if(btn && drawer){
+    btn.addEventListener('click', function(){
+      var open = drawer.classList.toggle('open');
+      btn.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
+      drawer.setAttribute('aria-hidden', String(!open));
+    });
+  }
+})();
+</script>
+<!-- ── END PSD ESPORTS SITE NAV ── -->
+
+    <header role="banner" class="relative py-20 overflow-hidden border-b border-white/10">
+        <div aria-hidden="true" class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070')] bg-cover bg-center opacity-10"></div>
+        <div class="relative max-w-7xl mx-auto px-4 z-20">
+            <div class="inline-block px-4 py-1 bg-esports-yellow text-black font-display font-black uppercase tracking-widest text-sm clip-slant mb-6">
+                Official Handbook
+            </div>
+            <h1 class="font-display font-black text-6xl md:text-8xl uppercase leading-[0.8] mb-4 italic">
+                Rules & <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-esports-blue-text via-esports-yellow-text to-esports-red-text">Regulations</span>
+            </h1>
+            <p class="text-xl text-gray-400 font-display font-bold tracking-[0.2em] uppercase">Palmdale Promise Esports League | 2025-2026</p>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-16">
+        <div class="flex flex-col lg:flex-row gap-16">
+
+            <aside class="lg:w-72 flex-shrink-0">
+                <div class="sticky top-8 space-y-2">
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600 mb-4 px-4">Navigation</p>
+                    <nav class="space-y-1">
+                        <a href="#mission" class="nav-link flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-gray-400">
+                            <i data-lucide="target" class="w-4 h-4 text-esports-blue-text"></i> Mission
+                        </a>
+                        <a href="#section1" class="nav-link flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-gray-400">
+                            <i data-lucide="info" class="w-4 h-4 text-esports-yellow-text"></i> 1. General Info
+                        </a>
+                        <a href="#section2" class="nav-link flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-gray-400">
+                            <i data-lucide="user-plus" class="w-4 h-4 text-esports-red-text"></i> 2. Eligibility
+                        </a>
+                        <a href="#section3" class="nav-link flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-gray-400">
+                            <i data-lucide="shield" class="w-4 h-4 text-esports-blue-text"></i> 3. Code of Conduct
+                        </a>
+                        <a href="#section4" class="nav-link flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-gray-400">
+                            <i data-lucide="layout" class="w-4 h-4 text-esports-yellow-text"></i> 4. Match Format
+                        </a>
+                        <a href="#section5" class="nav-link flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-gray-400">
+                            <i data-lucide="rocket" class="w-4 h-4 text-esports-red-text"></i> 5. Game Rules
+                        </a>
+                        <a href="#section6" class="nav-link flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-gray-400">
+                            <i data-lucide="cpu" class="w-4 h-4 text-esports-blue-text"></i> 6. Technical
+                        </a>
+                        <a href="#section7" class="nav-link flex items-center gap-3 px-4 py-3 text-sm font-bold uppercase tracking-wider text-gray-400">
+                            <i data-lucide="trophy" class="w-4 h-4 text-esports-yellow-text"></i> 7. Finals Format
+                        </a>
+                    </nav>
+                </div>
+            </aside>
+
+            <div class="flex-1 space-y-20">
+
+                <section id="mission" class="section-anchor">
+                    <div class="glass-panel p-10 rounded-3xl border-l-8 border-esports-blue relative overflow-hidden">
+                        <h2 class="font-display text-4xl font-black uppercase mb-6 text-white italic">Mission Statement</h2>
+                        <p class="text-xl text-gray-200 leading-relaxed font-light italic">
+                            The Palmdale School District Esports League is dedicated to providing a safe, inclusive, and competitive environment for students to develop valuable skills in teamwork, strategic thinking, communication, and sportsmanship. Our mission is to foster a positive gaming community that complements the academic and personal growth of every student participant.
+                        </p>
+                    </div>
+                </section>
+
+                <section id="section1" class="section-anchor">
+                    <h2 class="font-display text-3xl font-black uppercase mb-8 border-b border-white/10 pb-4 flex items-center gap-4 text-esports-yellow-text">
+                        Section 1: General League Information
+                    </h2>
+                    <div class="space-y-8">
+                        <div class="bg-esports-card p-8 rounded-2xl border border-white/5">
+                            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-4">1.1. League Divisions</h3>
+                            <p class="text-gray-400 mb-6 text-sm">The league is separated into two divisions based on a combination of grade level and release time:</p>
+                            <div class="grid md:grid-cols-2 gap-8">
+                                <div class="space-y-4">
+                                    <p class="font-black text-xs text-esports-red-text uppercase tracking-widest">Jr Promise League: (Early Release)</p>
+                                    <ul class="text-sm text-gray-300 space-y-1 pl-2 border-l border-white/10">
+                                        <li>Cimmarron</li><li>Desert Rose</li><li>Innovations Academy</li><li>Los Amigos</li><li>Manzanita</li><li>Palmtree</li><li>Tumbleweed</li><li>Yucca</li>
+                                    </ul>
+                                </div>
+                                <div class="space-y-4">
+                                    <p class="font-black text-xs text-esports-blue-text uppercase tracking-widest">Promise League: (Late Release)</p>
+                                    <ul class="text-sm text-gray-300 space-y-1 pl-2 border-l border-white/10">
+                                        <li>Cactus</li><li>Cole</li><li>David G Millen</li><li>Ocotillo</li><li>Palmdale Learning Plaza</li><li>Sage</li><li>Shadow Hills</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rule-card">
+                            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-2">1.2. Official Games</h3>
+                            <p class="text-gray-300">Rocket League</p>
+                        </div>
+
+                        <div class="bg-esports-card p-8 rounded-2xl border border-white/5">
+                            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-4">1.3. League Schedule</h3>
+                            <p class="text-sm text-gray-300 mb-4 font-bold">Regular Season Duration: The 7-week regular season will take place during the following weeks:</p>
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+                                <div class="bg-white/5 p-3 rounded border border-white/10 text-xs"><p class="text-gray-500 mb-1">Week 1</p><p class="font-bold">March 2nd, 2026</p></div>
+                                <div class="bg-white/5 p-3 rounded border border-white/10 text-xs"><p class="text-gray-500 mb-1">Week 2</p><p class="font-bold">March 9th, 2026</p></div>
+                                <div class="bg-white/5 p-3 rounded border border-white/10 text-xs"><p class="text-gray-500 mb-1">Week 3</p><p class="font-bold">March 16th, 2026</p></div>
+                                <div class="bg-white/5 p-3 rounded border border-white/10 text-xs"><p class="text-gray-500 mb-1">Week 4</p><p class="font-bold">March 30th, 2026</p></div>
+                                <div class="bg-white/5 p-3 rounded border border-white/10 text-xs"><p class="text-gray-500 mb-1">Week 5</p><p class="font-bold">April 13th, 2026</p></div>
+                                <div class="bg-white/5 p-3 rounded border border-white/10 text-xs"><p class="text-gray-500 mb-1">Week 6</p><p class="font-bold">April 20th, 2026</p></div>
+                                <div class="bg-white/5 p-3 rounded border border-white/10 text-xs"><p class="text-gray-500 mb-1">Week 7</p><p class="font-bold">April 27th, 2026</p></div>
+                            </div>
+                            <div class="space-y-2 text-sm">
+                                <p class="text-white uppercase font-bold text-xs tracking-widest">Division Match Days:</p>
+                                <p class="text-gray-400"><span class="text-esports-blue-text">Promise Division:</span> Mondays at 4:00 PM</p>
+                                <p class="text-gray-400"><span class="text-esports-red-text">Jr Promise Division:</span> Tuesdays at 2:00 PM</p>
+                                <div class="mt-4 pt-4 border-t border-white/10">
+                                    <p class="text-white uppercase font-bold text-xs tracking-widest">Championship Event:</p>
+                                    <p class="text-gray-400">Date: May 9, 2026</p>
+                                    <p class="text-gray-400">Location: Quail Valley Esports Arena</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rule-card">
+                            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-2">1.4. League Administration</h3>
+                            <p class="text-sm text-gray-300">All rules are subject to interpretation by the League Administrators. Administrator decisions are final.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="section2" class="section-anchor">
+                    <h2 class="font-display text-3xl font-black uppercase mb-8 border-b border-white/10 pb-4 text-esports-yellow-text">
+                        Section 2: Team and Player Eligibility
+                    </h2>
+                    <div class="space-y-8">
+                        <div class="bg-esports-card p-8 rounded-2xl border border-white/5">
+                            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-6">2.1. Player Eligibility</h3>
+                            <ul class="space-y-4 text-sm text-gray-300">
+                                <li class="flex gap-4 items-start"><i data-lucide="check" class="w-5 h-5 text-esports-yellow flex-shrink-0 mt-0.5"></i> All players must be currently enrolled students in good academic and behavioral standing at a school within the Palmdale School District.</li>
+                                <li class="flex gap-4 items-start"><i data-lucide="check" class="w-5 h-5 text-esports-yellow flex-shrink-0 mt-0.5"></i> Players must have a signed permission slip from a parent or guardian on file with their school's coach/advisor.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-esports-card p-8 rounded-2xl border border-white/5">
+                            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-6">2.2. Team Formation</h3>
+                            <ul class="space-y-4 text-sm text-gray-300">
+                                <li class="flex gap-4 items-start"><i data-lucide="check" class="w-5 h-5 text-esports-yellow flex-shrink-0 mt-0.5"></i> Each school will register both an "A" and "B" team.</li>
+                                <li class="flex gap-4 items-start"><i data-lucide="check" class="w-5 h-5 text-esports-yellow flex-shrink-0 mt-0.5"></i> Players may not be registered to more than one team.</li>
+                                <li class="flex gap-4 items-start"><i data-lucide="check" class="w-5 h-5 text-esports-yellow flex-shrink-0 mt-0.5"></i> Each team must have a designated adult Coach or Faculty Advisor who is an employee of the Palmdale School District.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-esports-card p-8 rounded-2xl border border-white/5">
+                            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-4">2.3. Roster Requirements</h3>
+                            <p class="text-sm font-bold text-esports-yellow-text uppercase mb-2">Rocket League:</p>
+                            <p class="text-sm text-gray-300">Each team roster must consist of 3 starting players and may (optional) have 1 registered alternate (4 players total).</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="section3" class="section-anchor">
+                    <h2 class="font-display text-3xl font-black uppercase mb-8 border-b border-white/10 pb-4 text-esports-yellow-text">
+                        Section 3: Code of Conduct
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="rule-card border-l-4 border-esports-red">
+                            <h3 class="font-display font-bold text-white uppercase mb-4">3.1. Sportsmanship</h3>
+                            <p class="text-sm text-gray-300 leading-relaxed italic">All participants are expected to exhibit the highest level of sportsmanship. This includes respect for all other players, coaches, and league officials, and graciousness in victory and defeat.</p>
+                        </div>
+                        <div class="rule-card border-l-4 border-esports-red">
+                            <h3 class="font-display font-bold text-white uppercase mb-4">3.2. Prohibited Conduct</h3>
+                            <p class="text-sm text-gray-300 leading-relaxed">Harassment, cheating, unsportsmanlike behavior, and the use of inappropriate names are strictly prohibited and will result in disciplinary action.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="section4" class="section-anchor">
+                    <h2 class="font-display text-3xl font-black uppercase mb-8 border-b border-white/10 pb-4 text-esports-yellow-text">
+                        Section 4: League and Match Format
+                    </h2>
+                    <div class="space-y-8">
+                        <div class="bg-esports-card p-8 rounded-2xl border border-white/5">
+                            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-6">4.1. Regular Season Format</h3>
+                            <div class="space-y-4 text-sm text-gray-300">
+                                <p>On scheduled match dates both school's "A" teams will face off in a best of three series. Both school's "B" teams will also face off in a best of three series.</p>
+                                <p>These series can be played simultaneously, or one after the other if necessary.</p>
+                                <p class="bg-white/5 p-3 rounded border border-white/10 italic">Note: A third match is only necessary if the series is tied 1-1</p>
+                                <p>League standings will be determined by the school's combined match win-loss record for both their "A" and "B" teams.</p>
+                                <p class="text-xs text-gray-500 font-bold uppercase">Note: schools are encouraged to have additional teams face off in unofficial scrimmages on match day, but scrimmages between "C" or lower tiered teams will not be considered towards a school's overall record.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="bg-esports-card p-8 rounded-2xl border border-white/5">
+                                <h3 class="font-display font-bold text-white uppercase tracking-widest mb-4">4.2. Standings and Tiebreakers</h3>
+                                <p class="text-xs text-gray-500 uppercase font-bold mb-4">In the event of a tie, the following criteria will be used in order:</p>
+                                <ul class="space-y-3 text-sm text-gray-300">
+                                    <li class="flex items-center gap-3"><span class="w-6 h-6 rounded bg-esports-blue flex items-center justify-center text-[10px] font-bold">1</span> Head-to-Head match record among the tied teams.</li>
+                                    <li class="flex items-center gap-3"><span class="w-6 h-6 rounded bg-esports-blue flex items-center justify-center text-[10px] font-bold">2</span> Overall Game Win Percentage.</li>
+                                    <li class="flex items-center gap-3"><span class="w-6 h-6 rounded bg-esports-blue flex items-center justify-center text-[10px] font-bold">3</span> Overall Goal Differential.</li>
+                                </ul>
+                                <p class="mt-4 text-xs italic text-gray-400">If a tie still exists, a tiebreaker match will be scheduled.</p>
+                            </div>
+                            <div class="glass-panel p-8 rounded-2xl border border-white/10 relative overflow-hidden group">
+                                <div class="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                    <i data-lucide="trophy" class="w-32 h-32 text-white"></i>
+                                </div>
+
+                                <div class="relative z-10">
+                                    <h3 class="font-display font-bold text-white uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <span class="text-esports-blue-text">4.3.</span> Championship Qualification
+                                    </h3>
+                                    <p class="text-sm text-gray-200 leading-relaxed max-w-md">
+                                        The top four (4) ranked schools from each league will be invited to the live championship finals event.
+                                    </p>
+                                </div>
+
+                                <div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-esports-blue via-esports-yellow to-esports-red opacity-50"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-esports-card p-8 rounded-2xl border border-white/5">
+                            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-6">4.4. Match Day Procedure</h3>
+                            <div class="grid md:grid-cols-2 gap-8 text-sm text-gray-300">
+                                <div class="space-y-4">
+                                    <div>
+                                        <p class="font-bold text-white mb-1 uppercase text-xs tracking-widest">Check-in (15 minutes prior):</p>
+                                        <p>Coaches must confirm readiness with the opposing coach.</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-white mb-1 uppercase text-xs tracking-widest">Absences:</p>
+                                        <p>Teams that are unable to field a full roster have the option of playing short handed or alerting the opposing coach of their intention to forfeit.</p>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-white mb-1 uppercase text-xs tracking-widest">Lobby Creation:</p>
+                                        <p>The "Home Team" is responsible for creating the game lobby and sending the lobby name and password to the opposing coach.</p>
+                                    </div>
+                                </div>
+                                <div class="space-y-4">
+                                    <div>
+                                        <p class="font-bold text-esports-red-text mb-1 uppercase text-xs tracking-widest">Forfeits:</p>
+                                        <p>If a team fails to check in within 15 minutes after the scheduled start time (4:15 PM for Promise, 2:15 PM for Jr Promise), they will forfeit the entire match. The present team will receive an automatic 2-0 win for both their "A" and "B" teams.</p>
+                                    </div>
+                                    <div class="pt-4 border-t border-white/10">
+                                        <p class="font-bold text-white mb-1 uppercase text-xs tracking-widest">Score Reporting:</p>
+                                        <p>Both coaches must report the final stats of each game to the League Administrators.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="section5" class="section-anchor">
+                    <h2 class="font-display text-3xl font-black uppercase mb-8 border-b border-white/10 pb-4 text-esports-yellow-text">
+                        Section 5: Game-Specific Rules
+                    </h2>
+                    <div class="bg-esports-card p-8 rounded-2xl border border-white/5">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div class="w-12 h-12 bg-esports-red rounded-lg flex items-center justify-center">
+                                <i data-lucide="rocket" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <h3 class="font-display font-black text-3xl uppercase tracking-tighter italic">5.1. Rocket League Rules</h3>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-x-12 gap-y-6 text-sm text-gray-300 mb-8">
+                            <div class="space-y-2">
+                                <p class="flex justify-between border-b border-white/5 pb-1"><span>Team Format:</span> <span class="text-white font-bold">3 vs 3</span></p>
+                                <p class="flex justify-between border-b border-white/5 pb-1"><span>Regular Season Format:</span> <span class="text-white font-bold">Best of 3 games</span></p>
+                                <p class="flex justify-between border-b border-white/5 pb-1"><span>Championship Format:</span> <span class="text-white font-bold">Best of 3 games</span></p>
+                            </div>
+                            <div class="space-y-2">
+                                <p class="flex justify-between border-b border-white/5 pb-1"><span>Game Mode:</span> <span class="text-white font-bold">Soccar</span></p>
+                                <p class="flex justify-between border-b border-white/5 pb-1"><span>Arena:</span> <span class="text-white font-bold">DFH Stadium</span></p>
+                                <p class="flex justify-between border-b border-white/5 pb-1"><span>Bot Difficulty:</span> <span class="text-white font-bold">No Bots</span></p>
+                                <p class="flex justify-between border-b border-white/5 pb-1"><span>Region:</span> <span class="text-white font-bold">Recommended</span></p>
+                            </div>
+                        </div>
+                        <p class="p-4 bg-white/5 rounded border border-white/10 text-xs italic"><strong>Substitutions:</strong> One registered alternate may be subbed in at the start of any game within a series.</p>
+                    </div>
+                </section>
+
+                <section id="section6" class="section-anchor">
+                    <h2 class="font-display text-3xl font-black uppercase mb-8 border-b border-white/10 pb-4 text-esports-yellow-text">
+                        Section 6: Technical Rules
+                    </h2>
+                    <div class="space-y-8">
+                        <div class="bg-esports-card p-8 rounded-2xl border-l-4 border-esports-blue">
+                            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-6">6.1. Disconnects and Game Restarts</h3>
+                            <div class="space-y-6 text-sm text-gray-300">
+                                <p class="italic text-gray-400">League officials understand that technical issues can happen. These rules are designed to be fair to all players while preventing a match from being unnecessarily delayed.</p>
+
+                                <div>
+                                    <p class="font-black text-xs text-esports-blue-text uppercase tracking-widest mb-2">Player Disconnects:</p>
+                                    <div class="space-y-3">
+                                        <p>If a player disconnects from a game for any reason (e.g., internet outage, power loss, accidentally leaving the lobby), the game will continue.</p>
+                                        <p>The disconnected player's team must finish the current game shorthanded (e.g., 2v3 in Rocket League.)</p>
+                                        <p>A player who disconnects may not rejoin the game that is currently in progress. They are eligible to play in any subsequent games in that match series (e.g., Game 2 or Game 3).</p>
+                                    </div>
+                                </div>
+
+                                <div class="pt-6 border-t border-white/10">
+                                    <p class="font-black text-xs text-esports-blue-text uppercase tracking-widest mb-2">Game Restarts:</p>
+                                    <div class="space-y-3">
+                                        <p>Game restarts are extremely rare and will only be granted by a League Administrator in two specific situations:</p>
+                                        <ul class="list-disc pl-5 space-y-2">
+                                            <li>There is a verifiable, critical bug that significantly alters core gameplay mechanics (e.g., a character becomes invisible or unable to move).</li>
+                                            <li>There is a verifiable technical issue that poses a safety risk to participants.</li>
+                                        </ul>
+                                        <p>Restarts will not be granted for individual player disconnects, non-game-altering glitches (e.g., minor graphical issues), or personal hardware issues (e.g., a controller dying).</p>
+                                        <p class="bg-esports-red/10 p-3 rounded text-esports-red-text font-bold">If a team believes a legitimate, restart-worthy issue has occurred, they must stop play immediately and contact a League Administrator.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="rule-card">
+                                <h3 class="font-display font-bold text-white uppercase tracking-widest mb-2">6.2. Equipment</h3>
+                                <p class="text-sm text-gray-300">Players and schools are responsible for providing their own equipment, including consoles, controllers, and a stable internet connection.</p>
+                            </div>
+                            <div class="rule-card">
+                                <h3 class="font-display font-bold text-white uppercase tracking-widest mb-2">6.3. Disputes</h3>
+                                <p class="text-sm text-gray-300">If a dispute arises, teams should immediately contact their Coach/Advisor. The coaches should attempt to resolve the issue based on these rules. If a resolution cannot be reached, a League Administrator should be contacted. Screenshots and video clips are highly encouraged as evidence for any dispute.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="section7" class="section-anchor">
+                    <h2 class="font-display text-3xl font-black uppercase mb-8 border-b border-white/10 pb-4 text-esports-yellow-text">
+                        Section 7: Finals Format
+                    </h2>
+
+                    <div class="space-y-8">
+                        <div class="bg-esports-card p-8 rounded-2xl border border-white/5 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-10">
+                                <i data-lucide="award" class="w-16 h-16 text-white"></i>
+                            </div>
+                            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-6">7.1. Seeding & Matchups</h3>
+                            <div class="space-y-4">
+                                <p class="text-sm text-gray-300">The top four teams based on regular season standings advance to the finals bracket. Matchups are determined by seed:</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="bg-white/5 p-4 rounded-xl border border-esports-blue/30 text-center">
+                                        <p class="text-xs text-esports-blue-text font-black uppercase mb-1 italic">Semi-Final 1</p>
+                                        <p class="font-display font-bold text-xl uppercase italic">Seed 1 vs Seed 4</p>
+                                    </div>
+                                    <div class="bg-white/5 p-4 rounded-xl border border-esports-red/30 text-center">
+                                        <p class="text-xs text-esports-red-text font-black uppercase mb-1 italic">Semi-Final 2</p>
+                                        <p class="font-display font-bold text-xl uppercase italic">Seed 2 vs Seed 3</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-8">
+                            <div class="rule-card border-t-4 border-esports-blue">
+                                <h3 class="font-display font-bold text-white uppercase mb-4 flex items-center gap-2">
+                                    <i data-lucide="users" class="w-5 h-5 text-esports-blue-text"></i> 7.2. Participation
+                                </h3>
+                                <p class="text-sm text-gray-300 leading-relaxed">
+                                    Finals matches maintain the dual-roster format. Both the school's <strong class="text-white">"A" and "B" teams</strong> must play their respective series to determine the overall winner.
+                                </p>
+                            </div>
+
+                            <div class="rule-card border-t-4 border-esports-yellow">
+                                <h3 class="font-display font-bold text-white uppercase mb-4 flex items-center gap-2">
+                                    <i data-lucide="swords" class="w-5 h-5 text-esports-yellow-text"></i> 7.3. Tiebreaker
+                                </h3>
+                                <div class="space-y-4">
+                                    <p class="text-sm text-gray-300 leading-relaxed">
+                                        If schools split the "A" and "B" match wins, a <strong class="text-white font-bold uppercase italic">One-Game Tiebreaker</strong> will occur.
+                                    </p>
+                                    <div class="bg-black/40 p-4 rounded-lg border border-white/10">
+                                        <p class="text-xs font-bold text-esports-yellow uppercase mb-2">Roster Eligibility:</p>
+                                        <p class="text-xs text-gray-400 italic">
+                                            For the tiebreaker, coaches may select any combination of three players from their existing "A" and "B" rosters to compete.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="py-20"></div>
+
+    <script>
+        lucide.createIcons();
+
+        // Handle smooth scrolling for side menu
+        document.querySelectorAll('aside nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+<style>
+.io-reveal{opacity:0;transform:translateY(28px);transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);}
+.io-reveal.io-visible{opacity:1;transform:none;}
+.io-reveal-left{opacity:0;transform:translateX(-24px);transition:opacity .5s cubic-bezier(.4,0,.2,1),transform .5s cubic-bezier(.4,0,.2,1);}
+.io-reveal-left.io-visible{opacity:1;transform:none;}
+.io-stagger .io-reveal,.io-stagger .io-reveal-left{transition-delay:calc(var(--i,0)*.08s);}
+</style>
+<script>
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('io-visible');io.unobserve(e.target);}
+    });
+  },{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+
+  function markAndObserve(sel,cls,parent){
+    var els=(parent||document).querySelectorAll(sel);
+    els.forEach(function(el,i){
+      el.classList.add(cls);
+      el.style.setProperty('--i',i);
+      io.observe(el);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    /* season blocks */
+    markAndObserve('.season','io-reveal');
+    /* champion cards — stagger within their grid */
+    document.querySelectorAll('.champ-grid').forEach(function(g){
+      g.classList.add('io-stagger');
+      markAndObserve('.champ-card',   'io-reveal', g);
+    });
+    /* schedule rows */
+    document.querySelectorAll('.schedule-table tbody, .sched-body').forEach(function(tb){
+      tb.classList.add('io-stagger');
+      markAndObserve('tr','io-reveal',tb);
+    });
+    /* standings table rows */
+    document.querySelectorAll('.standings-table tbody, .standings-body').forEach(function(tb){
+      tb.classList.add('io-stagger');
+      markAndObserve('tr','io-reveal',tb);
+    });
+    /* stat cards / leaderboard rows */
+    markAndObserve('.stat-card','io-reveal');
+    markAndObserve('.leaderboard-row','io-reveal');
+    /* section headers */
+    markAndObserve('.season-header','io-reveal-left');
+    /* generic cards on other pages */
+    markAndObserve('.badge-card','io-reveal');
+    markAndObserve('.finals-card','io-reveal');
+  });
+})();
+</script>
+</body>
+</html>
+
+
+
+

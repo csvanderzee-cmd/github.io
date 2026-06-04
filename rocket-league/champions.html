@@ -1,0 +1,484 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hall of Champions | PSD Esports</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0B0E14; --card:#151B26;
+    --red:#C8102E; --red-t:#FF6B6B;
+    --yellow:#FDB913; --yellow-t:#FFD166;
+    --blue:#005696; --blue-t:#4DABF7;
+    --text:#e5e7eb; --muted:#9ca3af;
+    --bdr:rgba(255,255,255,0.08); --bdr2:rgba(255,255,255,0.12);
+    --gold:#FFD700; --gold-d:#a88a00;
+    --purple:#a78bfa;
+  }
+  *,*::before,*::after{box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0;overflow-x:hidden;}
+
+  /* ── SITE NAV ── */
+  #psd-nav{position:sticky;top:0;z-index:1000;background:rgba(13,17,25,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.08);font-family:'Rajdhani',sans-serif;transition:background .3s,box-shadow .3s,border-color .3s;}
+  #psd-nav.nav-scrolled{background:rgba(9,12,18,.92);box-shadow:0 4px 32px rgba(0,0,0,.6);border-bottom-color:rgba(255,255,255,.05);}
+  #psd-nav.nav-scrolled .nav-inner{height:42px;}
+  #psd-nav.nav-scrolled .nav-link{height:42px;}
+  #psd-nav .nav-inner{max-width:1280px;margin:0 auto;padding:0 1.25rem;display:flex;align-items:center;height:52px;transition:height .3s cubic-bezier(.4,0,.2,1);}
+  #psd-nav .nav-brand{font-weight:900;font-size:1.1rem;letter-spacing:.08em;text-transform:uppercase;color:#fff;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:.5rem;margin-right:1.5rem;}
+  #psd-nav .nav-brand span{background:linear-gradient(90deg,#FF6B6B,#FFD166,#4DABF7,#FF6B6B);background-size:250% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:brand-shift 5s linear infinite;}
+  @keyframes brand-shift{to{background-position:250% center}}
+  #psd-nav .nav-links{display:flex;align-items:center;gap:.15rem;list-style:none;margin:0;padding:0;flex:1;}
+  #psd-nav .nav-item{position:relative;}
+  #psd-nav .nav-link{display:flex;align-items:center;gap:.3rem;padding:.4rem .75rem;font-weight:700;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;border-radius:6px 6px 0 0;transition:color .15s,background .15s;white-space:nowrap;cursor:pointer;background:none;border:none;height:52px;}
+  #psd-nav .nav-link:hover,#psd-nav .nav-link.active{color:#fff;background:rgba(255,255,255,.06);}
+  #psd-nav .nav-link.active{border-bottom:2px solid #FDB913;}
+  #psd-nav .nav-chevron{font-size:.5rem;opacity:.55;transition:transform .2s;}
+  #psd-nav .nav-item:hover .nav-chevron{transform:rotate(180deg);}
+  #psd-nav .nav-dropdown{display:none;position:absolute;top:100%;left:0;min-width:190px;background:#151B26;border:1px solid rgba(255,255,255,.1);border-radius:0 8px 8px 8px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.8);}
+  #psd-nav .nav-item:hover .nav-dropdown,#psd-nav .nav-item:focus-within .nav-dropdown{display:block;}
+  #psd-nav .nav-dropdown a{display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;font-weight:700;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;transition:color .15s,background .15s;}
+  #psd-nav .nav-dropdown a:hover{color:#fff;background:rgba(255,255,255,.07);}
+  #psd-nav .nav-dropdown a.active{color:#fff;background:rgba(255,255,255,.07);border-left:3px solid var(--dd-accent,#4DABF7);padding-left:calc(1rem - 3px);}
+  #psd-nav .nav-item.pl-item .nav-dropdown{--dd-accent:#4DABF7;}
+  #psd-nav .nav-item.jrpl-item .nav-dropdown{--dd-accent:#FF6B6B;}
+  #psd-nav .nav-link.child-active{color:#fff;background:rgba(255,255,255,.06);border-bottom:2px solid var(--child-accent,#FDB913);}
+  #psd-nav .dd-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  #psd-nav .dd-game-header{padding:.45rem 1rem .25rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:#4b5563;border-top:1px solid rgba(255,255,255,.06);}
+  #psd-nav .dd-game-header:first-child{border-top:none;}
+  #psd-nav .nav-right{margin-left:auto;display:flex;align-items:center;gap:.5rem;}
+  #psd-nav .nav-pill{padding:.3rem .9rem;font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;border-radius:9999px;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s;}
+  #psd-nav .pill-finals{background:rgba(255,215,0,.1);color:#FFD166;border:1px solid rgba(255,215,0,.22);}
+  #psd-nav .pill-finals:hover,#psd-nav .pill-finals.active{background:rgba(255,215,0,.22);border-color:rgba(255,215,0,.5);}
+  #psd-nav .pill-rules{background:rgba(77,171,247,.08);color:#4DABF7;border:1px solid rgba(77,171,247,.18);}
+  #psd-nav .pill-rules:hover,#psd-nav .pill-rules.active{background:rgba(77,171,247,.18);}
+  #psd-nav .pill-champs{background:rgba(255,215,0,.1);color:#FFD166;border:1px solid rgba(255,215,0,.22);}
+  #psd-nav .pill-champs:hover,#psd-nav .pill-champs.active{background:rgba(255,215,0,.22);border-color:rgba(255,215,0,.5);}
+  #psd-nav .nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:.5rem;background:none;border:none;margin-left:auto;}
+  #psd-nav .nav-hamburger span{display:block;width:22px;height:2px;background:#9ca3af;border-radius:2px;transition:all .25s;}
+  #psd-nav .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+  #psd-nav .nav-hamburger.open span:nth-child(2){opacity:0;}
+  #psd-nav .nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+  #psd-nav-drawer{display:none;background:#0d1119;border-bottom:1px solid rgba(255,255,255,.08);padding:.75rem 1.25rem 1rem;}
+  #psd-nav-drawer.open{display:block;}
+  #psd-nav-drawer a{display:block;padding:.5rem .75rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;border-radius:6px;}
+  #psd-nav-drawer a:hover,#psd-nav-drawer a.active{color:#fff;background:rgba(255,255,255,.06);}
+  #psd-nav-drawer .drawer-section{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#4b5563;font-family:'Rajdhani',sans-serif;font-weight:700;padding:.5rem .75rem .2rem;margin-top:.4rem;}
+  #psd-nav-drawer .drawer-indent{padding-left:1.5rem;}
+  @media(max-width:900px){#psd-nav .nav-links,#psd-nav .nav-right{display:none;}#psd-nav .nav-hamburger{display:flex;}}
+
+  /* ── HERO ── */
+  .hero{position:relative;min-height:280px;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .hero-bg{position:absolute;inset:0;background-image:url("https://images.purexbox.com/ef8d40feffa9b/rocket-league-artwork.900x250.jpg");background-size:cover;background-position:center;opacity:.25;}
+  .hero-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(11,14,20,.2),rgba(11,14,20,.92));}
+  .hero-side{position:absolute;inset:0;background:linear-gradient(to right,rgba(11,14,20,.85),transparent,rgba(11,14,20,.85));}
+  .hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(255,215,0,.12),transparent 65%);pointer-events:none;}
+  canvas{position:absolute;inset:0;opacity:.45;pointer-events:none;}
+  .hero-content{position:relative;z-index:10;text-align:center;padding:2.5rem 1rem 3rem;}
+  .hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.25rem 1.1rem;border-left:4px solid var(--yellow-t);background:rgba(253,185,19,.12);color:var(--yellow-t);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:1rem;}
+  .hero h1{font-family:'Rajdhani',sans-serif;font-size:clamp(2.6rem,7vw,5rem);font-weight:900;line-height:.88;text-transform:uppercase;letter-spacing:.08em;margin:0 0 .7rem;background:linear-gradient(90deg,var(--yellow-t),#fff,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 14px rgba(0,0,0,.8));}
+  .hero-sub{font-size:.95rem;color:#d1d5db;letter-spacing:.04em;max-width:480px;margin:0 auto;}
+  .hero-trophy{font-size:3.5rem;line-height:1;margin-bottom:.75rem;animation:tpulse 2.5s ease-in-out infinite;}
+  @keyframes tpulse{0%,100%{filter:drop-shadow(0 0 12px rgba(255,215,0,.5))}50%{filter:drop-shadow(0 0 30px rgba(255,215,0,1))}}
+
+  /* ── LAYOUT ── */
+  .page{max-width:1100px;margin:0 auto;padding:3rem 1.25rem 5rem;}
+
+  /* ── SEASON BLOCK ── */
+  .season{margin-bottom:4rem;}
+  .season-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.75rem;}
+  .season-label{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:clamp(1.2rem,2.5vw,1.6rem);text-transform:uppercase;letter-spacing:.1em;color:#fff;margin:0;}
+  .season-pill{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;padding:3px 12px;border-radius:9999px;white-space:nowrap;}
+  .season-pill.fall{background:rgba(249,115,22,.12);color:#fb923c;border:1px solid rgba(249,115,22,.3);}
+  .season-pill.spring{background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.25);}
+  .season-divider{flex:1;height:1px;background:linear-gradient(to right,rgba(255,255,255,.1),transparent);}
+
+  /* ── CHAMP GRID ── */
+  .champ-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;}
+
+  /* ── CHAMP CARD ── */
+  .champ-card{position:relative;background:var(--card);border-radius:16px;overflow:hidden;border:1px solid var(--bdr2);box-shadow:0 8px 32px rgba(0,0,0,.5);transition:transform .18s,box-shadow .18s;}
+  .champ-card:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.7);}
+  .champ-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+
+  /* league color accents */
+  .champ-card.pl::before{background:linear-gradient(90deg,var(--blue),var(--blue-t));}
+  .champ-card.jrpl::before{background:linear-gradient(90deg,var(--red),var(--red-t));}
+  .champ-card.pl{border-color:rgba(77,171,247,.2);}
+  .champ-card.jrpl{border-color:rgba(255,107,107,.2);}
+
+  .card-inner{padding:1.25rem 1.4rem 1.4rem;}
+
+  /* league + game tags */
+  .card-tags{display:flex;flex-direction:column;gap:.45rem;margin-bottom:.9rem;}
+  .card-tags-row{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+  .tag{font-family:'Rajdhani',sans-serif;font-weight:700;text-transform:uppercase;border-radius:9999px;border:1px solid;letter-spacing:.14em;}
+  .tag.league-pl{background:rgba(0,86,150,.2);color:var(--blue-t);border-color:rgba(77,171,247,.3);font-size:.58rem;padding:2px 9px;}
+  .tag.league-jrpl{background:rgba(200,16,46,.15);color:var(--red-t);border-color:rgba(255,107,107,.3);font-size:.58rem;padding:2px 9px;}
+  .tag.game-rl{background:rgba(77,171,247,.13);color:#bfdbfe;border-color:rgba(147,197,253,.35);font-size:.72rem;padding:4px 12px;font-weight:900;letter-spacing:.1em;}
+  .tag.game-smash{background:rgba(249,115,22,.13);color:#fed7aa;border-color:rgba(249,115,22,.35);font-size:.72rem;padding:4px 12px;font-weight:900;letter-spacing:.1em;}
+
+  /* school logo + name */
+  .card-school{display:flex;align-items:center;gap:.9rem;margin-bottom:.85rem;}
+  .school-logo{width:44px;height:44px;border-radius:9px;object-fit:contain;background:rgba(255,255,255,.06);padding:4px;flex-shrink:0;}
+  .school-logo-fb{width:44px;height:44px;border-radius:9px;background:rgba(255,255,255,.06);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.75rem;color:var(--muted);flex-shrink:0;}
+  .school-name{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.35rem;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;color:#fff;}
+  .champ-card.pl .school-name{color:var(--blue-t);}
+  .champ-card.jrpl .school-name{color:var(--red-t);}
+
+  /* crown + label */
+  .card-footer{display:flex;align-items:center;gap:.5rem;padding:.65rem 1.4rem;background:rgba(0,0,0,.3);border-top:1px solid var(--bdr);}
+  .crown-icon{font-size:.9rem;animation:cglow 1.8s ease-in-out infinite alternate;}
+  @keyframes cglow{from{filter:drop-shadow(0 0 3px var(--gold))}to{filter:drop-shadow(0 0 10px var(--gold))}}
+  .card-footer-lbl{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+
+  /* ── DOMINANT CHAMPION card (won all titles in a season) ── */
+  .champ-card.dominant{border-color:rgba(255,215,0,.4)!important;box-shadow:0 0 0 1px rgba(255,215,0,.2),0 12px 40px rgba(0,0,0,.6),0 0 60px rgba(255,215,0,.1)!important;}
+  .champ-card.dominant::before{background:linear-gradient(90deg,var(--gold-d),var(--gold),#fff,var(--gold),var(--gold-d));background-size:200% auto;animation:shimmer 2.5s linear infinite;height:5px!important;}
+  .champ-card.dominant .school-name{background:linear-gradient(90deg,var(--gold-d),var(--gold),#fff,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  @keyframes shimmer{to{background-position:200% center}}
+  .dominant-badge{display:flex;align-items:center;justify-content:center;gap:.5rem;width:calc(100% + 2.8rem);margin:-1.25rem -1.4rem .9rem;padding:.45rem 1.4rem;background:linear-gradient(90deg,rgba(255,215,0,.18),rgba(255,215,0,.1),rgba(255,215,0,.18));border-bottom:1px solid rgba(255,215,0,.3);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);}
+  .dominant-badge .db-icon{font-size:.85rem;}
+  .card-tags.dual{gap:.4rem;}
+  .card-tags.dual .tag{font-size:.58rem;padding:2px 7px;}
+
+  /* ── EMPTY STATE ── */
+  .empty-season{padding:2rem;text-align:center;background:rgba(255,255,255,.02);border:1px dashed var(--bdr);border-radius:12px;font-family:'Rajdhani',sans-serif;font-size:.88rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+
+  footer{text-align:center;font-family:'Rajdhani',sans-serif;font-size:.72rem;color:#4b5563;letter-spacing:.1em;text-transform:uppercase;padding-bottom:2rem;}
+
+  /* ── VIEW TOGGLE ── */
+  /* ── TIMELINE ── */
+  .timeline{position:relative;padding-left:2rem;}
+  .timeline::before{content:'';position:absolute;left:.75rem;top:.5rem;bottom:.5rem;width:2px;background:linear-gradient(to bottom,var(--gold),rgba(255,215,0,.15));border-radius:2px;}
+  .tl-entry{position:relative;margin-bottom:3rem;}
+  .tl-node{display:flex;align-items:center;gap:.85rem;margin-bottom:1.1rem;}
+  .tl-dot{position:absolute;left:-1.7rem;width:14px;height:14px;border-radius:50%;background:var(--gold);border:3px solid var(--bg);box-shadow:0 0 0 2px var(--gold),0 0 12px rgba(255,215,0,.5);flex-shrink:0;}
+  .tl-season-label{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:clamp(1.1rem,2.2vw,1.45rem);text-transform:uppercase;letter-spacing:.1em;color:#fff;margin:0;}
+  .tl-divider{flex:1;height:1px;background:linear-gradient(to right,rgba(255,255,255,.1),transparent);}
+
+  @media(max-width:600px){.champ-grid{grid-template-columns:1fr;}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;}canvas{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- ── SITE NAV ── -->
+<nav id="psd-nav" aria-label="Site navigation">
+  <div class="nav-inner">
+    <a href="../index.html" class="nav-brand">PSD <span>Esports</span></a>
+    <ul class="nav-links" role="list">
+      <li class="nav-item pl-item">
+        <span class="nav-link" tabindex="0" role="button" aria-haspopup="true">Promise League <span class="nav-chevron">▼</span></span>
+        <div class="nav-dropdown" role="menu">
+          <div class="dd-game-header">🚀 Rocket League</div>
+          <a href="promise-league.html" data-page="promise-league"><span class="dd-dot" style="background:#4DABF7"></span>Standings</a>
+          <a href="promise-league-schedule.html" data-page="promise-league-schedule"><span class="dd-dot" style="background:#4DABF7"></span>Schedule</a>
+          <a href="promise-league-stats.html" data-page="promise-league-stats"><span class="dd-dot" style="background:#4DABF7"></span>Player Stats</a>
+        </div>
+      </li>
+      <li class="nav-item jrpl-item">
+        <span class="nav-link" tabindex="0" role="button" aria-haspopup="true">Jr Promise League <span class="nav-chevron">▼</span></span>
+        <div class="nav-dropdown" role="menu">
+          <div class="dd-game-header">🚀 Rocket League</div>
+          <a href="jr-promise-league.html" data-page="jr-promise-league"><span class="dd-dot" style="background:#FF6B6B"></span>Standings</a>
+          <a href="jr-promise-league-schedule.html" data-page="jr-promise-league-schedule"><span class="dd-dot" style="background:#FF6B6B"></span>Schedule</a>
+          <a href="jr-promise-league-stats.html" data-page="jr-promise-league-stats"><span class="dd-dot" style="background:#FF6B6B"></span>Player Stats</a>
+        </div>
+      </li>
+    </ul>
+    <div class="nav-right">
+      <a href="finals.html" class="nav-pill pill-finals" data-page="finals">🏆 Finals</a>
+      <a href="champions.html" class="nav-pill pill-champs" data-page="champions">🏅 Champions</a>
+      <a href="rules.html" class="nav-pill pill-rules" data-page="rules">Rules</a>
+    </div>
+    <button class="nav-hamburger" id="psd-hamburger" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div id="psd-nav-drawer" aria-hidden="true">
+  <div class="drawer-section">Promise League</div>
+  <div class="drawer-section" style="font-size:.55rem;color:#374151;padding-top:.1rem">🚀 Rocket League</div>
+  <a href="promise-league.html" class="drawer-indent" data-page="promise-league">Standings</a>
+  <a href="promise-league-schedule.html" class="drawer-indent" data-page="promise-league-schedule">Schedule</a>
+  <a href="promise-league-stats.html" class="drawer-indent" data-page="promise-league-stats">Player Stats</a>
+  <div class="drawer-section">Jr Promise League</div>
+  <div class="drawer-section" style="font-size:.55rem;color:#374151;padding-top:.1rem">🚀 Rocket League</div>
+  <a href="jr-promise-league.html" class="drawer-indent" data-page="jr-promise-league">Standings</a>
+  <a href="jr-promise-league-schedule.html" class="drawer-indent" data-page="jr-promise-league-schedule">Schedule</a>
+  <a href="jr-promise-league-stats.html" class="drawer-indent" data-page="jr-promise-league-stats">Player Stats</a>
+  <div class="drawer-section">More</div>
+  <a href="finals.html" data-page="finals">🏆 Finals</a>
+  <a href="champions.html" data-page="champions">🏅 Champions</a>
+  <a href="rules.html" data-page="rules">Rules</a>
+</div>
+<script>
+(function(){
+  var page = location.pathname.split('/').pop().replace('.html','') || 'index';
+  document.querySelectorAll('[data-page]').forEach(function(el){
+    if(el.dataset.page === page) el.classList.add('active');
+  });
+  // highlight parent nav-link when a dropdown child is active
+  document.querySelectorAll('.nav-dropdown a.active').forEach(function(a){
+    var item = a.closest('.nav-item');
+    if(item){
+      var trigger = item.querySelector('.nav-link');
+      if(trigger){
+        var accent = getComputedStyle(item.querySelector('.nav-dropdown')).getPropertyValue('--dd-accent').trim()||'#FDB913';
+        trigger.classList.add('child-active');
+        trigger.style.setProperty('--child-accent', accent);
+      }
+    }
+  });
+  var btn = document.getElementById('psd-hamburger');
+  var drawer = document.getElementById('psd-nav-drawer');
+  if(btn && drawer){
+    btn.addEventListener('click', function(){
+      var open = drawer.classList.toggle('open');
+      btn.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
+      drawer.setAttribute('aria-hidden', String(!open));
+    });
+  }
+  // scroll-aware shrink
+  var nav=document.getElementById('psd-nav');
+  if(nav){
+    var onScroll=function(){
+      if(window.scrollY>30){nav.classList.add('nav-scrolled');}
+      else{nav.classList.remove('nav-scrolled');}
+    };
+    window.addEventListener('scroll',onScroll,{passive:true});
+    onScroll();
+  }
+})();
+</script>
+
+<!-- ── HERO ── -->
+<header class="hero" role="banner">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-grad" aria-hidden="true"></div>
+  <div class="hero-side" aria-hidden="true"></div>
+  <div class="hero-glow" aria-hidden="true"></div>
+  <canvas id="heroParticles" aria-hidden="true"></canvas>
+  <div class="hero-content">
+    <div class="hero-trophy" aria-hidden="true">🏆</div>
+    <div class="hero-badge">PSD Esports · All Seasons</div>
+    <h1>Hall of<br>Champions</h1>
+    <p class="hero-sub">Every school that has claimed a PSD Esports championship title.</p>
+  </div>
+</header>
+
+<!-- ── CONTENT ── -->
+<div class="page">
+
+  <!-- ── TIMELINE ── -->
+    <div class="timeline">
+
+      <!-- 2025–26 · Spring -->
+      <div class="tl-entry">
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <h2 class="tl-season-label">2025–26 · Spring</h2>
+          <span class="season-pill spring">Spring Season</span>
+          <div class="tl-divider"></div>
+        </div>
+        <div class="champ-grid">
+          <div class="champ-card jrpl">
+            <div class="card-inner">
+              <div class="card-tags">
+                <div class="card-tags-row"><span class="tag league-jrpl">Jr. Promise League</span></div>
+                <div class="card-tags-row"><span class="tag game-rl">🚀 Rocket League</span></div>
+              </div>
+              <div class="card-school">
+                <img src="https://3.files.edl.io/bbc0/24/01/30/203123-f1eb745a-e767-4d91-80a4-2923ab07654d.png" alt="Desert Rose logo" class="school-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="school-logo-fb" style="display:none">DR</div>
+                <span class="school-name">Desert Rose</span>
+              </div>
+            </div>
+            <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Champions</span></div>
+          </div>
+          <div class="champ-card pl">
+            <div class="card-inner">
+              <div class="card-tags">
+                <div class="card-tags-row"><span class="tag league-pl">Promise League</span></div>
+                <div class="card-tags-row"><span class="tag game-rl">🚀 Rocket League</span></div>
+              </div>
+              <div class="card-school">
+                <img src="https://3.files.edl.io/88eb/24/01/30/203136-53ac6114-93b7-46a0-8fae-f78daf6287de.png" alt="Shadow Hills logo" class="school-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="school-logo-fb" style="display:none">SH</div>
+                <span class="school-name">Shadow Hills</span>
+              </div>
+            </div>
+            <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Champions</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2025–26 · Fall -->
+      <div class="tl-entry">
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <h2 class="tl-season-label">2025–26 · Fall</h2>
+          <span class="season-pill fall">Fall Season</span>
+          <div class="tl-divider"></div>
+        </div>
+        <div class="champ-grid">
+          <div class="champ-card jrpl">
+            <div class="card-inner">
+              <div class="card-tags">
+                <div class="card-tags-row"><span class="tag league-jrpl">Jr. Promise League</span></div>
+                <div class="card-tags-row"><span class="tag game-smash">⚔️ Smash Bros</span></div>
+              </div>
+              <div class="card-school">
+                <img src="https://3.files.edl.io/63ab/24/01/30/203120-a87c60bc-37da-483c-b392-238488c963de.png" alt="Cactus logo" class="school-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="school-logo-fb" style="display:none">CAC</div>
+                <span class="school-name">Cactus</span>
+              </div>
+            </div>
+            <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Champions</span></div>
+          </div>
+          <div class="champ-card jrpl">
+            <div class="card-inner">
+              <div class="card-tags">
+                <div class="card-tags-row"><span class="tag league-jrpl">Jr. Promise League</span></div>
+                <div class="card-tags-row"><span class="tag game-rl">🚀 Rocket League</span></div>
+              </div>
+              <div class="card-school">
+                <img src="https://3.files.edl.io/bbc0/24/01/30/203123-f1eb745a-e767-4d91-80a4-2923ab07654d.png" alt="Desert Rose logo" class="school-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="school-logo-fb" style="display:none">DR</div>
+                <span class="school-name">Desert Rose</span>
+              </div>
+            </div>
+            <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Champions</span></div>
+          </div>
+          <div class="champ-card pl dominant">
+            <div class="card-inner">
+              <div class="dominant-badge"><span class="db-icon">⚡</span> Swept Both Titles</div>
+              <div class="card-tags">
+                <div class="card-tags-row"><span class="tag league-pl">Promise League</span></div>
+                <div class="card-tags-row"><span class="tag game-smash">⚔️ Smash Bros</span><span class="tag game-rl">🚀 Rocket League</span></div>
+              </div>
+              <div class="card-school">
+                <img src="https://3.files.edl.io/e005/24/01/30/203135-3f3e9191-5b83-4ba9-a47c-124e5d54428c.png" alt="Sage logo" class="school-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="school-logo-fb" style="display:none">SGE</div>
+                <span class="school-name">Sage</span>
+              </div>
+            </div>
+            <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Dual Champions</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2024–25 · Fall -->
+      <div class="tl-entry">
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <h2 class="tl-season-label">2024–25 · Fall</h2>
+          <span class="season-pill fall">Fall Season</span>
+          <div class="tl-divider"></div>
+        </div>
+        <div class="champ-grid">
+          <div class="champ-card pl">
+            <div class="card-inner">
+              <div class="card-tags">
+                <div class="card-tags-row"><span class="tag league-pl">Promise League</span></div>
+                <div class="card-tags-row"><span class="tag game-rl">🚀 Rocket League</span></div>
+              </div>
+              <div class="card-school">
+                <img src="https://3.files.edl.io/8dc4/24/01/30/203122-5a3b347a-0d9f-434d-afcb-d500e246f4e3.png" alt="David G. Millen logo" class="school-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="school-logo-fb" style="display:none">DGM</div>
+                <span class="school-name">David G. Millen</span>
+              </div>
+            </div>
+            <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Champions</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.timeline -->
+
+  <footer><p>PSD Esports · Hall of Champions · Updated each season</p></footer>
+</div><!-- /.page -->
+
+<script>
+
+function initParticles() {
+  const c = document.getElementById('heroParticles'); if (!c) return;
+  const ctx = c.getContext('2d'); let w, h, p = [];
+  const sz = () => { w = c.width = c.parentElement.offsetWidth; h = c.height = c.parentElement.offsetHeight; };
+  window.addEventListener('resize', sz); sz();
+  class P {
+    constructor() { this.x=Math.random()*w; this.y=Math.random()*h; this.vx=(Math.random()-.5)*.35; this.vy=(Math.random()-.5)*.35; this.s=Math.random()*1.4+.4; this.a=Math.random()*.35+.08; }
+    up() { this.x+=this.vx; this.y+=this.vy; if(this.x<0)this.x=w; if(this.x>w)this.x=0; if(this.y<0)this.y=h; if(this.y>h)this.y=0; }
+    dr() { ctx.fillStyle=`rgba(255,215,0,${this.a})`; ctx.beginPath(); ctx.arc(this.x,this.y,this.s,0,Math.PI*2); ctx.fill(); }
+  }
+  for (let i = 0; i < 55; i++) p.push(new P());
+  (function an() { ctx.clearRect(0,0,w,h); p.forEach(x=>{x.up();x.dr();}); requestAnimationFrame(an); })();
+}
+document.addEventListener('DOMContentLoaded', () => {
+  if (!window.matchMedia('(prefers-reduced-motion:reduce)').matches) initParticles();
+});
+</script>
+<style>
+.io-reveal{opacity:0;transform:translateY(28px);transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);}
+.io-reveal.io-visible{opacity:1;transform:none;}
+.io-reveal-left{opacity:0;transform:translateX(-24px);transition:opacity .5s cubic-bezier(.4,0,.2,1),transform .5s cubic-bezier(.4,0,.2,1);}
+.io-reveal-left.io-visible{opacity:1;transform:none;}
+.io-stagger .io-reveal,.io-stagger .io-reveal-left{transition-delay:calc(var(--i,0)*.08s);}
+</style>
+<script>
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('io-visible');io.unobserve(e.target);}
+    });
+  },{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+
+  function markAndObserve(sel,cls,parent){
+    var els=(parent||document).querySelectorAll(sel);
+    els.forEach(function(el,i){
+      el.classList.add(cls);
+      el.style.setProperty('--i',i);
+      io.observe(el);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    /* season blocks */
+    markAndObserve('.season','io-reveal');
+    /* champion cards — stagger within their grid */
+    document.querySelectorAll('.champ-grid').forEach(function(g){
+      g.classList.add('io-stagger');
+      markAndObserve('.champ-card',   'io-reveal', g);
+    });
+    /* schedule rows */
+    document.querySelectorAll('.schedule-table tbody, .sched-body').forEach(function(tb){
+      tb.classList.add('io-stagger');
+      markAndObserve('tr','io-reveal',tb);
+    });
+    /* standings table rows */
+    document.querySelectorAll('.standings-table tbody, .standings-body').forEach(function(tb){
+      tb.classList.add('io-stagger');
+      markAndObserve('tr','io-reveal',tb);
+    });
+    /* stat cards / leaderboard rows */
+    markAndObserve('.stat-card','io-reveal');
+    markAndObserve('.leaderboard-row','io-reveal');
+    /* section headers */
+    markAndObserve('.season-header','io-reveal-left');
+    /* generic cards on other pages */
+    markAndObserve('.badge-card','io-reveal');
+    markAndObserve('.finals-card','io-reveal');
+  });
+})();
+</script>
+</body>
+</html>
+
+
+
+

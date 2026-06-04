@@ -1,0 +1,1080 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PSD Esports Showcase | Fall Season</title>
+    <meta name="description" content="Official home of PSD Esports. View the upcoming Fall Rocket League schedule, season standings, and championship finals replays.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        esports: {
+                            dark: '#0B0E14',
+                            card: '#151B26',
+                            yellow: '#FDB913',
+                            'yellow-text': '#FFD166',
+                            red: '#C8102E',
+                            'red-text': '#FF6B6B',
+                            blue: '#005696',
+                            'blue-text': '#4DABF7',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Rajdhani', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :focus-visible { outline: 3px solid #FDB913; outline-offset: 4px; border-radius: 4px; }
+        .skip-link { position: absolute; top: -40px; left: 0; background: #FDB913; color: #000; padding: 8px; z-index: 100; font-weight: bold; transition: top 0.3s; }
+        .skip-link:focus { top: 0; }
+        .glass-panel { background: rgba(21, 27, 38, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .tilt-card { transition: transform 0.1s ease-out, box-shadow 0.3s ease-out; transform-style: preserve-3d; }
+        .tilt-inner { transform: translateZ(20px); }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #0B0E14; }
+        ::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; border: 2px solid #0B0E14; }
+        ::-webkit-scrollbar-thumb:hover { background: #777; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        @media (prefers-reduced-motion: no-preference) {
+            .animate-marquee { display: flex; width: fit-content; animation: marquee 40s linear infinite; }
+            .animate-float { animation: float 6s ease-in-out infinite; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .animate-marquee { display: flex; width: 100%; overflow-x: auto; transform: none; animation: none; }
+            .animate-float { animation: none; transform: none; }
+            #particleCanvas { display: none; }
+            .tilt-card { transform: none !important; }
+        }
+        .clip-slant { clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); }
+        .video-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; border-radius: 1rem; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); }
+        .video-wrapper iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
+        .benefit-card { position: relative; overflow: hidden; }
+        .benefit-card::before { content: ""; position: absolute; inset: -1px; background: radial-gradient(circle at top, rgba(253,185,19,0.12), transparent 55%); opacity: 0; transition: opacity 0.3s ease-out; pointer-events: none; }
+        .benefit-card:hover::before { opacity: 1; }
+        .custom-scrollbar { scrollbar-width: thin; scrollbar-color: #333 #0B0E14; }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        .match-shimmer { background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%); background-size: 200% 100%; animation: shimmer 3s ease-in-out infinite; }
+        @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(253,185,19,0.3), 0 0 40px rgba(253,185,19,0.1); } 50% { box-shadow: 0 0 30px rgba(253,185,19,0.6), 0 0 60px rgba(253,185,19,0.2); } }
+        .season-started-banner { animation: pulse-glow 2s ease-in-out infinite; }
+        @keyframes finals-glow { 0%, 100% { box-shadow: 0 0 20px rgba(253,185,19,0.2), 0 0 40px rgba(200,16,46,0.1); } 50% { box-shadow: 0 0 40px rgba(253,185,19,0.5), 0 0 80px rgba(200,16,46,0.3); } }
+        .finals-glow { animation: finals-glow 3s ease-in-out infinite; }
+        @keyframes finals-stripe { 0% { background-position: 0 0; } 100% { background-position: 60px 0; } }
+        .finals-stripe-bg { background-image: repeating-linear-gradient(135deg, transparent, transparent 10px, rgba(253,185,19,0.03) 10px, rgba(253,185,19,0.03) 20px); background-size: 60px 60px; animation: finals-stripe 4s linear infinite; }
+        /* Contact bar */
+        .contact-bar-link:hover .contact-email { color: #FFD166; }
+    </style>
+</head>
+
+<body class="bg-esports-dark text-gray-100 font-sans antialiased overflow-x-hidden selection:bg-esports-blue selection:text-white">
+
+    <canvas id="particleCanvas" aria-hidden="true" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;"></canvas>
+
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ── PSD ESPORTS SITE NAV ── -->
+<style>
+#psd-nav{position:sticky;top:0;z-index:1000;background:rgba(13,17,25,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.08);font-family:'Rajdhani',sans-serif;transition:background .3s,box-shadow .3s,border-color .3s;}
+  #psd-nav.nav-scrolled{background:rgba(9,12,18,.92);box-shadow:0 4px 32px rgba(0,0,0,.6);border-bottom-color:rgba(255,255,255,.05);}
+  #psd-nav.nav-scrolled .nav-inner{height:42px;}
+  #psd-nav.nav-scrolled .nav-link{height:42px;}
+#psd-nav .nav-inner{max-width:1280px;margin:0 auto;padding:0 1.25rem;display:flex;align-items:center;height:52px;transition:height .3s cubic-bezier(.4,0,.2,1);}
+#psd-nav .nav-brand{font-weight:900;font-size:1.1rem;letter-spacing:.08em;text-transform:uppercase;color:#fff;text-decoration:none;white-space:nowrap;display:flex;align-items:center;gap:.5rem;margin-right:1.5rem;}
+#psd-nav .nav-brand span{background:linear-gradient(90deg,#FF6B6B,#FFD166,#4DABF7,#FF6B6B);background-size:250% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:brand-shift 5s linear infinite;}
+  @keyframes brand-shift{to{background-position:250% center}}
+#psd-nav .nav-links{display:flex;align-items:center;gap:.15rem;list-style:none;margin:0;padding:0;flex:1;}
+#psd-nav .nav-item{position:relative;}
+#psd-nav .nav-link{display:flex;align-items:center;gap:.3rem;padding:.4rem .75rem;font-weight:700;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;border-radius:6px 6px 0 0;transition:color .15s,background .15s;white-space:nowrap;cursor:pointer;background:none;border:none;height:52px;}
+#psd-nav .nav-link:hover,#psd-nav .nav-link.active{color:#fff;background:rgba(255,255,255,.06);}
+#psd-nav .nav-link.active{border-bottom:2px solid #FDB913;}
+#psd-nav .nav-chevron{font-size:.5rem;opacity:.55;transition:transform .2s;}
+#psd-nav .nav-item:hover .nav-chevron{transform:rotate(180deg);}
+#psd-nav .nav-dropdown{display:none;position:absolute;top:100%;left:0;min-width:190px;background:#151B26;border:1px solid rgba(255,255,255,.1);border-radius:0 8px 8px 8px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.8);}
+#psd-nav .nav-item:hover .nav-dropdown,#psd-nav .nav-item:focus-within .nav-dropdown{display:block;}
+#psd-nav .nav-dropdown a{display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;font-weight:700;font-size:.76rem;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;transition:color .15s,background .15s;}
+#psd-nav .nav-dropdown a:hover{color:#fff;background:rgba(255,255,255,.07);}
+  #psd-nav .nav-dropdown a.active{color:#fff;background:rgba(255,255,255,.07);border-left:3px solid var(--dd-accent,#4DABF7);padding-left:calc(1rem - 3px);}
+  #psd-nav .nav-item.pl-item .nav-dropdown{--dd-accent:#4DABF7;}
+  #psd-nav .nav-item.jrpl-item .nav-dropdown{--dd-accent:#FF6B6B;}
+  #psd-nav .nav-link.child-active{color:#fff;background:rgba(255,255,255,.06);border-bottom:2px solid var(--child-accent,#FDB913);}
+#psd-nav .dd-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  #psd-nav .dd-game-header{padding:.45rem 1rem .25rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:#4b5563;border-top:1px solid rgba(255,255,255,.06);}
+  #psd-nav .dd-game-header:first-child{border-top:none;}
+#psd-nav .nav-right{margin-left:auto;display:flex;align-items:center;gap:.5rem;}
+#psd-nav .nav-pill{padding:.3rem .9rem;font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;border-radius:9999px;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s;}
+#psd-nav .pill-finals{background:rgba(255,215,0,.1);color:#FFD166;border:1px solid rgba(255,215,0,.22);}
+#psd-nav .pill-finals:hover,#psd-nav .pill-finals.active{background:rgba(255,215,0,.22);border-color:rgba(255,215,0,.5);}
+#psd-nav .pill-rules{background:rgba(77,171,247,.08);color:#4DABF7;border:1px solid rgba(77,171,247,.18);}
+#psd-nav .pill-rules:hover,#psd-nav .pill-rules.active{background:rgba(77,171,247,.18);}
+#psd-nav .pill-champs{background:rgba(255,215,0,.1);color:#FFD166;border:1px solid rgba(255,215,0,.22);}
+#psd-nav .pill-champs:hover,#psd-nav .pill-champs.active{background:rgba(255,215,0,.22);border-color:rgba(255,215,0,.5);}
+#psd-nav .pill-badges{background:rgba(167,139,250,.08);color:#c4b5fd;border:1px solid rgba(167,139,250,.18);}
+#psd-nav .pill-badges:hover,#psd-nav .pill-badges.active{background:rgba(167,139,250,.2);border-color:rgba(167,139,250,.45);}
+#psd-nav .nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:.5rem;background:none;border:none;margin-left:auto;}
+#psd-nav .nav-hamburger span{display:block;width:22px;height:2px;background:#9ca3af;border-radius:2px;transition:all .25s;}
+#psd-nav .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+#psd-nav .nav-hamburger.open span:nth-child(2){opacity:0;}
+#psd-nav .nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+#psd-nav-drawer{display:none;background:#0d1119;border-bottom:1px solid rgba(255,255,255,.08);padding:.75rem 1.25rem 1rem;}
+#psd-nav-drawer.open{display:block;}
+#psd-nav-drawer a{display:block;padding:.5rem .75rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;border-radius:6px;}
+#psd-nav-drawer a:hover,#psd-nav-drawer a.active{color:#fff;background:rgba(255,255,255,.06);}
+#psd-nav-drawer .drawer-section{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#4b5563;font-family:'Rajdhani',sans-serif;font-weight:700;padding:.5rem .75rem .2rem;margin-top:.4rem;}
+#psd-nav-drawer .drawer-indent{padding-left:1.5rem;}
+@media(max-width:900px){#psd-nav .nav-links,#psd-nav .nav-right{display:none;}#psd-nav .nav-hamburger{display:flex;}}
+</style>
+<nav id="psd-nav" aria-label="Site navigation">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">PSD <span>Esports</span></a>
+    <ul class="nav-links" role="list">
+
+      <li class="nav-item pl-item">
+        <span class="nav-link" tabindex="0" role="button" aria-haspopup="true">Promise League <span class="nav-chevron">▼</span></span>
+        <div class="nav-dropdown" role="menu">
+          <div class="dd-game-header">🚀 Rocket League</div>
+          <a href="rocket-league/promise-league.html" data-page="promise-league"><span class="dd-dot" style="background:#4DABF7"></span>Standings</a>
+          <a href="rocket-league/promise-league-schedule.html" data-page="promise-league-schedule"><span class="dd-dot" style="background:#4DABF7"></span>Schedule</a>
+          <a href="rocket-league/promise-league-stats.html" data-page="promise-league-stats"><span class="dd-dot" style="background:#4DABF7"></span>Player Stats</a>
+        </div>
+      </li>
+      <li class="nav-item jrpl-item">
+        <span class="nav-link" tabindex="0" role="button" aria-haspopup="true">Jr Promise League <span class="nav-chevron">▼</span></span>
+        <div class="nav-dropdown" role="menu">
+          <div class="dd-game-header">🚀 Rocket League</div>
+          <a href="rocket-league/jr-promise-league.html" data-page="jr-promise-league"><span class="dd-dot" style="background:#FF6B6B"></span>Standings</a>
+          <a href="rocket-league/jr-promise-league-schedule.html" data-page="jr-promise-league-schedule"><span class="dd-dot" style="background:#FF6B6B"></span>Schedule</a>
+          <a href="rocket-league/jr-promise-league-stats.html" data-page="jr-promise-league-stats"><span class="dd-dot" style="background:#FF6B6B"></span>Player Stats</a>
+        </div>
+      </li>
+    </ul>
+    <div class="nav-right">
+      <a href="rocket-league/finals.html" class="nav-pill pill-finals" data-page="finals">🏆 Finals</a>
+      <a href="rocket-league/champions.html" class="nav-pill pill-champs" data-page="champions">🏅 Champions</a>
+      <a href="rocket-league/rules.html" class="nav-pill pill-rules" data-page="rules">Rules</a>
+
+    </div>
+    <button class="nav-hamburger" id="psd-hamburger" aria-label="Toggle navigation" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div id="psd-nav-drawer" aria-hidden="true">
+  <a href="index.html" data-page="index">Home</a>
+  <div class="drawer-section">Promise League</div>
+  <div class="drawer-section" style="font-size:.55rem;color:#374151;padding-top:.1rem">🚀 Rocket League</div>
+  <a href="rocket-league/promise-league.html" class="drawer-indent" data-page="promise-league">Standings</a>
+  <a href="rocket-league/promise-league-schedule.html" class="drawer-indent" data-page="promise-league-schedule">Schedule</a>
+  <a href="rocket-league/promise-league-stats.html" class="drawer-indent" data-page="promise-league-stats">Player Stats</a>
+  <div class="drawer-section">Jr Promise League</div>
+  <div class="drawer-section" style="font-size:.55rem;color:#374151;padding-top:.1rem">🚀 Rocket League</div>
+  <a href="rocket-league/jr-promise-league.html" class="drawer-indent" data-page="jr-promise-league">Standings</a>
+  <a href="rocket-league/jr-promise-league-schedule.html" class="drawer-indent" data-page="jr-promise-league-schedule">Schedule</a>
+  <a href="rocket-league/jr-promise-league-stats.html" class="drawer-indent" data-page="jr-promise-league-stats">Player Stats</a>
+  <div class="drawer-section">More</div>
+  <a href="rocket-league/finals.html" data-page="finals">🏆 Finals</a>
+  <a href="rocket-league/champions.html" data-page="champions">🏅 Champions</a>
+  <a href="rocket-league/rules.html" data-page="rules">Rules</a>
+
+</div>
+<script>
+(function(){
+  var page = location.pathname.split('/').pop().replace('.html','') || 'index';
+  document.querySelectorAll('[data-page]').forEach(function(el){
+    if(el.dataset.page === page) el.classList.add('active');
+  });
+  // highlight parent nav-link when a dropdown child is active
+  document.querySelectorAll('.nav-dropdown a.active').forEach(function(a){
+    var item = a.closest('.nav-item');
+    if(item){
+      var trigger = item.querySelector('.nav-link');
+      if(trigger){
+        var accent = getComputedStyle(item.querySelector('.nav-dropdown')).getPropertyValue('--dd-accent').trim()||'#FDB913';
+        trigger.classList.add('child-active');
+        trigger.style.setProperty('--child-accent', accent);
+      }
+    }
+  });
+  var btn = document.getElementById('psd-hamburger');
+  var drawer = document.getElementById('psd-nav-drawer');
+  if(btn && drawer){
+    btn.addEventListener('click', function(){
+      var open = drawer.classList.toggle('open');
+      btn.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', String(open));
+      drawer.setAttribute('aria-hidden', String(!open));
+    });
+  }
+})();
+</script>
+<!-- ── END PSD ESPORTS SITE NAV ── -->
+
+    <header role="banner" class="relative min-h-[680px] flex items-center overflow-hidden">
+        <div aria-hidden="true" class="absolute inset-0 bg-[url('https://i.imgur.com/xJbVm81.png')] bg-cover bg-center opacity-25"></div>
+        <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-esports-dark via-esports-dark/80 to-transparent"></div>
+        <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-r from-esports-dark/90 via-transparent to-transparent"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 py-8 z-20 w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+                <div class="max-w-3xl">
+                    <div id="status-badge-preseason" role="status" class="inline-flex items-center gap-3 px-5 py-2 rounded-sm bg-esports-blue/10 border-l-4 border-esports-blue-text text-esports-blue-text font-display font-bold tracking-widest mb-5">
+                        <span class="relative flex h-3 w-3" aria-hidden="true">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75 motion-reduce:animate-none"></span>
+                          <span class="relative inline-flex rounded-full h-3 w-3 bg-esports-blue-text"></span>
+                        </span>
+                        <span>FALL SEASON COMING SOON</span>
+                    </div>
+                    <div id="status-badge-live" role="status" class="hidden inline-flex items-center gap-3 px-5 py-2 rounded-sm bg-esports-yellow/10 border-l-4 border-esports-yellow-text text-esports-yellow-text font-display font-bold tracking-widest mb-5">
+                        <span class="relative flex h-3 w-3" aria-hidden="true">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75 motion-reduce:animate-none"></span>
+                          <span class="relative inline-flex rounded-full h-3 w-3 bg-esports-yellow-text"></span>
+                        </span>
+                        <span>SEASON LIVE</span>
+                    </div>
+
+                    <h1 class="font-display font-black uppercase leading-[0.9] mb-6 tracking-tight">
+                        <span class="block text-4xl md:text-5xl lg:text-6xl text-gray-400 font-bold tracking-[0.15em] mb-2">Rocket League</span>
+                        <span class="block text-6xl md:text-8xl lg:text-9xl text-white">Fall</span>
+                        <span class="block text-6xl md:text-8xl lg:text-9xl text-transparent bg-clip-text bg-gradient-to-r from-esports-red-text via-esports-yellow-text to-esports-blue-text" role="img" aria-label="Season">Season</span>
+                    </h1>
+
+                    <div id="hero-copy-preseason" class="flex flex-col md:flex-row gap-8 items-start md:items-center border-l-4 border-esports-yellow pl-6 mb-6 bg-gradient-to-r from-esports-yellow/10 to-transparent py-4 rounded-r-xl">
+                        <p class="text-xl text-gray-200 font-light max-w-xl">
+                            The engines are warming up.
+                            <strong class="text-white font-bold block mt-1">Fall season schedule coming soon.</strong>
+                        </p>
+                    </div>
+                    <div id="hero-copy-live" class="hidden flex flex-col md:flex-row gap-8 items-start md:items-center border-l-4 border-esports-red pl-6 mb-6 bg-gradient-to-r from-esports-red/10 to-transparent py-4 rounded-r-xl">
+                        <p class="text-xl text-gray-200 font-light max-w-xl">
+                            The race for the championship is on.
+                            <strong class="text-white font-bold block mt-1">Season is live — championship finals ahead.</strong>
+                        </p>
+                    </div>
+
+                    <div class="max-w-lg mb-4">
+                      <!-- Countdown hidden until fall dates are set -->
+                      <div id="countdown-wrapper" class="hidden" aria-label="Countdown to Fall Season">
+                        <div class="bg-gradient-to-r from-esports-blue via-esports-yellow to-esports-red p-[1px] rounded-lg">
+                          <div class="grid grid-cols-4 gap-2 bg-esports-dark rounded-lg p-3">
+                            <div class="bg-white/5 border border-white/10 p-3 text-center rounded">
+                              <div id="days" class="font-display font-bold text-3xl text-esports-yellow-text" aria-hidden="true">00</div>
+                              <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold" aria-hidden="true">Days</div>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 p-3 text-center rounded">
+                              <div id="hours" class="font-display font-bold text-3xl text-esports-blue-text" aria-hidden="true">00</div>
+                              <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold" aria-hidden="true">Hrs</div>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 p-3 text-center rounded">
+                              <div id="minutes" class="font-display font-bold text-3xl text-white" aria-hidden="true">00</div>
+                              <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold" aria-hidden="true">Mins</div>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 p-3 text-center rounded">
+                              <div id="seconds" class="font-display font-bold text-3xl text-esports-red-text" aria-hidden="true">00</div>
+                              <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold" aria-hidden="true">Secs</div>
+                            </div>
+                            <div class="col-span-4 text-center text-xs text-gray-400 uppercase pt-1 font-medium" aria-hidden="true">Until Season Starts</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Dates TBA state (shown when no season dates set) -->
+                      <div id="dates-tba-banner" class="bg-gradient-to-r from-esports-blue/10 via-white/5 to-transparent border border-white/10 rounded-lg p-4 flex items-center gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-esports-blue/20 flex items-center justify-center">
+                          <i data-lucide="calendar" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                          <div class="font-display font-black text-white uppercase tracking-wider text-lg leading-tight">Fall Season Dates</div>
+                          <div class="text-gray-400 text-xs uppercase tracking-widest font-bold mt-0.5">To Be Announced</div>
+                        </div>
+                      </div>
+
+                      <div id="finals-hero-wrapper" aria-label="Countdown to Championship Finals" class="hidden">
+                        <div class="bg-gradient-to-r from-esports-red via-esports-yellow to-esports-blue p-[1px] rounded-lg">
+                          <div class="grid grid-cols-4 gap-2 bg-esports-dark rounded-lg p-3">
+                            <div class="bg-white/5 border border-white/10 p-3 text-center rounded">
+                              <div id="finals-days" class="font-display font-bold text-3xl text-esports-yellow-text" aria-hidden="true">--</div>
+                              <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold" aria-hidden="true">Days</div>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 p-3 text-center rounded">
+                              <div id="finals-hours" class="font-display font-bold text-3xl text-esports-blue-text" aria-hidden="true">--</div>
+                              <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold" aria-hidden="true">Hrs</div>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 p-3 text-center rounded">
+                              <div id="finals-minutes" class="font-display font-bold text-3xl text-white" aria-hidden="true">--</div>
+                              <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold" aria-hidden="true">Mins</div>
+                            </div>
+                            <div class="bg-white/5 border border-white/10 p-3 text-center rounded">
+                              <div id="finals-seconds" class="font-display font-bold text-3xl text-esports-red-text" aria-hidden="true">--</div>
+                              <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold" aria-hidden="true">Secs</div>
+                            </div>
+                            <div class="col-span-4 text-center text-xs text-gray-400 uppercase pt-1 font-medium" aria-hidden="true">Until Championship Finals</div>
+                          </div>
+                        </div>
+                        <div class="flex items-center justify-center gap-2 mt-3 text-xs text-gray-500 font-semibold uppercase tracking-wider">
+                          <i data-lucide="zap" class="w-3 h-3 text-esports-yellow-text" aria-hidden="true"></i>
+                          <span id="hero-week-label">Season in progress</span>
+                        </div>
+                      </div>
+
+                      <div id="finals-day-banner" class="hidden">
+                        <div class="season-started-banner bg-gradient-to-r from-esports-yellow/20 via-esports-red/10 to-transparent border border-esports-yellow/50 rounded-lg p-4 text-center">
+                          <div class="flex items-center justify-center gap-3 mb-1">
+                            <i data-lucide="trophy" class="w-5 h-5 text-esports-yellow-text" aria-hidden="true"></i>
+                            <span id="finals-banner-text" class="font-display font-black text-2xl uppercase text-esports-yellow-text tracking-widest">Championship Finals Today!</span>
+                            <i data-lucide="trophy" class="w-5 h-5 text-esports-yellow-text" aria-hidden="true"></i>
+                          </div>
+                          <p id="finals-banner-sub" class="text-gray-300 text-sm font-semibold uppercase tracking-wider">It all comes down to today.</p>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+
+                <div class="hidden lg:flex justify-center lg:justify-end relative" aria-hidden="true">
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-esports-blue/20 blur-[80px] rounded-full -z-10"></div>
+                    <div class="animate-float relative w-full max-w-md bg-esports-dark/80 backdrop-blur-xl border border-white/20 rounded-3xl p-7 shadow-2xl transform -rotate-1 hover:rotate-0 transition-all duration-500">
+                        <div class="flex items-center gap-2 mb-5 pb-3 border-b border-white/20">
+                            <i data-lucide="trophy" class="w-5 h-5 text-esports-yellow-text"></i>
+                            <span class="text-white font-display font-bold uppercase tracking-widest text-sm">25-26 Champions</span>
+                            <span class="ml-auto text-esports-yellow-text text-xs uppercase tracking-widest font-bold px-2 py-1 rounded border border-esports-yellow/40 bg-esports-yellow/10">Final</span>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="trophy" class="w-3 h-3 text-esports-blue-text"></i>
+                                <span class="text-esports-blue-text text-[10px] uppercase tracking-widest font-bold">Promise League</span>
+                            </div>
+                            <div class="flex items-center gap-3 bg-gradient-to-r from-esports-yellow/10 to-transparent border border-esports-yellow/20 rounded-lg px-4 py-3">
+                                <i data-lucide="award" class="w-5 h-5 text-esports-yellow-text flex-shrink-0"></i>
+                                <span class="font-display font-black text-xl uppercase text-esports-yellow-text">Shadow Hills</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-5">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i data-lucide="star" class="w-3 h-3 text-esports-red-text"></i>
+                                <span class="text-esports-red-text text-[10px] uppercase tracking-widest font-bold">Jr Promise League</span>
+                            </div>
+                            <div class="flex items-center gap-3 bg-gradient-to-r from-esports-yellow/10 to-transparent border border-esports-yellow/20 rounded-lg px-4 py-3">
+                                <i data-lucide="award" class="w-5 h-5 text-esports-yellow-text flex-shrink-0"></i>
+                                <span class="font-display font-black text-xl uppercase text-esports-yellow-text">Desert Rose</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-white/20">
+                            <div class="flex items-center justify-center gap-2 text-xs text-gray-500 uppercase tracking-wider font-bold">
+                                <i data-lucide="calendar" class="w-3 h-3"></i>
+                                <span>Fall Season Coming Soon</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content">
+
+        <!-- ─── NEXT SEASON CONTACT BAR ─── -->
+        <div class="bg-gradient-to-r from-esports-blue/20 via-esports-card to-esports-yellow/10 border-b border-white/10 relative z-30" role="complementary" aria-label="Next season information">
+            <div class="max-w-7xl mx-auto px-4 py-5">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-center sm:text-left">
+                    <div class="flex items-center gap-2 text-esports-yellow-text font-display font-bold uppercase tracking-widest text-base flex-shrink-0">
+                        <i data-lucide="calendar-plus" class="w-5 h-5" aria-hidden="true"></i>
+                        <span>Interested in the Fall Season?</span>
+                    </div>
+                    <div class="hidden sm:block w-px h-6 bg-white/20" aria-hidden="true"></div>
+                    <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
+                        <a href="mailto:drhubler@palmdalesd.org"
+                           class="contact-bar-link flex items-center gap-2 text-gray-300 hover:text-esports-yellow-text transition-colors duration-200 font-semibold group"
+                           aria-label="Email Mr. Hubler for next season info">
+                            <i data-lucide="mail" class="w-4 h-4 text-esports-blue-text group-hover:text-esports-yellow-text transition-colors" aria-hidden="true"></i>
+                            <span class="font-bold text-white text-base">Mr. Hubler</span>
+                            <span class="contact-email text-gray-400 text-sm transition-colors">drhubler@palmdalesd.org</span>
+                        </a>
+                        <div class="hidden sm:block w-px h-5 bg-white/20" aria-hidden="true"></div>
+                        <a href="mailto:csvanderzee@palmdalesd.org"
+                           class="contact-bar-link flex items-center gap-2 text-gray-300 hover:text-esports-yellow-text transition-colors duration-200 font-semibold group"
+                           aria-label="Email Mr. Vanderzee for next season info">
+                            <i data-lucide="mail" class="w-4 h-4 text-esports-blue-text group-hover:text-esports-yellow-text transition-colors" aria-hidden="true"></i>
+                            <span class="font-bold text-white text-base">Mr. Vanderzee</span>
+                            <span class="contact-email text-gray-400 text-sm transition-colors">csvanderzee@palmdalesd.org</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ─── CHAMPIONS TICKER ─── -->
+        <aside aria-label="Season Champions Ticker" class="bg-black border-y border-white/20 text-white py-3 overflow-hidden relative z-30">
+            <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-esports-red via-esports-yellow to-esports-blue" aria-hidden="true"></div>
+            <div class="flex items-center whitespace-nowrap animate-marquee font-display font-bold text-lg uppercase tracking-widest" aria-hidden="true">
+                <div class="flex items-center gap-12 px-4">
+                    <span class="text-esports-blue-text">24-25 ROCKET LEAGUE CHAMPIONS: DGM</span>
+                    <span class="text-gray-600">///</span>
+                    <span class="text-esports-red-text">25-26 SMASH CHAMPIONS: SAGE</span>
+                    <span class="text-gray-600">///</span>
+                    <span class="text-esports-yellow-text">25-26 ROCKET LEAGUE CHAMPIONS: SHADOW HILLS</span>
+                    <span class="text-gray-600">///</span>
+                    <span class="text-esports-blue-text">25-26 ROCKET LEAGUE JR CHAMPIONS: DESERT ROSE</span>
+                    <span class="text-gray-600">///</span>
+                    <span class="text-esports-red-text">25-26 SMASH JR CHAMPIONS: CACTUS</span>
+                    <span class="text-gray-600">///</span>
+                    <span class="text-esports-yellow-text">CONGRATULATIONS TO ALL 25-26 COMPETITORS</span>
+                    <span class="text-gray-600">///</span>
+                </div>
+                <div class="flex items-center gap-12 px-4">
+                    <span class="text-esports-blue-text">24-25 ROCKET LEAGUE CHAMPIONS: DGM</span>
+                    <span class="text-gray-600">///</span>
+                    <span class="text-esports-red-text">25-26 SMASH CHAMPIONS: SAGE</span>
+                    <span class="text-gray-600">///</span>
+                    <span class="text-esports-yellow-text">25-26 ROCKET LEAGUE CHAMPIONS: SHADOW HILLS</span>
+                    <span class="text-gray-600">///</span>
+                    <span class="text-esports-blue-text">25-26 ROCKET LEAGUE JR CHAMPIONS: DESERT ROSE</span>
+                    <span class="text-gray-600">///</span>
+                    <span class="text-esports-red-text">25-26 SMASH JR CHAMPIONS: CACTUS</span>
+                    <span class="text-gray-600">///</span>
+                    <span class="text-esports-yellow-text">CONGRATULATIONS TO ALL 25-26 COMPETITORS</span>
+                    <span class="text-gray-600">///</span>
+                </div>
+            </div>
+        </aside>
+
+
+        <section class="py-14 bg-esports-dark relative z-20" aria-labelledby="schedule-heading">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-10">
+                    <span class="text-esports-blue-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">Upcoming</span>
+                    <h2 id="schedule-heading" class="font-display text-4xl md:text-6xl font-black uppercase mb-6 text-white">Fall Schedule</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <article class="perspective-container">
+                        <div class="tilt-card relative h-[300px] bg-esports-card border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                            <img src="https://wallpapers.com/images/hd/rocket-league-art-gc3hnsq6vdkak9y9.jpg" alt="Rocket League art" class="absolute inset-0 w-full h-full object-cover object-center opacity-20" loading="lazy">
+                            <div class="absolute inset-0 bg-gradient-to-t from-esports-dark via-esports-dark/80 to-transparent" aria-hidden="true"></div>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 z-10">
+                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-esports-red/20 text-esports-red-text text-xs font-bold uppercase tracking-wider border border-esports-red-text/30">
+                                    <i data-lucide="star" class="w-3 h-3" aria-hidden="true"></i>Jr Promise League
+                                </div>
+                                <h3 class="font-display font-black text-4xl uppercase italic text-white text-center">Jr Promise League</h3>
+                                <div class="flex items-center gap-2 text-gray-500 text-sm font-bold uppercase tracking-widest">
+                                    <i data-lucide="clock" class="w-4 h-4" aria-hidden="true"></i>
+                                    Schedule Coming Soon
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="perspective-container">
+                        <div class="tilt-card relative h-[300px] bg-esports-card border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                            <img src="https://wallpapers.com/images/hd/hd-rocket-league-background-1920-x-1080-r2ww5p6794a767uw.jpg" alt="Rocket League background" class="absolute inset-0 w-full h-full object-cover object-center opacity-20" loading="lazy">
+                            <div class="absolute inset-0 bg-gradient-to-t from-esports-dark via-esports-dark/80 to-transparent" aria-hidden="true"></div>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 z-10">
+                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-esports-blue/20 text-esports-blue-text text-xs font-bold uppercase tracking-wider border border-esports-blue-text/30">
+                                    <i data-lucide="trophy" class="w-3 h-3" aria-hidden="true"></i>Promise League
+                                </div>
+                                <h3 class="font-display font-black text-4xl uppercase italic text-white text-center">Promise League</h3>
+                                <div class="flex items-center gap-2 text-gray-500 text-sm font-bold uppercase tracking-widest">
+                                    <i data-lucide="clock" class="w-4 h-4" aria-hidden="true"></i>
+                                    Schedule Coming Soon
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-14 bg-esports-dark border-t border-white/10 relative z-20" aria-labelledby="standings-heading">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-6">
+                    <span class="text-esports-red-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">Current Rankings</span>
+                    <h2 id="standings-heading" class="font-display text-4xl md:text-6xl font-black uppercase mb-6 text-white">Season Standings</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <article class="block group perspective-container">
+                        <div class="tilt-card relative h-[350px] bg-esports-card border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                            <img src="https://wallpapers.com/images/featured/rocket-league-q83tcwb7har0kh5h.webp" alt="Rocket League featured wallpaper" class="absolute inset-0 w-full h-full object-cover object-center opacity-40 group-hover:opacity-50 group-hover:scale-110 transition-all duration-700" loading="lazy">
+                            <div class="absolute inset-0 bg-gradient-to-t from-esports-dark via-esports-dark/70 to-transparent" aria-hidden="true"></div>
+                            <div class="tilt-inner absolute bottom-0 left-0 p-8 w-full z-10">
+                                <h3 class="font-display font-black text-4xl mb-2 uppercase italic text-white">Jr Promise League</h3>
+                                <a href="https://www.psdesports.com/jr-promise-rocket-league" target="_blank" rel="noopener noreferrer" class="mt-6 relative z-50 inline-flex items-center justify-center w-full py-4 bg-esports-red text-white font-bold uppercase tracking-widest text-sm rounded hover:bg-red-700 clip-slant cursor-pointer no-underline">
+                                    View Standings
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="block group perspective-container">
+                        <div class="tilt-card relative h-[350px] bg-esports-card border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                            <img src="https://wallpapers.com/images/hd/rocket-league-rocket-powered-car-1920x1080-xbjxok5dk6itr8eo.jpg" alt="Rocket League rocket powered car" class="absolute inset-0 w-full h-full object-cover object-center opacity-40 group-hover:opacity-50 group-hover:scale-110 transition-all duration-700" loading="lazy">
+                            <div class="absolute inset-0 bg-gradient-to-t from-esports-dark via-esports-dark/70 to-transparent" aria-hidden="true"></div>
+                            <div class="tilt-inner absolute bottom-0 left-0 p-8 w-full z-10">
+                                <h3 class="font-display font-black text-4xl mb-2 uppercase italic text-white">Promise League</h3>
+                                <a href="https://www.psdesports.com/promise-rocket-league" target="_blank" rel="noopener noreferrer" class="mt-6 relative z-50 inline-flex items-center justify-center w-full py-4 bg-esports-blue text-white font-bold uppercase tracking-widest text-sm rounded hover:bg-blue-600 clip-slant cursor-pointer no-underline">
+                                    View Standings
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-14 bg-esports-dark border-t border-white/10 relative z-20" aria-labelledby="stats-heading">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-10">
+                    <span class="text-esports-yellow-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">Individual Performance</span>
+                    <h2 id="stats-heading" class="font-display text-4xl md:text-6xl font-black uppercase mb-6 text-white">Student Stats</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <article class="block group perspective-container">
+                        <div class="tilt-card relative h-[300px] bg-esports-card border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                            <img src="https://www.psu.com/wp/wp-content/uploads/2020/09/Rocket-League-PS4-Wallpapers-02.jpg" alt="Rocket League PS4 wallpaper" class="absolute inset-0 w-full h-full object-cover object-center opacity-40 group-hover:opacity-55 group-hover:scale-110 transition-all duration-700" loading="lazy">
+                            <div class="absolute inset-0 bg-gradient-to-t from-esports-dark via-esports-dark/70 to-transparent" aria-hidden="true"></div>
+                            <div class="tilt-inner absolute bottom-0 left-0 p-8 w-full z-10">
+                                <h3 class="font-display font-black text-4xl mb-3 uppercase italic text-white">Jr Promise League</h3>
+                                <a href="https://www.psdesports.com/jr-promise-rocket-league/student-stats" target="_blank" rel="noopener noreferrer" class="relative z-50 inline-flex items-center justify-center w-full py-4 bg-esports-red text-white font-bold uppercase tracking-widest text-sm rounded hover:bg-red-700 clip-slant">
+                                    View Student Stats
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="block group perspective-container">
+                        <div class="tilt-card relative h-[300px] bg-esports-card border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                            <img src="https://cdn.sanity.io/images/6znhzi10/production/3ee0c2e78fa43cd2d3afdc9465afb9a88ef7cb22-1920x1080.jpg?w=768&auto=format" alt="Rocket League official artwork" class="absolute inset-0 w-full h-full object-cover object-center opacity-40 group-hover:opacity-55 group-hover:scale-110 transition-all duration-700" loading="lazy">
+                            <div class="absolute inset-0 bg-gradient-to-t from-esports-dark via-esports-dark/70 to-transparent" aria-hidden="true"></div>
+                            <div class="tilt-inner absolute bottom-0 left-0 p-8 w-full z-10">
+                                <h3 class="font-display font-black text-4xl mb-3 uppercase italic text-white">Promise League</h3>
+                                <a href="https://www.psdesports.com/promise-rocket-league/student-stats" target="_blank" rel="noopener noreferrer" class="relative z-50 inline-flex items-center justify-center w-full py-4 bg-esports-blue text-white font-bold uppercase tracking-widest text-sm rounded hover:bg-blue-600 clip-slant">
+                                    View Student Stats
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ─── FINALS ARCHIVE (cleaned up) ─── -->
+        <section class="bg-esports-dark py-14 border-y border-white/10 relative z-20" aria-labelledby="video-heading">
+            <div class="max-w-7xl mx-auto px-4">
+
+                <!-- Section header -->
+                <div class="text-center mb-10">
+                    <span class="text-esports-yellow-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">Championship Rewind</span>
+                    <h2 id="video-heading" class="font-display text-4xl md:text-6xl font-black uppercase mb-3 text-white">The Finals Archive</h2>
+                    <!-- YouTube channel CTA -->
+                    <a href="https://www.youtube.com/@LevelUpPSD"
+                       target="_blank" rel="noopener noreferrer"
+                       class="inline-flex items-center gap-2 mt-2 px-4 py-2 rounded-full bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30 hover:text-red-300 transition-all duration-200 text-sm font-bold uppercase tracking-widest no-underline group"
+                       aria-label="Visit PSD Esports YouTube channel">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                        <span>PSD Esports Channel</span>
+                        <i data-lucide="external-link" class="w-3 h-3 opacity-70 group-hover:opacity-100" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <!-- Videos grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+
+                    <!-- Main: 25-26 Championship Livestream -->
+                    <div class="lg:col-span-2 flex flex-col gap-3">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-esports-yellow/10 border border-esports-yellow/30 text-esports-yellow-text text-xs font-bold uppercase tracking-widest">
+                                <span class="relative flex h-2 w-2" aria-hidden="true">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-yellow-300"></span>
+                                </span>
+                                25-26 Championship Finals
+                            </span>
+                        </div>
+                        <div class="video-wrapper bg-black/60">
+                            <iframe src="https://www.youtube.com/embed/WqsQoQnU0RA"
+                                    title="PSD Esports 25-26 Championship Finals Livestream"
+                                    frameborder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowfullscreen></iframe>
+                        </div>
+                        <p class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Spring Season Championship · 25-26</p>
+                    </div>
+
+                    <!-- Sidebar: past videos + channel link -->
+                    <div class="flex flex-col gap-5">
+
+                        <!-- Season recap -->
+                        <div class="bg-esports-card border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-300 group">
+                            <a href="https://www.youtube.com/watch?v=12PhyAoZbJU"
+                               target="_blank" rel="noopener noreferrer"
+                               class="block no-underline">
+                                <div class="relative aspect-video overflow-hidden">
+                                    <img src="https://img.youtube.com/vi/12PhyAoZbJU/hqdefault.jpg"
+                                         alt="PSD Esports Season Recap"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                            <i data-lucide="play" class="w-5 h-5 text-white fill-white" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <div class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Season Recap</div>
+                                    <h4 class="font-display font-bold text-base text-white group-hover:text-esports-yellow-text transition-colors leading-tight">Spring Season Highlights</h4>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- 24-25 Championship -->
+                        <div class="bg-esports-card border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-300 group">
+                            <a href="https://www.youtube.com/watch?v=xvIg684JPc4"
+                               target="_blank" rel="noopener noreferrer"
+                               class="block no-underline">
+                                <div class="relative aspect-video overflow-hidden">
+                                    <img src="https://img.youtube.com/vi/xvIg684JPc4/hqdefault.jpg"
+                                         alt="24-25 Championship"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                            <i data-lucide="play" class="w-5 h-5 text-white fill-white" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <div class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-1">Previous Season</div>
+                                    <h4 class="font-display font-bold text-base text-white group-hover:text-esports-yellow-text transition-colors leading-tight">24-25 Championship</h4>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- More on YouTube -->
+                        <a href="https://www.youtube.com/@LevelUpPSD"
+                           target="_blank" rel="noopener noreferrer"
+                           class="flex items-center justify-center gap-2 py-3 rounded-xl border border-red-500/30 bg-red-600/10 text-red-400 hover:bg-red-600/20 hover:text-red-300 transition-all duration-200 text-sm font-bold uppercase tracking-wider no-underline group">
+                            <svg class="w-4 h-4 fill-current flex-shrink-0" viewBox="0 0 24 24" aria-hidden="true"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                            More Videos on YouTube
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-14 bg-gradient-to-b from-esports-dark via-black/70 to-esports-dark relative z-10" aria-labelledby="why-heading">
+            <div class="max-w-7xl mx-auto px-4 text-center">
+                <h2 id="why-heading" class="font-display text-4xl md:text-6xl font-black uppercase mb-6 text-white">Why Esports Matters</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8" role="list">
+                    <div class="benefit-card bg-esports-card rounded-2xl p-8 border border-white/10" role="listitem">
+                        <i data-lucide="brain" class="w-8 h-8 text-esports-blue-text mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-display font-bold text-white mb-3">Critical Thinking</h3>
+                        <p class="text-gray-300 text-sm">Players break down problems, read the field, and make smart decisions.</p>
+                    </div>
+                    <div class="benefit-card bg-esports-card rounded-2xl p-8 border border-white/10" role="listitem">
+                        <i data-lucide="users" class="w-8 h-8 text-esports-yellow-text mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-display font-bold text-white mb-3">Teamwork</h3>
+                        <p class="text-gray-300 text-sm">Success depends on clear communication and trust in teammates.</p>
+                    </div>
+                    <div class="benefit-card bg-esports-card rounded-2xl p-8 border border-white/10" role="listitem">
+                        <i data-lucide="heart-pulse" class="w-8 h-8 text-esports-red-text mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-display font-bold text-white mb-3">Confidence</h3>
+                        <p class="text-gray-300 text-sm">Students find a place to belong and represent their school.</p>
+                    </div>
+                    <div class="benefit-card bg-esports-card rounded-2xl p-8 border border-white/10" role="listitem">
+                        <i data-lucide="graduation-cap" class="w-8 h-8 text-esports-yellow-text mx-auto mb-4"></i>
+                        <h3 class="text-2xl font-display font-bold text-white mb-3">Future Pathways</h3>
+                        <p class="text-gray-300 text-sm">Esports connects to STEM, design, IT, and more.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+    lucide.createIcons();
+
+    const WEEK_DATES = [
+      { week: 1, plDate: new Date('March 2, 2026')  },
+      { week: 2, plDate: new Date('March 9, 2026')  },
+      { week: 3, plDate: new Date('March 16, 2026') },
+      { week: 4, plDate: new Date('March 30, 2026') },
+      { week: 5, plDate: new Date('April 13, 2026') },
+      { week: 6, plDate: new Date('April 20, 2026') },
+      { week: 7, plDate: new Date('April 27, 2026') },
+    ];
+
+    const FINALS_DATE = new Date('May 9, 2026 09:00:00');
+    const SEASON_OVER_DATE = new Date('May 10, 2026 00:00:00');
+
+    function getCurrentWeek() {
+      const now = new Date();
+      let current = 1;
+      for (const wd of WEEK_DATES) { if (now >= wd.plDate) current = wd.week; }
+      return current;
+    }
+
+    function getPLDateForWeek(weekNum) {
+      const entry = WEEK_DATES.find(wd => wd.week === weekNum);
+      return entry ? entry.plDate : null;
+    }
+
+    function getUpcomingWeek() {
+      const today = new Date(); today.setHours(0,0,0,0);
+      for (const wd of WEEK_DATES) {
+        const d = new Date(wd.plDate); d.setHours(0,0,0,0);
+        if (today <= d) return wd.week;
+      }
+      return WEEK_DATES[WEEK_DATES.length - 1].week;
+    }
+
+    let heroSwitched = false, finalsArrived = false;
+
+    function switchToSeasonLive() {
+      if (heroSwitched) return; heroSwitched = true;
+      document.getElementById('countdown-wrapper').classList.add('hidden');
+      document.getElementById('status-badge-preseason').classList.add('hidden');
+      document.getElementById('hero-copy-preseason').classList.add('hidden');
+      document.getElementById('finals-hero-wrapper').classList.remove('hidden');
+      document.getElementById('status-badge-live').classList.remove('hidden');
+      document.getElementById('hero-copy-live').classList.remove('hidden');
+      const wk = getCurrentWeek();
+      const label = document.getElementById('hero-week-label');
+      if (label) label.textContent = `Week ${wk} in progress`;
+      lucide.createIcons();
+    }
+
+    function switchToFinalsDay() {
+      if (finalsArrived) return; finalsArrived = true;
+      switchToSeasonLive();
+      document.getElementById('finals-hero-wrapper').classList.add('hidden');
+      document.getElementById('finals-day-banner').classList.remove('hidden');
+      const badge = document.getElementById('status-badge-live');
+      if (badge) {
+        badge.querySelector('span:last-child').textContent = 'CHAMPIONSHIP FINALS TODAY';
+        badge.classList.remove('bg-esports-yellow/10','border-esports-yellow-text','text-esports-yellow-text');
+        badge.classList.add('bg-esports-red/10','border-esports-red-text','text-esports-red-text');
+      }
+      lucide.createIcons();
+    }
+
+    function switchToPostSeason() {
+        document.getElementById('finals-day-banner').classList.remove('hidden');
+        document.getElementById('finals-banner-text').textContent = "Season Concluded";
+        document.getElementById('finals-banner-sub').textContent = "Congratulations to all our competitors!";
+        const badge = document.getElementById('status-badge-live');
+        if (badge) badge.querySelector('span:last-child').textContent = 'SEASON COMPLETE';
+    }
+
+    function updateCountdown() {
+      const seasonTarget = new Date('March 2, 2026 16:00:00').getTime();
+      const finalsTarget = FINALS_DATE.getTime();
+      const now = new Date().getTime();
+
+      const isPastFinals = now > (finalsTarget + 86400000);
+
+      if (isPastFinals) {
+          switchToPostSeason();
+          return;
+      }
+
+      if (now < seasonTarget) {
+        const gap = seasonTarget - now;
+        document.getElementById('days').innerText    = Math.floor(gap / 86400000);
+        document.getElementById('hours').innerText   = Math.floor((gap % 86400000) / 3600000);
+        document.getElementById('minutes').innerText = Math.floor((gap % 3600000) / 60000);
+        document.getElementById('seconds').innerText = Math.floor((gap % 60000) / 1000);
+        return;
+      }
+      switchToSeasonLive();
+      if (now < finalsTarget) {
+        const gap = finalsTarget - now;
+        document.getElementById('finals-days').innerText    = Math.floor(gap / 86400000);
+        document.getElementById('finals-hours').innerText   = Math.floor((gap % 86400000) / 3600000);
+        document.getElementById('finals-minutes').innerText = Math.floor((gap % 3600000) / 60000);
+        document.getElementById('finals-seconds').innerText = Math.floor((gap % 60000) / 1000);
+        return;
+      }
+      switchToFinalsDay();
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    function autoUpdateScheduleUI() {
+      const upcomingWeek = getUpcomingWeek();
+      const plDate = getPLDateForWeek(upcomingWeek);
+      const jrDate = plDate ? new Date(plDate.getTime() + 86400000) : null;
+      const dateOpts = { month: 'short', day: 'numeric' };
+      const jrB = document.getElementById('jr-week-badge'), jrBtn = document.getElementById('jr-week-btn');
+      if (jrB) jrB.innerHTML = `<i data-lucide="star" class="w-3 h-3"></i>Week ${upcomingWeek}`;
+      if (jrBtn) jrBtn.innerHTML = `<i data-lucide="external-link" class="w-4 h-4 mr-2"></i> View Week ${upcomingWeek} Schedule`;
+      if (plB) plB.innerHTML = `<i data-lucide="trophy" class="w-3 h-3"></i>Week ${upcomingWeek}`;
+      if (plBtn) plBtn.innerHTML = `<i data-lucide="external-link" class="w-4 h-4 mr-2"></i> View Week ${upcomingWeek} Schedule`;
+      lucide.createIcons();
+    }
+
+    const LEAGUE_CONFIG = [
+      { name: 'Promise League', baseUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfiiH7TZmsMoydz3A4aKuhmT-7X007DLoC_IFjU-3kxNbK-abiagp1KiJc6hNxvbJzvpxT2gmZdn9U/pub?output=csv', weeks: [{week:1,gid:'0'},{week:2,gid:'1394279234'},{week:3,gid:'1802241807'},{week:4,gid:'865555826'},{week:5,gid:'510645723'},{week:6,gid:'670646977'},{week:7,gid:'1597369451'}] },
+      { name: 'Jr Promise League', baseUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTXXJZey-hpvZVSmyq7J4Mwp1JTKJGdri0PIBXCqNhl5rpDqvsNuX-VYLHh7xoEqZg3uFvk0yaECTO/pub?output=csv', weeks: [{week:1,gid:'0'},{week:2,gid:'426994172'},{week:3,gid:'1433543241'},{week:4,gid:'444737932'},{week:5,gid:'1415786975'},{week:6,gid:'1494494803'},{week:7,gid:'1784129739'}] }
+    ];
+
+    async function fetchSheetCSV(baseUrl, gid) {
+      try { return await (await fetch(`${baseUrl}&gid=${gid}`)).text(); } catch(e) { return null; }
+    }
+
+    function isFFCell(v) { const s = String(v||'').trim().toUpperCase(); return s==='F'||s==='FF'||s==='FORFEIT'; }
+
+    function parseWeekSheet(csvText, configWeek) {
+      const lines = csvText.trim().split('\n').map(l => {
+        const res=[]; let cur='', iQ=false;
+        for (let i=0; i<l.length; i++) {
+          if (l[i]==='"') iQ=!iQ;
+          else if (l[i]===','&&!iQ) { res.push(cur.trim()); cur=''; }
+          else cur+=l[i];
+        }
+        res.push(cur.trim()); return res;
+      });
+      if (lines.length < 2) return null;
+      let matchDate=null, parsedWeek=null;
+      for (const line of lines) {
+        const row=line.join(' ');
+        const dm=row.match(/(\d{1,2}\/\d{1,2}\/\d{4})/), wm=row.match(/Week\s*(\d+)/i);
+        if (dm&&!matchDate) matchDate=new Date(dm[1]);
+        if (wm&&!parsedWeek) parsedWeek=parseInt(wm[1]);
+      }
+      const validRows=[];
+      for (const row of lines) {
+        const col0=(row[0]||'').trim().toLowerCase();
+        if (col0==='team'||col0.startsWith('week')) continue;
+        validRows.push(row);
+      }
+      const matchups=[]; let vi=0;
+      while (vi < validRows.length-1) {
+        const r1=validRows[vi], r2=validRows[vi+1];
+        const t1=(r1[0]||'').trim(), t2=(r2[0]||'').trim();
+        if (!t1||!t2) { vi++; continue; }
+        let w1=0, w2=0, isForfeit=false, isDoubleFF=false;
+        for (const idx of [1,2,3]) {
+          const v1=isFFCell(r1[idx]), v2=isFFCell(r2[idx]);
+          if (v1||v2) {
+            isForfeit=true;
+            if (v1&&v2) isDoubleFF=true;
+            else if (v1) w2=2;
+            else w1=2;
+            break;
+          }
+          const s1=parseInt(r1[idx],10), s2=parseInt(r2[idx],10);
+          if (!isNaN(s1)&&!isNaN(s2)) { if(s1>s2)w1++; else if(s2>s1)w2++; }
+        }
+        const played=isForfeit||(w1+w2)>0;
+        let winner=null, loser=null;
+        if (!isDoubleFF&&(w1+w2)>0) {
+          if (w1>w2) { winner=t1; loser=t2; } else if (w2>w1) { winner=t2; loser=t1; }
+        }
+        matchups.push({ team1:t1, team2:t2, played, winner, loser, isDoubleFF, team1GamesWon:w1, team2GamesWon:w2 });
+        vi+=2;
+      }
+      return { matchDate, weekNum: configWeek||parsedWeek, matchups };
+    }
+
+    async function loadFeaturedMatch() {
+      const cL=document.getElementById('card-loading'), cC=document.getElementById('card-content'), cF=document.getElementById('card-fallback');
+
+      if (new Date() >= SEASON_OVER_DATE) {
+        document.getElementById('pl-match').classList.add('hidden');
+        document.getElementById('jr-match').classList.add('hidden');
+        document.getElementById('card-footer').classList.add('hidden');
+        document.getElementById('card-week-badge').textContent = 'OFF-SEASON';
+        const el = document.getElementById('season-concluded-ui');
+        el.innerHTML = `
+          <i data-lucide="award" class="w-10 h-10 text-esports-yellow-text mx-auto mb-3"></i>
+          <h4 class="font-display font-black text-xl text-white uppercase tracking-wider">Season Complete</h4>
+          <p class="text-gray-400 text-xs mt-1 uppercase font-bold tracking-widest">See you next season!</p>`;
+        el.classList.remove('hidden');
+        cL.classList.add('hidden'); cC.classList.remove('hidden');
+        lucide.createIcons();
+        return;
+      }
+
+      try {
+        const fP=[], fM=[];
+        LEAGUE_CONFIG.forEach(l => l.weeks.forEach(w => { fM.push({l:l.name,w:w.week}); fP.push(fetchSheetCSV(l.baseUrl,w.gid)); }));
+        const results = await Promise.all(fP);
+        const teamRecs={}, upcoming=[];
+        const getSchool = n => n.replace(/\s+[AB]$/i,'').trim();
+        results.forEach((csv,idx) => {
+          if (!csv) return;
+          const parsed=parseWeekSheet(csv,fM[idx].w);
+          if (!parsed) return;
+          parsed.matchups.forEach(m => {
+            if (!teamRecs[m.team1]) teamRecs[m.team1]={w:0,l:0,lg:fM[idx].l};
+            if (!teamRecs[m.team2]) teamRecs[m.team2]={w:0,l:0,lg:fM[idx].l};
+            if (m.played) {
+              if (m.isDoubleFF) { teamRecs[m.team1].l++; teamRecs[m.team2].l++; }
+              else if (m.winner) { teamRecs[m.winner].w++; teamRecs[m.loser].l++; }
+            }
+            if (!m.played) upcoming.push({...m,school1:getSchool(m.team1),school2:getSchool(m.team2),league:fM[idx].l,week:parsed.weekNum,date:parsed.matchDate});
+          });
+        });
+        const schoolRecs={};
+        Object.entries(teamRecs).forEach(([name,r]) => {
+          const k=`${r.lg}|||${getSchool(name)}`;
+          if (!schoolRecs[k]) schoolRecs[k]={w:0,l:0};
+          schoolRecs[k].w+=r.w; schoolRecs[k].l+=r.l;
+        });
+        const scored=[], seen=new Set();
+        upcoming.forEach(m => {
+          const k=`${m.league}|||${m.week}|||${[m.school1,m.school2].sort().join(' vs ')}`;
+          if (!seen.has(k)) {
+            const r1=schoolRecs[`${m.league}|||${m.school1}`]||{w:0,l:0}, r2=schoolRecs[`${m.league}|||${m.school2}`]||{w:0,l:0};
+            scored.push({...m,r1,r2,score:(r1.w/(r1.w+r1.l||1))+(r2.w/(r2.w+r2.l||1))}); seen.add(k);
+          }
+        });
+        const calWeek=getCurrentWeek();
+        const plM=scored.filter(m=>m.league==='Promise League'&&m.week>=calWeek).sort((a,b)=>a.week-b.week||b.score-a.score);
+        const jrM=scored.filter(m=>m.league==='Jr Promise League'&&m.week>=calWeek).sort((a,b)=>a.week-b.week||b.score-a.score);
+        const plF=plM[0], jrF=jrM[0];
+
+        if (!plF && !jrF) {
+          document.getElementById('pl-match').classList.add('hidden');
+          document.getElementById('jr-match').classList.add('hidden');
+          document.getElementById('card-footer').classList.add('hidden');
+          document.getElementById('card-week-badge').textContent = 'FINALS';
+          const el = document.getElementById('season-concluded-ui');
+          el.innerHTML = `
+            <i data-lucide="trophy" class="w-10 h-10 text-esports-yellow-text mx-auto mb-3"></i>
+            <h4 class="font-display font-black text-2xl text-esports-yellow-text uppercase tracking-wider mb-1">Championship Finals</h4>
+            <p class="text-gray-300 text-xs uppercase font-bold tracking-widest mb-4">Championship Finals</p>
+            <a href="https://www.psdesports.com/finals" target="_blank" rel="noopener noreferrer"
+               class="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-400 text-black font-display font-black text-sm uppercase tracking-widest rounded-lg shadow-lg shadow-yellow-500/30 hover:shadow-yellow-400/50 hover:scale-105 transition-all duration-300 no-underline">
+              <i data-lucide="trophy" class="w-4 h-4 mr-2"></i> View Live Bracket
+            </a>`;
+          el.classList.remove('hidden');
+        } else {
+          document.getElementById('card-week-badge').textContent=`Week ${plF?.week||jrF?.week||calWeek}`;
+          const dOpts={weekday:'short',month:'short',day:'numeric'};
+          if (plF) {
+            document.getElementById('pl-team1').textContent=plF.school1; document.getElementById('pl-team2').textContent=plF.school2;
+            document.getElementById('pl-record1').textContent=`(${plF.r1.w}-${plF.r1.l})`; document.getElementById('pl-record2').textContent=`(${plF.r2.w}-${plF.r2.l})`;
+            document.getElementById('pl-date').textContent=plF.date?plF.date.toLocaleDateString('en-US',dOpts):'';
+            document.getElementById('pl-match').classList.remove('hidden');
+          } else document.getElementById('pl-match').classList.add('hidden');
+          if (jrF) {
+            document.getElementById('jr-team1').textContent=jrF.school1; document.getElementById('jr-team2').textContent=jrF.school2;
+            document.getElementById('jr-record1').textContent=`(${jrF.r1.w}-${jrF.r1.l})`; document.getElementById('jr-record2').textContent=`(${jrF.r2.w}-${jrF.r2.l})`;
+            document.getElementById('jr-date').textContent=jrF.date?jrF.date.toLocaleDateString('en-US',dOpts):'';
+            document.getElementById('jr-match').classList.remove('hidden');
+          } else document.getElementById('jr-match').classList.add('hidden');
+          const tag=document.getElementById('card-tagline');
+          const bS=Math.max(plF?plF.score:0,jrF?jrF.score:0);
+          tag.textContent=bS>=1.5?'Top Tier Matchup':bS>=1.0?'Crucial Conference Clash':"Don't Miss These";
+        }
+        cL.classList.add('hidden'); cC.classList.remove('hidden'); lucide.createIcons();
+      } catch(e) { cL.classList.add('hidden'); if(cF) cF.classList.remove('hidden'); }
+    }
+
+    autoUpdateScheduleUI();
+    loadFeaturedMatch();
+
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (!mq.matches) {
+        const canvas=document.getElementById('particleCanvas'), ctx=canvas.getContext('2d');
+        let w, h, p=[];
+        const C=[{r:77,g:171,b:247},{r:255,g:209,b:102},{r:255,g:107,b:107},{r:255,g:255,b:255}];
+        function rs() { w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight; }
+        window.addEventListener('resize',rs); rs();
+        class Part {
+            constructor() { this.reset(); }
+            reset() { this.x=Math.random()*w; this.y=Math.random()*h; const c=C[Math.floor(Math.random()*C.length)]; this.r=c.r; this.g=c.g; this.b=c.b; this.s=Math.random()*2+1; this.vx=(Math.random()-0.5)*0.5; this.vy=(Math.random()-0.5)*0.5; this.a=Math.random(); }
+            up() { this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>w||this.y<0||this.y>h)this.reset(); }
+            dr() { ctx.fillStyle=`rgba(${this.r},${this.g},${this.b},${this.a})`; ctx.beginPath(); ctx.arc(this.x,this.y,this.s,0,Math.PI*2); ctx.fill(); }
+        }
+        for(let i=0;i<100;i++) p.push(new Part());
+        function anim() { ctx.clearRect(0,0,w,h); p.forEach(pt=>{pt.up();pt.dr();}); requestAnimationFrame(anim); } anim();
+        document.querySelectorAll('.tilt-card').forEach(c => {
+            c.addEventListener('mousemove',(e)=>{
+                const r=c.getBoundingClientRect();
+                const x=((e.clientX-r.left)/r.width-0.5)*10, y=((e.clientY-r.top)/r.height-0.5)*-10;
+                c.style.transform=`perspective(1000px) rotateX(${y}deg) rotateY(${x}deg)`;
+            });
+            c.addEventListener('mouseleave',()=>c.style.transform='none');
+        });
+    }
+    </script>
+<style>
+.io-reveal{opacity:0;transform:translateY(28px);transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);}
+.io-reveal.io-visible{opacity:1;transform:none;}
+.io-reveal-left{opacity:0;transform:translateX(-24px);transition:opacity .5s cubic-bezier(.4,0,.2,1),transform .5s cubic-bezier(.4,0,.2,1);}
+.io-reveal-left.io-visible{opacity:1;transform:none;}
+.io-stagger .io-reveal,.io-stagger .io-reveal-left{transition-delay:calc(var(--i,0)*.08s);}
+</style>
+<script>
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('io-visible');io.unobserve(e.target);}
+    });
+  },{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+
+  function markAndObserve(sel,cls,parent){
+    var els=(parent||document).querySelectorAll(sel);
+    els.forEach(function(el,i){
+      el.classList.add(cls);
+      el.style.setProperty('--i',i);
+      io.observe(el);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded',function(){
+    /* season blocks */
+    markAndObserve('.season','io-reveal');
+    /* champion cards — stagger within their grid */
+    document.querySelectorAll('.champ-grid').forEach(function(g){
+      g.classList.add('io-stagger');
+      markAndObserve('.champ-card',   'io-reveal', g);
+    });
+    /* schedule rows */
+    document.querySelectorAll('.schedule-table tbody, .sched-body').forEach(function(tb){
+      tb.classList.add('io-stagger');
+      markAndObserve('tr','io-reveal',tb);
+    });
+    /* standings table rows */
+    document.querySelectorAll('.standings-table tbody, .standings-body').forEach(function(tb){
+      tb.classList.add('io-stagger');
+      markAndObserve('tr','io-reveal',tb);
+    });
+    /* stat cards / leaderboard rows */
+    markAndObserve('.stat-card','io-reveal');
+    markAndObserve('.leaderboard-row','io-reveal');
+    /* section headers */
+    markAndObserve('.season-header','io-reveal-left');
+    /* generic cards on other pages */
+    markAndObserve('.badge-card','io-reveal');
+    markAndObserve('.finals-card','io-reveal');
+  });
+})();
+</script>
+</body>
+</html>
+
+
+
+
