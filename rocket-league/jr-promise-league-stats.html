@@ -718,7 +718,11 @@ function getBadges(player, allPlayers) {
   const mSc=Math.max(0,...nf.map(g=>parseInt(g['Score'])||0));
   if(mG>=5)b.push({icon:'🌋',label:'Tidal Wave',color:'#FF6B6B',pri:10,tip:'Scored 5+ goals in a single game'});
   else if(mG>=3)b.push({icon:'🎩',label:'Hat Trick',color:'#FFD166',pri:6,tip:'Scored 3+ goals in a single game'});
-  if(mSc>=700)b.push({icon:'🎸',label:'Rock Star',color:'#FFD166',pri:9,tip:'700+ points in a single game'});
+  if      (mSc>=1000)b.push({icon:'💥',label:'Legendary', color:'#ffd700',pri:12,tip:'1000+ points in a single game'});
+  else if (mSc>= 800)b.push({icon:'🌟',label:'Superstar', color:'#c084fc',pri:10,tip:'800+ points in a single game'});
+  else if (mSc>= 600)b.push({icon:'🎸',label:'Rock Star', color:'#FFD166',pri:9, tip:'600+ points in a single game'});
+  else if (mSc>= 400)b.push({icon:'🎮',label:'Breakout',  color:'#4ade80',pri:6, tip:'400+ points in a single game'});
+  else if (mSc>= 250)b.push({icon:'⭐',label:'Solid Game',color:'#9ca3af',pri:3, tip:'250+ points in a single game'});
   if(mSv>=5)b.push({icon:'🏰',label:'Fortress',color:'#4DABF7',pri:7,tip:'5+ saves in a single game'});
   if(nf.some(g=>(parseInt(g['Goals'])||0)>=1&&(parseInt(g['Assists'])||0)>=1&&(parseInt(g['Saves'])||0)>=1))
     b.push({icon:'⚡',label:'Balanced',color:'#4DABF7',pri:5,tip:'1+ goal, assist & save in a single game'});

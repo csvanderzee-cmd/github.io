@@ -376,10 +376,30 @@ const DEFS = [
     desc: () => 'Scored 5 or more goals in a single game. Unstoppable.',
     pill: () => '5+ goals · 1 game' },
 
-  { tier:'epic', emoji:'🎸',
+  { tier:'legendary', emoji:'💥',
+    name: 'Legendary',
+    desc: () => '1000+ points in a single game. An all-time performance.',
+    pill: () => '1000+ pts · 1 game' },
+
+  { tier:'epic', emoji:'🌟',
+    name: 'Superstar',
+    desc: () => '800+ points in a single game. A dominant showing.',
+    pill: () => '800+ pts · 1 game' },
+
+  { tier:'rare', emoji:'🎸',
     name: 'Rock Star',
-    desc: () => '700+ points in a single game. An explosive performance.',
-    pill: () => '700+ pts · 1 game' },
+    desc: () => '600+ points in a single game. An explosive performance.',
+    pill: () => '600+ pts · 1 game' },
+
+  { tier:'uncommon', emoji:'🎮',
+    name: 'Breakout',
+    desc: () => '400+ points in a single game. A standout match.',
+    pill: () => '400+ pts · 1 game' },
+
+  { tier:'common', emoji:'⭐',
+    name: 'Solid Game',
+    desc: () => '250+ points in a single game. A strong showing.',
+    pill: () => '250+ pts · 1 game' },
 
   { tier:'epic', emoji:'⚡',
     name: () => `W${rStreak(5,4)} Streak`,

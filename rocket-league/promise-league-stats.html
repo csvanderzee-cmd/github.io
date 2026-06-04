@@ -873,7 +873,11 @@ function getBadges(player, allPlayers) {
 
   if      (maxGoalsGame >= 5) b.push({ icon:'🌋', label:'Tidal Wave', color:'#FF6B6B', pri:10, tip:'Scored 5+ goals in a single game' });
   else if (maxGoalsGame >= 3) b.push({ icon:'🎩', label:'Hat Trick',  color:'#FFD166', pri:6,  tip:'Scored 3+ goals in a single game' });
-  if (maxScoreGame >= 700) b.push({ icon:'🎸', label:'Rock Star', color:'#FFD166', pri:9, tip:'700+ points in a single game' });
+  if      (maxScoreGame >= 1000) b.push({ icon:'💥', label:'Legendary',  color:'#ffd700', pri:12, tip:'1000+ points in a single game' });
+  else if (maxScoreGame >=  800) b.push({ icon:'🌟', label:'Superstar',  color:'#c084fc', pri:10, tip:'800+ points in a single game' });
+  else if (maxScoreGame >=  600) b.push({ icon:'🎸', label:'Rock Star',  color:'#FFD166', pri:9,  tip:'600+ points in a single game' });
+  else if (maxScoreGame >=  400) b.push({ icon:'🎮', label:'Breakout',   color:'#4ade80', pri:6,  tip:'400+ points in a single game' });
+  else if (maxScoreGame >=  250) b.push({ icon:'⭐', label:'Solid Game', color:'#9ca3af', pri:3,  tip:'250+ points in a single game' });
   if (maxSavesGame >= 5)   b.push({ icon:'🏰', label:'Fortress',  color:'#4DABF7', pri:7, tip:'5+ saves in a single game' });
 
   // Balanced: 1+ goal, assist AND save in a single game
