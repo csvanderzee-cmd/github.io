@@ -162,9 +162,7 @@
   .score-wrap { display:inline-flex; align-items:center; gap:5px; }
   .score-bar { height:3px; border-radius:2px; min-width:3px; opacity:0.6; flex-shrink:0; }
   .score-th { cursor:help; white-space:nowrap; position:relative; }
-  .score-th::after { content:attr(data-tip); position:absolute; bottom:calc(100% + 7px); left:50%; transform:translateX(-50%); background:#070a10; color:#e5e7eb; padding:6px 12px; border-radius:8px; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:400; letter-spacing:0; text-transform:none; white-space:nowrap; border:1px solid rgba(255,255,255,0.15); box-shadow:0 8px 24px rgba(0,0,0,0.85); z-index:300; pointer-events:none; opacity:0; transition:opacity 0.15s ease; }
-  .score-th::before { content:''; position:absolute; bottom:calc(100% + 3px); left:50%; transform:translateX(-50%); border:5px solid transparent; border-top-color:rgba(255,255,255,0.15); z-index:301; pointer-events:none; opacity:0; transition:opacity 0.15s ease; }
-  .score-th:hover::after, .score-th:hover::before { opacity:1; }
+  #fixed-tip { position:fixed; background:#070a10; color:#e5e7eb; padding:6px 12px; border-radius:8px; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:400; letter-spacing:0; white-space:nowrap; border:1px solid rgba(255,255,255,0.15); box-shadow:0 8px 24px rgba(0,0,0,0.85); z-index:9999; pointer-events:none; display:none; }
 
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } canvas#heroParticles { display: none; } }
   @media (max-width: 700px) { #stats-display-area { overflow-x: auto; padding-bottom: 10px; } .player-card { min-width: 640px; } }
@@ -180,6 +178,7 @@
 </head>
 <body>
 
+<div id="fixed-tip"></div>
 <a href="#main-content" class="skip-link">Skip to main content</a>
 
 <!-- ── PSD ESPORTS SITE NAV ── -->
@@ -1001,6 +1000,25 @@ if (!mq.matches) {
     /* generic cards on other pages */
     markAndObserve('.badge-card','io-reveal');
     markAndObserve('.finals-card','io-reveal');
+  });
+})();
+
+// Fixed-position tooltip for score-th (bypasses modal overflow:hidden)
+(function() {
+  const tip = document.getElementById('fixed-tip');
+  document.addEventListener('mouseover', e => {
+    const th = e.target.closest('.score-th');
+    if (!th) return;
+    tip.textContent = th.getAttribute('data-tip') || '';
+    tip.style.display = 'block';
+  });
+  document.addEventListener('mousemove', e => {
+    if (tip.style.display === 'none') return;
+    tip.style.left = (e.clientX + 12) + 'px';
+    tip.style.top  = (e.clientY - 36) + 'px';
+  });
+  document.addEventListener('mouseout', e => {
+    if (e.target.closest('.score-th')) tip.style.display = 'none';
   });
 })();
 </script>
