@@ -463,45 +463,53 @@
         </aside>
 
 
-        <!-- ─── WHY ESPORTS MATTERS ─── -->
-        <section class="py-14 bg-esports-dark border-t border-white/10 relative z-20" aria-labelledby="why-heading">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="text-center mb-10">
-                    <span class="text-esports-yellow-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">More Than a Game</span>
-                    <h2 id="why-heading" class="font-display text-4xl md:text-6xl font-black uppercase text-white">Why Esports Matters</h2>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6" role="list">
-                    <div class="benefit-card group relative bg-esports-card rounded-2xl p-7 border border-esports-blue/20 hover:border-esports-blue/50 transition-all duration-300" role="listitem">
-                        <div class="w-12 h-12 rounded-xl bg-esports-blue/10 border border-esports-blue/30 flex items-center justify-center mb-5 group-hover:bg-esports-blue/20 transition-colors">
-                            <i data-lucide="brain" class="w-6 h-6 text-esports-blue-text" aria-hidden="true"></i>
-                        </div>
-                        <h3 class="text-xl font-display font-black text-white uppercase mb-2">Critical Thinking</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Players break down problems, read the field, and make smart decisions under pressure.</p>
-                    </div>
-                    <div class="benefit-card group relative bg-esports-card rounded-2xl p-7 border border-esports-yellow/20 hover:border-esports-yellow/50 transition-all duration-300" role="listitem">
-                        <div class="w-12 h-12 rounded-xl bg-esports-yellow/10 border border-esports-yellow/30 flex items-center justify-center mb-5 group-hover:bg-esports-yellow/20 transition-colors">
-                            <i data-lucide="users" class="w-6 h-6 text-esports-yellow-text" aria-hidden="true"></i>
-                        </div>
-                        <h3 class="text-xl font-display font-black text-white uppercase mb-2">Teamwork</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Success depends on clear communication and trusting your teammates to execute.</p>
-                    </div>
-                    <div class="benefit-card group relative bg-esports-card rounded-2xl p-7 border border-esports-red/20 hover:border-esports-red/50 transition-all duration-300" role="listitem">
-                        <div class="w-12 h-12 rounded-xl bg-esports-red/10 border border-esports-red/30 flex items-center justify-center mb-5 group-hover:bg-esports-red/20 transition-colors">
-                            <i data-lucide="heart-pulse" class="w-6 h-6 text-esports-red-text" aria-hidden="true"></i>
-                        </div>
-                        <h3 class="text-xl font-display font-black text-white uppercase mb-2">Confidence</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Students find a place to belong, grow, and represent their school with pride.</p>
-                    </div>
-                    <div class="benefit-card group relative bg-esports-card rounded-2xl p-7 border border-purple-500/20 hover:border-purple-500/50 transition-all duration-300" role="listitem">
-                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center mb-5 group-hover:bg-purple-500/20 transition-colors">
-                            <i data-lucide="graduation-cap" class="w-6 h-6 text-purple-400" aria-hidden="true"></i>
-                        </div>
-                        <h3 class="text-xl font-display font-black text-white uppercase mb-2">Real Pathways</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Esports connects directly to careers in STEM, game design, broadcasting, and IT.</p>
-                    </div>
+        <!-- ─── PHOTO TICKER ─── -->
+        <div id="photo-ticker-section" class="bg-esports-dark border-b border-white/10 py-6 overflow-hidden relative z-20" aria-label="Community Photos">
+            <div class="max-w-7xl mx-auto px-4 mb-4">
+                <span class="text-gray-500 text-xs font-bold tracking-[0.2em] uppercase">Community Moments</span>
+            </div>
+            <div class="relative overflow-hidden">
+                <div id="photo-ticker" class="flex gap-4 w-fit" style="animation: photo-scroll 40s linear infinite;">
                 </div>
             </div>
-        </section>
+            <div id="photo-ticker-empty" class="hidden text-center text-gray-600 text-sm py-4">No photos yet — add images to the <code>photos/</code> folder in the repo.</div>
+        </div>
+        <style>
+            @keyframes photo-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+            #photo-ticker img { height: 160px; width: auto; object-fit: cover; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
+            @media (prefers-reduced-motion: reduce) {
+                #photo-ticker { animation: none; flex-wrap: wrap; justify-content: center; }
+            }
+        </style>
+        <script>
+        (function() {
+            var api = 'https://api.github.com/repos/csvanderzee-cmd/github.io/contents/photos';
+            var raw = 'https://raw.githubusercontent.com/csvanderzee-cmd/github.io/main/photos/';
+            var ticker = document.getElementById('photo-ticker');
+            var empty = document.getElementById('photo-ticker-empty');
+            var section = document.getElementById('photo-ticker-section');
+            var exts = /\.(jpg|jpeg|png|gif|webp|avif)$/i;
+            fetch(api)
+                .then(function(r) { return r.ok ? r.json() : []; })
+                .then(function(files) {
+                    if (!Array.isArray(files)) { section.style.display = 'none'; return; }
+                    var imgs = files.filter(function(f) { return exts.test(f.name); });
+                    if (imgs.length === 0) { ticker.style.display = 'none'; empty.classList.remove('hidden'); return; }
+                    // shuffle
+                    for (var i = imgs.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = imgs[i]; imgs[i] = imgs[j]; imgs[j] = tmp; }
+                    // duplicate for seamless loop
+                    var all = imgs.concat(imgs);
+                    all.forEach(function(f) {
+                        var img = document.createElement('img');
+                        img.src = raw + encodeURIComponent(f.name);
+                        img.alt = f.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+                        img.loading = 'lazy';
+                        ticker.appendChild(img);
+                    });
+                })
+                .catch(function() { section.style.display = 'none'; });
+        })();
+        </script>
 
         <!-- ─── LEAGUE HUB ─── -->
         <section class="py-14 bg-esports-dark border-t border-white/10 relative z-20" aria-labelledby="hub-heading">
@@ -612,6 +620,46 @@
                     </a>
                 </div>
 
+            </div>
+        </section>
+
+        <!-- ─── WHY ESPORTS MATTERS ─── -->
+        <section class="py-14 bg-esports-dark border-t border-white/10 relative z-20" aria-labelledby="why-heading">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-10">
+                    <span class="text-esports-yellow-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">More Than a Game</span>
+                    <h2 id="why-heading" class="font-display text-4xl md:text-6xl font-black uppercase text-white">Why Esports Matters</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6" role="list">
+                    <div class="benefit-card group relative bg-esports-card rounded-2xl p-7 border border-esports-blue/20 hover:border-esports-blue/50 transition-all duration-300" role="listitem">
+                        <div class="w-12 h-12 rounded-xl bg-esports-blue/10 border border-esports-blue/30 flex items-center justify-center mb-5 group-hover:bg-esports-blue/20 transition-colors">
+                            <i data-lucide="brain" class="w-6 h-6 text-esports-blue-text" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-xl font-display font-black text-white uppercase mb-2">Critical Thinking</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Players break down problems, read the field, and make smart decisions under pressure.</p>
+                    </div>
+                    <div class="benefit-card group relative bg-esports-card rounded-2xl p-7 border border-esports-yellow/20 hover:border-esports-yellow/50 transition-all duration-300" role="listitem">
+                        <div class="w-12 h-12 rounded-xl bg-esports-yellow/10 border border-esports-yellow/30 flex items-center justify-center mb-5 group-hover:bg-esports-yellow/20 transition-colors">
+                            <i data-lucide="users" class="w-6 h-6 text-esports-yellow-text" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-xl font-display font-black text-white uppercase mb-2">Teamwork</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Success depends on clear communication and trusting your teammates to execute.</p>
+                    </div>
+                    <div class="benefit-card group relative bg-esports-card rounded-2xl p-7 border border-esports-red/20 hover:border-esports-red/50 transition-all duration-300" role="listitem">
+                        <div class="w-12 h-12 rounded-xl bg-esports-red/10 border border-esports-red/30 flex items-center justify-center mb-5 group-hover:bg-esports-red/20 transition-colors">
+                            <i data-lucide="heart-pulse" class="w-6 h-6 text-esports-red-text" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-xl font-display font-black text-white uppercase mb-2">Confidence</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Students find a place to belong, grow, and represent their school with pride.</p>
+                    </div>
+                    <div class="benefit-card group relative bg-esports-card rounded-2xl p-7 border border-purple-500/20 hover:border-purple-500/50 transition-all duration-300" role="listitem">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center mb-5 group-hover:bg-purple-500/20 transition-colors">
+                            <i data-lucide="graduation-cap" class="w-6 h-6 text-purple-400" aria-hidden="true"></i>
+                        </div>
+                        <h3 class="text-xl font-display font-black text-white uppercase mb-2">Real Pathways</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Esports connects directly to careers in STEM, game design, broadcasting, and IT.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
