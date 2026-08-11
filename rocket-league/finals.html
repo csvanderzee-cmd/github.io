@@ -534,10 +534,12 @@
   <footer><p>PSD Esports · Finals Day · Auto-refreshes every 60 seconds</p></footer>
 </div>
 
+<script src="/data/leagues.js"></script>
+<script src="/data/psd-data.js"></script>
 <script>
 // Logic to move the schedule based on the date
 function adjustSchedulePosition() {
-  const TOURNAMENT_DATE = '2026-05-09';
+  const TOURNAMENT_DATE = PSD.config.finalsDate;
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -578,18 +580,16 @@ const JRPL_LOGOS = {
   'Yucca':'https://3.files.edl.io/c0fd/24/01/30/203144-7cccf38b-4ea6-4ca5-ac4e-1c5cb2ecdc53.png',
 };
 
-const LEAGUES = [
-  {
-    id:'pl', label:'Promise League', logoMap:PL_LOGOS,
-    times:{ s1:'12:00 PM', s2:'12:45 PM', fin:'1:30 PM' },
-    url:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfiiH7TZmsMoydz3A4aKuhmT-7X007DLoC_IFjU-3kxNbK-abiagp1KiJc6hNxvbJzvpxT2gmZdn9U/pub?output=csv&gid=672839496',
-  },
-  {
-    id:'jrpl', label:'Jr Promise League', logoMap:JRPL_LOGOS,
-    times:{ s1:'9:30 AM', s2:'10:15 AM', fin:'11:00 AM' },
-    url:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTXXJZey-hpvZVSmyq7J4Mwp1JTKJGdri0PIBXCqNhl5rpDqvsNuX-VYLHh7xoEqZg3uFvk0yaECTO/pub?output=csv&gid=2049340971',
-  },
-];
+const LOGO_MAPS = { pl: PL_LOGOS, jrpl: JRPL_LOGOS };
+
+const LEAGUES = PSD.config.leagues.map(lg => ({
+  id:      lg.id,
+  label:   lg.name,
+  logoMap: LOGO_MAPS[lg.id],
+  times:   lg.finalsTimes,
+  sheetId: lg.matchSheet,
+  gid:     lg.finalsGid,
+}));
 
 function schoolOf(n) { return (n||'').replace(/\s+[AB]$/i,'').trim(); }
 function toNum(v)    { const n=parseInt(v); return Number.isFinite(n)?n:null; }
@@ -609,9 +609,9 @@ function logoHtml(name, map) {
     : `<div class="logo-fb-sm">${init}</div>`;
 }
 
-async function fetchCSV(url) {
-  const r = await fetch(url, {cache:'no-store'});
-  return (await r.text()).trim().split('\n')
+async function fetchCSV(sheetId, gid) {
+  const text = await PSD.fetchCSV(sheetId, gid);
+  return text.trim().split('\n')
     .map(row => row.split(',').map(c => c.replace(/^"|"$/g,'').trim()));
 }
 
@@ -891,7 +891,7 @@ function highlightCurrentScheduleItem() {
 async function refresh() {
   try {
     await Promise.all(LEAGUES.map(async lg => {
-      const rows = await fetchCSV(lg.url);
+      const rows = await fetchCSV(lg.sheetId, lg.gid);
       const d = parseSheet(rows);
       renderLeague(lg, d);
     }));

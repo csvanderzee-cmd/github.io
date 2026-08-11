@@ -392,6 +392,8 @@
     </div>
   </div>
 
+<script src="/data/leagues.js"></script>
+<script src="/data/psd-data.js"></script>
 <script>
 const SCHOOL_LOGOS = {
   'Cimarron':             'https://3.files.edl.io/bfd5/24/01/30/203122-a5d549fc-84c8-4af4-9e2a-4ca56e0f02ee.png',
@@ -482,9 +484,8 @@ let schoolData = {};
 let lastFocusedElement = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  const sheetGids = ['0','426994172','1433543241','444737932','1415786975','1494494803','1784129739'];
-  const baseUrl   = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTXXJZey-hpvZVSmyq7J4Mwp1JTKJGdri0PIBXCqNhl5rpDqvsNuX-VYLHh7xoEqZg3uFvk0yaECTO/pub?output=csv';
-  loadAndProcessAllData(baseUrl, sheetGids);
+  const league = PSD.config.league('jrpl');
+  loadAndProcessAllData(league.matchSheet, PSD.config.matchGids('jrpl'));
 
   document.getElementById('modal-close').addEventListener('click', closeModal);
   document.getElementById('team-modal').addEventListener('click', (e) => { if (e.target.id === 'team-modal') closeModal(); });
@@ -674,13 +675,13 @@ function closeModal() {
 
 function valOrDash(v) { return (v === null || v === undefined) ? '–' : v; }
 
-function loadAndProcessAllData(baseUrl, gids) {
+function loadAndProcessAllData(sheetId, gids) {
   const rankingsBody = document.getElementById('rankings-body');
   const lastUpdatedSpan = document.getElementById('last-updated');
   const loadStatus = document.getElementById('load-status');
   rankingsBody.innerHTML = `<tr><td colspan="14" class="loader" role="status">Fetching latest rankings…</td></tr>`;
 
-  Promise.all(gids.map(gid => fetchWithTimeout(`${baseUrl}&gid=${gid}`)))
+  PSD.fetchAllCSV(sheetId, gids)
     .then(allCsvText => {
       const combined = allCsvText.filter(Boolean).join('\n');
       allTeamsData = processData(combined);

@@ -300,6 +300,8 @@
         </div>
     </main>
 
+    <script src="/data/leagues.js"></script>
+    <script src="/data/psd-data.js"></script>
     <script>
     const SCHOOL_LOGOS = {
         'Cimarron':             'https://3.files.edl.io/bfd5/24/01/30/203122-a5d549fc-84c8-4af4-9e2a-4ca56e0f02ee.png',
@@ -334,17 +336,14 @@
         return `<div class="match-logo-fallback" aria-hidden="true" ${marginStyle}>${initials}</div>`;
     }
 
-    const SPREADSHEET_ID = '2PACX-1vRTXXJZey-hpvZVSmyq7J4Mwp1JTKJGdri0PIBXCqNhl5rpDqvsNuX-VYLHh7xoEqZg3uFvk0yaECTO';
+    const SPREADSHEET_ID = PSD.config.league('jrpl').matchSheet;
 
-    const WEEKS = [
-        { name: "Week 1", gid: "0",          startDate: "2026-03-03" },
-        { name: "Week 2", gid: "426994172",  startDate: "2026-03-10" },
-        { name: "Week 3", gid: "1433543241", startDate: "2026-03-17" },
-        { name: "Week 4", gid: "444737932",  startDate: "2026-03-31" },
-        { name: "Week 5", gid: "1415786975", startDate: "2026-04-14" },
-        { name: "Week 6", gid: "1494494803", startDate: "2026-04-21" },
-        { name: "Week 7", gid: "1784129739", startDate: "2026-04-28" }
-    ];
+    const WEEKS = PSD.config.league('jrpl').weeks.map(w => ({
+        name: `Week ${w.week}`,
+        gid: w.gid,
+        startDate: w.startDate,
+        interPool: !!w.interPool
+    }));
 
     const weekButtonsContainer = document.getElementById('week-buttons');
     const weekTitle            = document.getElementById('week-title');
@@ -363,7 +362,7 @@
     function getRelevantWeekIndex() {
         const today = new Date();
         for (let i = WEEKS.length - 1; i >= 0; i--) {
-            if (today >= new Date(WEEKS[i].startDate)) return i;
+            if (today >= PSD.localDate(WEEKS[i].startDate)) return i;
         }
         return 0;
     }
@@ -389,13 +388,12 @@
     }
 
     async function fetchAndDisplayData(gid) {
-        const url = `https://docs.google.com/spreadsheets/d/e/${SPREADSHEET_ID}/pub?output=csv&gid=${gid}`;
         weekTitle.textContent = 'Loading…';
         upcomingContainer.innerHTML = '<div class="loader">Loading matches…</div>';
         resultsContainer.innerHTML = '';
         upcomingSection.classList.remove('hidden');
         try {
-            processData(await fetchWithTimeout(url));
+            processData(await PSD.fetchCSV(SPREADSHEET_ID, gid));
         } catch (error) {
             console.error("Failed to fetch spreadsheet data:", error);
             weekTitle.textContent = "Error loading data.";

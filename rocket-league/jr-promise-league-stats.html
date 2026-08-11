@@ -407,16 +407,10 @@
   </div>
 </div>
 
+<script src="/data/leagues.js"></script>
+<script src="/data/psd-data.js"></script>
 <script>
-const WEEK_DATES = [
-  { week: 1, date: new Date('March 3, 2026')  },
-  { week: 2, date: new Date('March 10, 2026') },
-  { week: 3, date: new Date('March 17, 2026') },
-  { week: 4, date: new Date('March 31, 2026') },
-  { week: 5, date: new Date('April 14, 2026') },
-  { week: 6, date: new Date('April 21, 2026') },
-  { week: 7, date: new Date('April 28, 2026') },
-];
+const WEEK_DATES = PSD.weekDates('jrpl');
 
 function getLastCompletedWeek() {
   const today = new Date();
@@ -481,8 +475,8 @@ function logoHtml(schoolName, imgClass, fallbackClass) {
   return `<div class="${fallbackClass}" aria-hidden="true">${initials}</div>`;
 }
 
-const sheetId = '2PACX-1vTrT4vgQwfWvwkG_e3KcAmmEd9nUmnqVvQ2oxzSEM79g-PWlguAD4UWmqZBy2aiT9W4d7WwSkSqp3fV';
-const tabGids = ['0','1261668260','1158082507','374664413','1141111679','15645180','1065229934'];
+const sheetId = PSD.config.league('jrpl').statsSheet;
+const tabGids = PSD.config.statsGids('jrpl');
 
 let masterPlayerData = [];
 let lastFocusedElement = null;
@@ -517,8 +511,7 @@ async function loadAndProcessData() {
   const statusDiv = document.getElementById('status');
   statusDiv.textContent = 'Fetching latest data…';
   try {
-    const baseUrl = `https://docs.google.com/spreadsheets/d/e/${sheetId}/pub?output=csv`;
-    const csvTexts = await Promise.all(tabGids.map(gid => fetchWithTimeout(`${baseUrl}&gid=${gid}`)));
+    const csvTexts = await PSD.fetchAllCSV(sheetId, tabGids);
     const allRawData = csvTexts.flatMap(text => text ? parseCSV(text) : []);
     masterPlayerData = aggregateStats(allRawData);
     populateSchoolFilter(masterPlayerData);

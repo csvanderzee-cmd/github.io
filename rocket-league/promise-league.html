@@ -558,6 +558,8 @@
     </div>
   </div>
 
+<script src="/data/leagues.js"></script>
+<script src="/data/psd-data.js"></script>
 <script>
 // ── SCHOOL LOGOS ─────────────────────────────────────────────────────────────
 const SCHOOL_LOGOS = {
@@ -619,10 +621,8 @@ let schoolData   = {};
 let lastFocusedElement = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-  const sheetId   = '2PACX-1vRfiiH7TZmsMoydz3A4aKuhmT-7X007DLoC_IFjU-3kxNbK-abiagp1KiJc6hNxvbJzvpxT2gmZdn9U';
-  const sheetGids = ['0','1394279234','1802241807','865555826','510645723','670646977','1597369451'];
-  const baseUrl   = `https://docs.google.com/spreadsheets/d/e/${sheetId}/pub?output=csv`;
-  loadAndProcessAllData(baseUrl, sheetGids);
+  const league = PSD.config.league('pl');
+  loadAndProcessAllData(league.matchSheet, PSD.config.matchGids('pl'));
 
   document.getElementById('modal-close').addEventListener('click', closeModal);
   document.getElementById('team-modal').addEventListener('click', (e) => {
@@ -870,15 +870,13 @@ function closeModal(){
 
 function valOrDash(v){ return (v===null||v===undefined)?'–':v; }
 
-function loadAndProcessAllData(baseUrl, gids){
+function loadAndProcessAllData(sheetId, gids){
   const rankingsBody = document.getElementById('rankings-body');
   const lastUpdatedSpan = document.getElementById('last-updated');
   const loadStatus = document.getElementById('load-status');
   rankingsBody.innerHTML = `<tr><td colspan="14" class="loader" role="status">Fetching latest rankings…</td></tr>`;
 
-  const fetchPromises = gids.map(gid => fetch(`${baseUrl}&gid=${gid}`,{cache:'no-store'}).then(r=>r.text()));
-
-  Promise.all(fetchPromises)
+  PSD.fetchAllCSV(sheetId, gids)
     .then(allCsvText => {
       const teams = {};
       for (const csvText of allCsvText) processSheetData(csvText, teams);

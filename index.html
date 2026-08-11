@@ -759,21 +759,15 @@
 
     </main>
 
+    <script src="/data/leagues.js"></script>
+    <script src="/data/psd-data.js"></script>
     <script>
     lucide.createIcons();
 
-    const WEEK_DATES = [
-      { week: 1, plDate: new Date('March 2, 2026')  },
-      { week: 2, plDate: new Date('March 9, 2026')  },
-      { week: 3, plDate: new Date('March 16, 2026') },
-      { week: 4, plDate: new Date('March 30, 2026') },
-      { week: 5, plDate: new Date('April 13, 2026') },
-      { week: 6, plDate: new Date('April 20, 2026') },
-      { week: 7, plDate: new Date('April 27, 2026') },
-    ];
+    const WEEK_DATES = PSD.weekDates('pl').map(w => ({ week: w.week, plDate: w.date }));
 
-    const FINALS_DATE = new Date('May 9, 2026 09:00:00');
-    const SEASON_OVER_DATE = new Date('May 10, 2026 00:00:00');
+    const FINALS_DATE = PSD.localDateTime(PSD.config.finalsDate, PSD.config.finalsTipoff);
+    const SEASON_OVER_DATE = PSD.localDate(PSD.config.seasonEndDate);
 
     function getCurrentWeek() {
       const now = new Date();
@@ -835,7 +829,8 @@
     }
 
     function updateCountdown() {
-      const seasonTarget = new Date('March 2, 2026 16:00:00').getTime();
+      const seasonTarget = PSD.localDateTime(
+        PSD.config.league('pl').weeks[0].startDate, PSD.config.kickoffTime).getTime();
       const finalsTarget = FINALS_DATE.getTime();
       const now = new Date().getTime();
 
@@ -874,6 +869,11 @@
       const jrDate = plDate ? new Date(plDate.getTime() + 86400000) : null;
       const dateOpts = { month: 'short', day: 'numeric' };
       const jrB = document.getElementById('jr-week-badge'), jrBtn = document.getElementById('jr-week-btn');
+      // plB/plBtn were referenced without being declared, which threw a
+      // ReferenceError here and stopped loadFeaturedMatch() below from ever
+      // running. These elements were dropped in the hub redesign, so the
+      // lookups return null and the guards below simply skip.
+      const plB = document.getElementById('pl-week-badge'), plBtn = document.getElementById('pl-week-btn');
       if (jrB) jrB.innerHTML = `<i data-lucide="star" class="w-3 h-3"></i>Week ${upcomingWeek}`;
       if (jrBtn) jrBtn.innerHTML = `<i data-lucide="external-link" class="w-4 h-4 mr-2"></i> View Week ${upcomingWeek} Schedule`;
       if (plB) plB.innerHTML = `<i data-lucide="trophy" class="w-3 h-3"></i>Week ${upcomingWeek}`;
@@ -881,13 +881,14 @@
       lucide.createIcons();
     }
 
-    const LEAGUE_CONFIG = [
-      { name: 'Promise League', baseUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRfiiH7TZmsMoydz3A4aKuhmT-7X007DLoC_IFjU-3kxNbK-abiagp1KiJc6hNxvbJzvpxT2gmZdn9U/pub?output=csv', weeks: [{week:1,gid:'0'},{week:2,gid:'1394279234'},{week:3,gid:'1802241807'},{week:4,gid:'865555826'},{week:5,gid:'510645723'},{week:6,gid:'670646977'},{week:7,gid:'1597369451'}] },
-      { name: 'Jr Promise League', baseUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRTXXJZey-hpvZVSmyq7J4Mwp1JTKJGdri0PIBXCqNhl5rpDqvsNuX-VYLHh7xoEqZg3uFvk0yaECTO/pub?output=csv', weeks: [{week:1,gid:'0'},{week:2,gid:'426994172'},{week:3,gid:'1433543241'},{week:4,gid:'444737932'},{week:5,gid:'1415786975'},{week:6,gid:'1494494803'},{week:7,gid:'1784129739'}] }
-    ];
+    const LEAGUE_CONFIG = PSD.config.leagues.map(lg => ({
+      name:    lg.name,
+      sheetId: lg.matchSheet,
+      weeks:   lg.weeks.map(w => ({ week: w.week, gid: w.gid })),
+    }));
 
-    async function fetchSheetCSV(baseUrl, gid) {
-      try { return await (await fetch(`${baseUrl}&gid=${gid}`)).text(); } catch(e) { return null; }
+    async function fetchSheetCSV(sheetId, gid) {
+      try { return await PSD.fetchCSV(sheetId, gid); } catch(e) { return null; }
     }
 
     function isFFCell(v) { const s = String(v||'').trim().toUpperCase(); return s==='F'||s==='FF'||s==='FORFEIT'; }
@@ -948,6 +949,11 @@
     async function loadFeaturedMatch() {
       const cL=document.getElementById('card-loading'), cC=document.getElementById('card-content'), cF=document.getElementById('card-fallback');
 
+      // The featured-match card was removed in the hub redesign. Until/unless
+      // it comes back, there is nothing to fill in — bail out before touching
+      // elements that no longer exist.
+      if (!cL || !cC) return;
+
       if (new Date() >= SEASON_OVER_DATE) {
         document.getElementById('pl-match').classList.add('hidden');
         document.getElementById('jr-match').classList.add('hidden');
@@ -966,7 +972,7 @@
 
       try {
         const fP=[], fM=[];
-        LEAGUE_CONFIG.forEach(l => l.weeks.forEach(w => { fM.push({l:l.name,w:w.week}); fP.push(fetchSheetCSV(l.baseUrl,w.gid)); }));
+        LEAGUE_CONFIG.forEach(l => l.weeks.forEach(w => { fM.push({l:l.name,w:w.week}); fP.push(fetchSheetCSV(l.sheetId,w.gid)); }));
         const results = await Promise.all(fP);
         const teamRecs={}, upcoming=[];
         const getSchool = n => n.replace(/\s+[AB]$/i,'').trim();
