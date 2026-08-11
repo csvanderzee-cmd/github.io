@@ -73,9 +73,23 @@
     });
   }
 
-  /** Many tabs at once, resolved in the order given. */
+  /**
+   * Many tabs at once, resolved in the order given.
+   *
+   * A tab that fails resolves to '' rather than rejecting the whole batch, so
+   * one unpublished or slow tab degrades to a missing week instead of an empty
+   * page. Callers already treat '' as "no rows". Use fetchCSV directly when a
+   * single tab failing genuinely is an error worth surfacing.
+   */
   function fetchAllCSV(sheetId, gids) {
-    return Promise.all(gids.map(function (gid) { return fetchCSV(sheetId, gid); }));
+    return Promise.all(gids.map(function (gid) {
+      return fetchCSV(sheetId, gid).catch(function (err) {
+        if (root.console && console.warn) {
+          console.warn('[PSD] gid ' + gid + ' failed, skipping:', err.message);
+        }
+        return '';
+      });
+    }));
   }
 
   root.PSD = {

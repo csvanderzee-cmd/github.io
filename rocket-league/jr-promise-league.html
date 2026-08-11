@@ -510,20 +510,6 @@ function lockScroll(lock) { document.body.style.overflow = lock ? 'hidden' : '';
 function getSchoolName(t) { return t.replace(/\s+[AB]$/i, '').trim(); }
 function getTeamSuffix(t) { const m = t.match(/\s+([AB])$/i); return m ? m[1].toUpperCase() : ''; }
 
-async function fetchWithTimeout(url, ms = 8000) {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), ms);
-  try {
-    const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
-    clearTimeout(id);
-    return res.text();
-  } catch (err) {
-    clearTimeout(id);
-    console.warn('Fetch failed or timed out:', url, err.message);
-    return '';
-  }
-}
-
 function buildSchoolData(allTeams) {
   const schools = {};
   for (const [fullName, team] of Object.entries(allTeams)) {

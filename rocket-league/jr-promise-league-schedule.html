@@ -373,20 +373,6 @@
         fetchAndDisplayData(WEEKS[index].gid);
     }
 
-    async function fetchWithTimeout(url, ms = 8000) {
-        const controller = new AbortController();
-        const id = setTimeout(() => controller.abort(), ms);
-        try {
-            const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
-            clearTimeout(id);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return res.text();
-        } catch (err) {
-            clearTimeout(id);
-            throw err;
-        }
-    }
-
     async function fetchAndDisplayData(gid) {
         weekTitle.textContent = 'Loading…';
         upcomingContainer.innerHTML = '<div class="loader">Loading matches…</div>';

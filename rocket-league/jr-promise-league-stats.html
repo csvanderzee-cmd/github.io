@@ -492,21 +492,6 @@ document.getElementById('school-filter').addEventListener('change', updateDispla
 document.getElementById('stat-mode-select').addEventListener('change', () => { updateSortOptions(); updateDisplay(); });
 document.getElementById('player-search-input').addEventListener('keyup', updateDisplay);
 
-async function fetchWithTimeout(url, ms = 8000) {
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), ms);
-  try {
-    const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
-    clearTimeout(id);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return res.text();
-  } catch (err) {
-    clearTimeout(id);
-    console.warn('Fetch failed or timed out:', url, err.message);
-    return '';
-  }
-}
-
 async function loadAndProcessData() {
   const statusDiv = document.getElementById('status');
   statusDiv.textContent = 'Fetching latest data…';
