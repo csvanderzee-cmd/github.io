@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -67,6 +67,12 @@
         .match-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--psd-red), var(--psd-yellow), var(--psd-blue)); opacity: 0; transition: opacity 0.2s; }
         .match-card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.6); border-color: var(--psd-red-text); }
         .match-card:hover::before { opacity: 1; }
+
+        /* ── ORANGE / BLUE SIDE BADGE ── */
+        .side-badge { position: absolute; left: 12px; top: 8px; font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; font-weight: 800; padding: 2px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.12em; }
+        .side-badge.side-orange { background: rgba(245,158,11,0.16); color: #FBBF24; border: 1px solid rgba(245,158,11,0.4); }
+        .side-badge.side-blue   { background: rgba(59,130,246,0.16); color: #60A5FA; border: 1px solid rgba(59,130,246,0.4); }
+        .match-card { padding-top: 26px; }
 
         /* ── BYE CARD ── */
         .match-card.bye-card { border-color: rgba(253,185,19,0.2); background: rgba(253,185,19,0.04); }
@@ -303,26 +309,11 @@
     <script src="/data/leagues.js"></script>
     <script src="/data/psd-data.js"></script>
     <script>
-    const SCHOOL_LOGOS = {
-        'Cimarron':             'https://3.files.edl.io/bfd5/24/01/30/203122-a5d549fc-84c8-4af4-9e2a-4ca56e0f02ee.png',
-        'Desert Rose':          'https://3.files.edl.io/bbc0/24/01/30/203123-f1eb745a-e767-4d91-80a4-2923ab07654d.png',
-        'Innovations Academy':  'https://3.files.edl.io/5b29/24/01/30/203127-760b8684-7411-463d-84d0-38653baa5249.png',
-        'Innovations':          'https://3.files.edl.io/5b29/24/01/30/203127-760b8684-7411-463d-84d0-38653baa5249.png',
-        'Los Amigos':           'https://3.files.edl.io/aa2d/24/01/30/203128-f79f02e7-682b-4e43-975d-d6ac2b210779.png',
-        'Manzanita':            'https://3.files.edl.io/78d0/24/11/12/173918-dbf6ddaa-bf7b-408d-aa49-db4cdecdc9bb.png',
-        'Palm Tree':            'https://3.files.edl.io/deef/24/01/30/203132-727d82ee-15ae-4e4a-9e3b-95f7e677e038.png',
-        'Palmtree':             'https://3.files.edl.io/deef/24/01/30/203132-727d82ee-15ae-4e4a-9e3b-95f7e677e038.png',
-        'Tumbleweed':           'https://3.files.edl.io/419d/25/10/02/220537-89da6677-8013-4232-bf2b-62aab2b64d29.png',
-        'Yucca':                'https://3.files.edl.io/c0fd/24/01/30/203144-7cccf38b-4ea6-4ca5-ac4e-1c5cb2ecdc53.png',
-    };
-
+    // ── SCHOOL BADGES ────────────────────────────────────────────────────────
+    // Logos live in data/leagues.js so one school edit reaches every page.
+    // The lookup accepts any spelling the sheets use.
     function getLogo(name) {
-        if (!name) return null;
-        const n = name.toUpperCase();
-        for (const [key, url] of Object.entries(SCHOOL_LOGOS)) {
-            if (n.includes(key.toUpperCase())) return url;
-        }
-        return null;
+        return PSD.config.schoolLogo(name);
     }
 
     function logoHtml(name, side) {
@@ -366,10 +357,23 @@
         }
         return 0;
     }
+    /* The heading comes from leagues.js, not the tab's own title cell — a
+       duplicated tab can carry the previous week's number. */
+    let WEEK_TITLE_OVERRIDE = '';
+    function weekHeading(index) {
+        const w = WEEKS[index];
+        if (!w) return '';
+        const d = PSD.localDate(w.startDate);
+        return d
+            ? `${w.name} - ${d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}`
+            : w.name;
+    }
+
 
     function loadWeekByIndex(index) {
         document.querySelectorAll('.week-button').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.week-button')[index].classList.add('active');
+        WEEK_TITLE_OVERRIDE = weekHeading(index);
         fetchAndDisplayData(WEEKS[index].gid);
     }
 
@@ -378,6 +382,16 @@
         upcomingContainer.innerHTML = '<div class="loader">Loading matches…</div>';
         resultsContainer.innerHTML = '';
         upcomingSection.classList.remove('hidden');
+
+        // Match workbook for this season is not published yet.
+        if (!PSD.config.hasLiveData('jrpl')) {
+            weekTitle.textContent = 'Schedule coming soon';
+            upcomingContainer.innerHTML = `<p style="text-align:center;padding:2rem;color:#9ca3af">
+                Early Release plays Tuesdays at 2:00 PM, September 22 through November 17.<br>
+                Week-by-week matchups appear here once the season schedule is published.</p>`;
+            return;
+        }
+
         try {
             processData(await PSD.fetchCSV(SPREADSHEET_ID, gid));
         } catch (error) {
@@ -389,16 +403,46 @@
 
     function processData(csv) {
         const rows = csv.trim().split('\n').map(row => row.split(','));
-        weekTitle.textContent = rows[0][0]?.trim() || 'Schedule';
+        weekTitle.textContent = WEEK_TITLE_OVERRIDE || rows[0][0]?.trim() || 'Schedule';
 
-        const dataRows = rows.slice(3);
+        /* 2026-27 layout, header on row 3:
+             Team | Team | Location | Points | Points | Points
+           Column B is the ORANGE/BLUE side and C is Home/Away, so scores that
+           used to sit in B-D now start at D. Columns are found by their header
+           label so a future move does not break this again. */
+        const headerIdx = rows.findIndex(r => (r[0]||'').trim().toLowerCase() === 'team');
+        const header    = headerIdx === -1 ? [] : rows[headerIdx];
+
+        const scoreCols = [];
+        let sideCol = -1, locCol = -1;
+        header.forEach((cell, i) => {
+            const hh = (cell||'').trim().toLowerCase();
+            if (hh === 'points' || /^game\s*\d+$/.test(hh)) scoreCols.push(i);
+            else if (hh === 'location')                     locCol  = i;
+            else if (hh === 'team' && i > 0)                sideCol = i;
+        });
+        if (!scoreCols.length) scoreCols.push(3, 4, 5);
+
+        const dataRows = rows
+            .slice(headerIdx === -1 ? 3 : headerIdx + 1)
+            .filter(r => (r[0]||'').trim() && !/^week/i.test(r[0]));
         const matches = [];
+        const cell = (row, idx) => (row?.[idx] ?? '').trim();
 
         for (let i = 0; i < dataRows.length; i += 2) {
-            const homeRow = dataRows[i];
-            const awayRow = dataRows[i + 1] ?? [];
-            const homeName = homeRow[0]?.trim() ?? '';
-            const awayName = awayRow[0]?.trim() ?? '';
+            let homeRow = dataRows[i];
+            let awayRow = dataRows[i + 1] ?? [];
+
+            // Believe the Location column over row order about which is home.
+            if (locCol >= 0 && /away/i.test(cell(homeRow, locCol)) && /home/i.test(cell(awayRow, locCol))) {
+                const swap = homeRow; homeRow = awayRow; awayRow = swap;
+            }
+
+            // Roster spelling, so "Cimmaron" and "Palm Tree" still find their
+            // logo and read consistently across weeks.
+            const homeName = PSD.config.canonicalSchool('jrpl', cell(homeRow, 0));
+            const awayName = PSD.config.canonicalSchool('jrpl', cell(awayRow, 0));
+            const side     = sideCol >= 0 ? cell(homeRow, sideCol) : '';
 
             if (!homeName && !awayName) continue;
 
@@ -407,33 +451,33 @@
                 continue;
             }
 
-            const h = [homeRow[1], homeRow[2], homeRow[3]].map(v => (v ?? '').trim().toUpperCase());
-            const a = [awayRow[1], awayRow[2], awayRow[3]].map(v => (v ?? '').trim().toUpperCase());
+            const h = scoreCols.map(c => cell(homeRow, c).toUpperCase());
+            const a = scoreCols.map(c => cell(awayRow, c).toUpperCase());
 
-            const doubleForfeitIndex = [0,1,2].find(idx => h[idx] === 'F' && a[idx] === 'F');
-            if (doubleForfeitIndex !== undefined) {
-                matches.push({ type: 'result', home: homeName, away: awayName, score: 'FF - FF', hClass: '', aClass: '', isFF: false, isDoubleFF: true });
+            const doubleForfeitIndex = h.findIndex((v, idx) => v === 'F' && a[idx] === 'F');
+            if (doubleForfeitIndex !== -1) {
+                matches.push({ type: 'result', home: homeName, away: awayName, side, score: 'FF - FF', hClass: '', aClass: '', isFF: false, isDoubleFF: true });
                 continue;
             }
 
-            const ffIndex = [0,1,2].find(idx => (h[idx]==='F' && a[idx]==='0') || (a[idx]==='F' && h[idx]==='0'));
-            if (ffIndex !== undefined) {
+            const ffIndex = h.findIndex((v, idx) => (v==='F' && a[idx]==='0') || (a[idx]==='F' && v==='0'));
+            if (ffIndex !== -1) {
                 const homeForfeited = (h[ffIndex]==='F' && a[ffIndex]==='0');
-                matches.push({ type: 'result', home: homeName, away: awayName, score: homeForfeited ? 'W - FF' : 'FF - W', hClass: homeForfeited ? '' : 'winner', aClass: homeForfeited ? 'winner' : '', isFF: true, isDoubleFF: false });
+                matches.push({ type: 'result', home: homeName, away: awayName, side, score: homeForfeited ? 'W - FF' : 'FF - W', hClass: homeForfeited ? '' : 'winner', aClass: homeForfeited ? 'winner' : '', isFF: true, isDoubleFF: false });
                 continue;
             }
 
-            const g1Home = parseInt(homeRow[1], 10), g1Away = parseInt(awayRow[1], 10);
-            if (isNaN(g1Home) || isNaN(g1Away)) {
-                matches.push({ type: 'upcoming', home: homeName, away: awayName });
+            const nums = scoreCols.map(c => [parseInt(cell(homeRow, c), 10), parseInt(cell(awayRow, c), 10)]);
+            if (isNaN(nums[0][0]) || isNaN(nums[0][1])) {
+                matches.push({ type: 'upcoming', home: homeName, away: awayName, side });
             } else {
                 let hWins = 0, aWins = 0;
-                if (g1Home > g1Away) hWins++; else aWins++;
-                const g2H = parseInt(homeRow[2], 10), g2A = parseInt(awayRow[2], 10);
-                if (!isNaN(g2H) && !isNaN(g2A)) { if (g2H > g2A) hWins++; else aWins++; }
-                const g3H = parseInt(homeRow[3], 10), g3A = parseInt(awayRow[3], 10);
-                if (hWins < 2 && aWins < 2 && !isNaN(g3H) && !isNaN(g3A)) { if (g3H > g3A) hWins++; else aWins++; }
-                matches.push({ type: 'result', home: homeName, away: awayName, score: `${aWins} - ${hWins}`, hClass: hWins > aWins ? 'winner' : '', aClass: aWins > hWins ? 'winner' : '', isFF: false, isDoubleFF: false });
+                for (const [hv, av] of nums) {
+                    if (isNaN(hv) || isNaN(av)) continue;
+                    if (hWins === 2 || aWins === 2) break;   // series already decided
+                    if (hv > av) hWins++; else if (av > hv) aWins++;
+                }
+                matches.push({ type: 'result', home: homeName, away: awayName, side, score: `${aWins} - ${hWins}`, hClass: hWins > aWins ? 'winner' : '', aClass: aWins > hWins ? 'winner' : '', isFF: false, isDoubleFF: false });
             }
         }
 
@@ -442,10 +486,10 @@
 
         matches.forEach(m => {
             if (m.type === 'upcoming') {
-                upcomingHTML += createUpcomingCard(m.away, m.home);
+                upcomingHTML += createUpcomingCard(m.away, m.home, m.side);
             } else if (m.type === 'result') {
                 if (m.isDoubleFF) resultsHTML += createDoubleFFCard(m.away, m.home);
-                else resultsHTML += createMatchCard(m.away, m.home, m.score, m.aClass, m.hClass, m.isFF);
+                else resultsHTML += createMatchCard(m.away, m.home, m.score, m.aClass, m.hClass, m.isFF, m.side);
             } else if (m.type === 'bye') {
                 if (isWeekFinished) resultsHTML += createByeCard(m.team);
                 else upcomingHTML += createByeCard(m.team);
@@ -462,9 +506,20 @@
             || '<p style="text-align:center;color:var(--text-muted);font-family:\'Rajdhani\',sans-serif;letter-spacing:0.08em;">No results yet.</p>';
     }
 
-    function createMatchCard(away, home, score, aClass, hClass, isFF) {
+    /* Each school fields an ORANGE and a BLUE team, so every fixture appears
+       twice on a week tab. Without this badge the two rows look like the same
+       match listed by mistake. */
+    function sideBadge(side) {
+        if (!side) return '';
+        const s = side.trim().toUpperCase();
+        if (s !== 'ORANGE' && s !== 'BLUE') return '';
+        return `<span class="side-badge side-${s.toLowerCase()}">${s}</span>`;
+    }
+
+    function createMatchCard(away, home, score, aClass, hClass, isFF, side) {
         return `
         <div class="match-card">
+            ${sideBadge(side)}
             <div class="team team-left ${aClass}">
                 <span class="team-label away-label">Away</span>
                 ${logoHtml(away, 'left')}
@@ -498,9 +553,10 @@
         </div>`;
     }
 
-    function createUpcomingCard(away, home) {
+    function createUpcomingCard(away, home, side) {
         return `
         <div class="match-card">
+            ${sideBadge(side)}
             <div class="team team-left">
                 <span class="team-label away-label">Away</span>
                 ${logoHtml(away, 'left')}

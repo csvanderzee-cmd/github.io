@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -183,6 +183,18 @@
             background: var(--psd-yellow); color: #000; padding: 3px 8px; border-radius: 4px;
             text-transform: uppercase; letter-spacing: 0.06em; box-shadow: 0 0 10px rgba(253,185,19,0.4);
         }
+
+        /* Marks a card as the ORANGE or the BLUE series. Sits top-left, where
+           the forfeit badge already claims the right-hand side. */
+        .side-badge {
+            position: absolute; left: 12px; top: 8px;
+            font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; font-weight: 800;
+            padding: 2px 7px; border-radius: 4px;
+            text-transform: uppercase; letter-spacing: 0.12em;
+        }
+        .side-badge.side-orange { background: rgba(245,158,11,0.16); color: #FBBF24; border: 1px solid rgba(245,158,11,0.4); }
+        .side-badge.side-blue   { background: rgba(59,130,246,0.16); color: #60A5FA; border: 1px solid rgba(59,130,246,0.4); }
+        .match-card { padding-top: 26px; }
 
         .loader { color: var(--psd-blue-text); font-family: 'Rajdhani', sans-serif; font-weight: 700; text-align: center; margin: 2rem; letter-spacing: 0.1em; text-transform: uppercase; }
         .hidden { display: none !important; }
@@ -387,25 +399,11 @@
     <script src="/data/psd-data.js"></script>
     <script>
     // ── SCHOOL LOGOS ─────────────────────────────────────────────────────────
-    const SCHOOL_LOGOS = {
-        'Cactus':                  'https://3.files.edl.io/63ab/24/01/30/203120-a87c60bc-37da-483c-b392-238488c963de.png',
-        'David G Millen':          'https://3.files.edl.io/8dc4/24/01/30/203122-5a3b347a-0d9f-434d-afcb-d500e246f4e3.png',
-        'DGM':                     'https://3.files.edl.io/8dc4/24/01/30/203122-5a3b347a-0d9f-434d-afcb-d500e246f4e3.png',
-        'Ocotillo':                'https://3.files.edl.io/cca4/24/01/30/203131-fbd479f1-cdfe-47b0-b95a-05f2cc28e867.png',
-        'Palmdale Learning Plaza':  'https://3.files.edl.io/330f/24/01/30/203134-48db1f14-cb8d-4f6b-aa74-94648928b58a.png',
-        'PLP':                     'https://3.files.edl.io/330f/24/01/30/203134-48db1f14-cb8d-4f6b-aa74-94648928b58a.png',
-        'Sage':                    'https://3.files.edl.io/e005/24/01/30/203135-3f3e9191-5b83-4ba9-a47c-124e5d54428c.png',
-        'Shadow Hills':            'https://3.files.edl.io/88eb/24/01/30/203136-53ac6114-93b7-46a0-8fae-f78daf6287de.png',
-        'Cole':                    'https://cole.eastsideusd.org/pics/school_logo.png',
-    };
-
+    // ── SCHOOL BADGES ────────────────────────────────────────────────────────
+    // Logos live in data/leagues.js so one school edit reaches every page.
+    // The lookup accepts any spelling the sheets use.
     function getLogo(name) {
-        if (!name) return null;
-        const n = name.toUpperCase();
-        for (const [key, url] of Object.entries(SCHOOL_LOGOS)) {
-            if (n.includes(key.toUpperCase())) return url;
-        }
-        return null;
+        return PSD.config.schoolLogo(name);
     }
 
     function logoHtml(name, side) {
@@ -437,6 +435,18 @@
 
     let currentWeekIndex = 0;
 
+    /* The heading comes from leagues.js, not from the tab's own title cell —
+       a duplicated tab can carry the previous week's number. */
+    let WEEK_TITLE_OVERRIDE = '';
+    function weekHeading(index) {
+        const w = WEEKS[index];
+        if (!w) return '';
+        const d = PSD.localDate(w.startDate);
+        return d
+            ? `${w.name} - ${d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}`
+            : w.name;
+    }
+
     WEEKS.forEach((week, index) => {
         const btn = document.createElement('button');
         btn.textContent = week.name;
@@ -459,6 +469,7 @@
         document.querySelectorAll('.week-button').forEach(b => b.classList.remove('active'));
         const btn = document.querySelectorAll('.week-button')[index];
         if (btn) btn.classList.add('active');
+        WEEK_TITLE_OVERRIDE = weekHeading(index);
         fetchAndDisplayData(WEEKS[index].gid);
     }
 
@@ -467,6 +478,15 @@
         upcomingContainer.innerHTML = '<div class="loader">Loading matches…</div>';
         resultsContainer.innerHTML = '';
         upcomingSection.classList.remove('hidden');
+
+        // Match workbook for this season is not published yet.
+        if (!PSD.config.hasLiveData('pl')) {
+            weekTitle.textContent = 'Schedule coming soon';
+            upcomingContainer.innerHTML = `<p style="text-align:center;padding:2rem;color:#9ca3af">
+                Late Release plays Mondays at 4:00 PM, September 21 through November 16.<br>
+                Week-by-week matchups appear here once the season schedule is published.</p>`;
+            return;
+        }
 
         try {
             processData(await PSD.fetchCSV(SPREADSHEET_ID, gid));
@@ -479,16 +499,46 @@
 
     function processData(csv) {
         const rows = csv.trim().split('\n').map(row => row.split(','));
-        weekTitle.textContent = rows[0][0]?.trim() || '';
+        weekTitle.textContent = WEEK_TITLE_OVERRIDE || rows[0][0]?.trim() || '';
 
-        const dataRows = rows.slice(3);
+        /* 2026-27 layout, header on row 3:
+             Team | Team | Location | Points | Points | Points
+           Column B is the ORANGE/BLUE side and column C is Home/Away, so the
+           scores that used to sit in B-D now start at D. Columns are located
+           by their header label so a future move does not break this again. */
+        const headerIdx = rows.findIndex(r => (r[0]||'').trim().toLowerCase() === 'team');
+        const header    = headerIdx === -1 ? [] : rows[headerIdx];
+
+        const scoreCols = [];
+        let sideCol = -1, locCol = -1;
+        header.forEach((cell, i) => {
+            const h = (cell||'').trim().toLowerCase();
+            if (h === 'points' || /^game\s*\d+$/.test(h)) scoreCols.push(i);
+            else if (h === 'location')                    locCol  = i;
+            else if (h === 'team' && i > 0)               sideCol = i;
+        });
+        if (!scoreCols.length) scoreCols.push(3, 4, 5);
+
+        const dataRows = rows
+            .slice(headerIdx === -1 ? 3 : headerIdx + 1)
+            .filter(r => (r[0]||'').trim() && !/^week/i.test(r[0]));
         const matches = [];
+        const cell = (row, idx) => (row?.[idx] ?? '').trim();
 
         for (let i = 0; i < dataRows.length; i += 2) {
-            const homeRow = dataRows[i];
-            const awayRow = dataRows[i + 1] ?? [];
-            const homeName = homeRow[0]?.trim() ?? '';
-            const awayName = awayRow[0]?.trim() ?? '';
+            let homeRow = dataRows[i];
+            let awayRow = dataRows[i + 1] ?? [];
+
+            // Believe the Location column over row order about which is home.
+            if (locCol >= 0 && /away/i.test(cell(homeRow, locCol)) && /home/i.test(cell(awayRow, locCol))) {
+                const swap = homeRow; homeRow = awayRow; awayRow = swap;
+            }
+
+            // Roster spelling, so a retyped name still finds its logo and
+            // reads consistently across weeks.
+            const homeName = PSD.config.canonicalSchool('pl', cell(homeRow, 0));
+            const awayName = PSD.config.canonicalSchool('pl', cell(awayRow, 0));
+            const side     = sideCol >= 0 ? cell(homeRow, sideCol) : '';
 
             if (!homeName && !awayName) continue;
 
@@ -497,14 +547,14 @@
                 continue;
             }
 
-            const hRaw = [homeRow[1], homeRow[2], homeRow[3]].map(v => (v ?? '').trim().toUpperCase());
-            const aRaw = [awayRow[1], awayRow[2], awayRow[3]].map(v => (v ?? '').trim().toUpperCase());
-            const ffIndex = [0,1,2].find(idx => (hRaw[idx]==='F' && aRaw[idx]==='0') || (aRaw[idx]==='F' && hRaw[idx]==='0'));
+            const hRaw = scoreCols.map(c => cell(homeRow, c).toUpperCase());
+            const aRaw = scoreCols.map(c => cell(awayRow, c).toUpperCase());
+            const ffIndex = hRaw.findIndex((v, idx) => (v==='F' && aRaw[idx]==='0') || (aRaw[idx]==='F' && v==='0'));
 
-            if (ffIndex !== undefined) {
+            if (ffIndex !== -1) {
                 const homeForfeited = (hRaw[ffIndex]==='F' && aRaw[ffIndex]==='0');
                 matches.push({
-                    type: 'result', home: homeName, away: awayName,
+                    type: 'result', home: homeName, away: awayName, side,
                     score: homeForfeited ? 'W - FF' : 'FF - W',
                     hClass: homeForfeited ? '' : 'winner', aClass: homeForfeited ? 'winner' : '',
                     isFF: true
@@ -512,18 +562,18 @@
                 continue;
             }
 
-            const g1Home = parseInt(homeRow[1], 10), g1Away = parseInt(awayRow[1], 10);
-            if (isNaN(g1Home) || isNaN(g1Away)) {
-                matches.push({ type: 'upcoming', home: homeName, away: awayName });
+            const nums = scoreCols.map(c => [parseInt(cell(homeRow, c), 10), parseInt(cell(awayRow, c), 10)]);
+            if (isNaN(nums[0][0]) || isNaN(nums[0][1])) {
+                matches.push({ type: 'upcoming', home: homeName, away: awayName, side });
             } else {
                 let hWins = 0, aWins = 0;
-                if (g1Home > g1Away) hWins++; else aWins++;
-                const g2H = parseInt(homeRow[2], 10), g2A = parseInt(awayRow[2], 10);
-                if (!isNaN(g2H) && !isNaN(g2A)) { if (g2H > g2A) hWins++; else aWins++; }
-                const g3H = parseInt(homeRow[3], 10), g3A = parseInt(awayRow[3], 10);
-                if (hWins < 2 && aWins < 2 && !isNaN(g3H) && !isNaN(g3A)) { if (g3H > g3A) hWins++; else aWins++; }
+                for (const [h, a] of nums) {
+                    if (isNaN(h) || isNaN(a)) continue;
+                    if (hWins === 2 || aWins === 2) break;   // series already decided
+                    if (h > a) hWins++; else if (a > h) aWins++;
+                }
                 matches.push({
-                    type: 'result', home: homeName, away: awayName,
+                    type: 'result', home: homeName, away: awayName, side,
                     score: `${aWins} - ${hWins}`,
                     hClass: hWins > aWins ? 'winner' : '', aClass: aWins > hWins ? 'winner' : '',
                     isFF: false
@@ -538,9 +588,9 @@
 
         matches.forEach(m => {
             if (m.type === 'upcoming') {
-                upcomingHTML += createUpcomingCard(m.away, m.home);
+                upcomingHTML += createUpcomingCard(m.away, m.home, m.side);
             } else if (m.type === 'result') {
-                resultsHTML += createMatchCard(m.away, m.home, m.score, m.aClass, m.hClass, m.isFF);
+                resultsHTML += createMatchCard(m.away, m.home, m.score, m.aClass, m.hClass, m.isFF, m.side);
             } else if (m.type === 'bye') {
                 if (isWeekFinished) resultsHTML += createByeCard(m.team);
                 else upcomingHTML += createByeCard(m.team);
@@ -559,9 +609,20 @@
             : '<p style="text-align:center;color:var(--text-muted);font-family:\'Rajdhani\',sans-serif;letter-spacing:0.08em;">No results yet.</p>';
     }
 
-    function createMatchCard(away, home, score, aClass, hClass, isFF) {
+    /* Each school fields an ORANGE and a BLUE team, so every fixture appears
+       twice on a week tab. Without this badge the two rows look like the same
+       match listed by mistake. */
+    function sideBadge(side) {
+        if (!side) return '';
+        const s = side.trim().toUpperCase();
+        if (s !== 'ORANGE' && s !== 'BLUE') return '';
+        return `<span class="side-badge side-${s.toLowerCase()}">${s}</span>`;
+    }
+
+    function createMatchCard(away, home, score, aClass, hClass, isFF, side) {
         return `
         <div class="match-card">
+            ${sideBadge(side)}
             <div class="team team-left ${aClass}">
                 <span class="team-label away-label">Away</span>
                 ${logoHtml(away, 'left')}
@@ -577,9 +638,10 @@
         </div>`;
     }
 
-    function createUpcomingCard(away, home) {
+    function createUpcomingCard(away, home, side) {
         return `
         <div class="match-card">
+            ${sideBadge(side)}
             <div class="team team-left">
                 <span class="team-label away-label">Away</span>
                 ${logoHtml(away, 'left')}

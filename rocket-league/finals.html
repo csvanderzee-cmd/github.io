@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -556,53 +556,28 @@ function adjustSchedulePosition() {
   }
 }
 
-const PL_LOGOS = {
-  'Cactus':'https://3.files.edl.io/63ab/24/01/30/203120-a87c60bc-37da-483c-b392-238488c963de.png',
-  'David G Millen':'https://3.files.edl.io/8dc4/24/01/30/203122-5a3b347a-0d9f-434d-afcb-d500e246f4e3.png',
-  'DGM':'https://3.files.edl.io/8dc4/24/01/30/203122-5a3b347a-0d9f-434d-afcb-d500e246f4e3.png',
-  'Ocotillo':'https://3.files.edl.io/cca4/24/01/30/203131-fbd479f1-cdfe-47b0-b95a-05f2cc28e867.png',
-  'Palmdale Learning Plaza':'https://3.files.edl.io/330f/24/01/30/203134-48db1f14-cb8d-4f6b-aa74-94648928b58a.png',
-  'PLP':'https://3.files.edl.io/330f/24/01/30/203134-48db1f14-cb8d-4f6b-aa74-94648928b58a.png',
-  'Sage':'https://3.files.edl.io/e005/24/01/30/203135-3f3e9191-5b83-4ba9-a47c-124e5d54428c.png',
-  'Shadow Hills':'https://3.files.edl.io/88eb/24/01/30/203136-53ac6114-93b7-46a0-8fae-f78daf6287de.png',
-  'Cole':'https://cole.eastsideusd.org/pics/school_logo.png',
-};
-const JRPL_LOGOS = {
-  'Cimarron':'https://3.files.edl.io/bfd5/24/01/30/203122-a5d549fc-84c8-4af4-9e2a-4ca56e0f02ee.png',
-  'Desert Rose':'https://3.files.edl.io/bbc0/24/01/30/203123-f1eb745a-e767-4d91-80a4-2923ab07654d.png',
-  'Innovations Academy':'https://3.files.edl.io/5b29/24/01/30/203127-760b8684-7411-463d-84d0-38653baa5249.png',
-  'Innovations':'https://3.files.edl.io/5b29/24/01/30/203127-760b8684-7411-463d-84d0-38653baa5249.png',
-  'Los Amigos':'https://3.files.edl.io/aa2d/24/01/30/203128-f79f02e7-682b-4e43-975d-d6ac2b210779.png',
-  'Manzanita':'https://3.files.edl.io/78d0/24/11/12/173918-dbf6ddaa-bf7b-408d-aa49-db4cdecdc9bb.png',
-  'Palm Tree':'https://3.files.edl.io/deef/24/01/30/203132-727d82ee-15ae-4e4a-9e3b-95f7e677e038.png',
-  'Palmtree':'https://3.files.edl.io/deef/24/01/30/203132-727d82ee-15ae-4e4a-9e3b-95f7e677e038.png',
-  'Tumbleweed':'https://3.files.edl.io/419d/25/10/02/220537-89da6677-8013-4232-bf2b-62aab2b64d29.png',
-  'Yucca':'https://3.files.edl.io/c0fd/24/01/30/203144-7cccf38b-4ea6-4ca5-ac4e-1c5cb2ecdc53.png',
-};
-
-const LOGO_MAPS = { pl: PL_LOGOS, jrpl: JRPL_LOGOS };
+// Logos live in data/leagues.js so one school edit reaches every page.
 
 const LEAGUES = PSD.config.leagues.map(lg => ({
   id:      lg.id,
   label:   lg.name,
-  logoMap: LOGO_MAPS[lg.id],
+
   times:   lg.finalsTimes,
   sheetId: lg.matchSheet,
   gid:     lg.finalsGid,
 }));
 
-function schoolOf(n) { return (n||'').replace(/\s+[AB]$/i,'').trim(); }
+// Strips the side off "Shadow Hills ORANGE". A/B is last season's naming and
+// stays recognised so an archived bracket still reads.
+function schoolOf(n) { return (n||'').replace(/\s+(ORANGE|BLUE|[AB])$/i,'').trim(); }
 function toNum(v)    { const n=parseInt(v); return Number.isFinite(n)?n:null; }
 function cleanTB(v)  { const s=(v||'').trim(); return (s.toLowerCase()==='tiebreaker'||s==='')?'':s; }
 
-function getLogo(name, map) {
-  if (!name) return null;
-  const n = name.toUpperCase();
-  for (const [k,v] of Object.entries(map)) if (n.includes(k.toUpperCase())) return v;
-  return null;
+function getLogo(name) {
+  return PSD.config.schoolLogo(name);
 }
-function logoHtml(name, map) {
-  const url = getLogo(name, map);
+function logoHtml(name) {
+  const url = getLogo(name);
   const init = name.replace(/\s+[AB]$/i,'').split(/\s+/).map(w=>w[0]).join('').substring(0,3).toUpperCase();
   return url
     ? `<img src="${url}" alt="${name} logo" class="logo-sm" loading="lazy" onerror="this.style.display='none'">`
@@ -688,7 +663,7 @@ function solveMatchup(s1, s2, aRes, bRes, tb1, tb2) {
 
 function seedCls(s) { return ['','s1','s2','s3','s4'][s]||''; }
 
-function subSectionHtml(t1, t2, aRes, label, isTB, logoMap, higherCls, lowerCls) {
+function subSectionHtml(t1, t2, aRes, label, isTB, higherCls, lowerCls) {
   higherCls = higherCls || 't1-team';
   lowerCls  = lowerCls  || 't2-team';
   const {w1, w2, gp, games, winner} = aRes;
@@ -705,7 +680,7 @@ function subSectionHtml(t1, t2, aRes, label, isTB, logoMap, higherCls, lowerCls)
   const row = (team, gw, isWin, isLoss, rankCls) => {
     const isTbd = !team.name;
     return `<div class="competitor ${isWin?'win':isLoss?'loss':isTbd?'tbd':''} ${rankCls}">
-      ${isTbd?'':logoHtml(team.name, logoMap)}
+      ${isTbd?'':logoHtml(team.name)}
       <span class="comp-name${isTbd?' tbd':''}">${team.name||'TBD'}</span>
       ${isWin?'<span class="crown">👑</span>':''}
       <span class="score-disp ${isWin?'win':isLoss?'loss':any?'none':''}">${any?gw:''}</span>
@@ -734,7 +709,7 @@ function subSectionHtml(t1, t2, aRes, label, isTB, logoMap, higherCls, lowerCls)
 
 const CLOCK_ICON = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
 
-function matchupCardHtml(matchData, label, seed1, seed2, logoMap, isChamp, startTime, t1IsHigher) {
+function matchupCardHtml(matchData, label, seed1, seed2, isChamp, startTime, t1IsHigher) {
   t1IsHigher = (t1IsHigher !== false); // default true
   const higherCls = t1IsHigher ? 't1-team' : 't2-team';
   const lowerCls  = t1IsHigher ? 't2-team' : 't1-team';
@@ -756,13 +731,13 @@ function matchupCardHtml(matchData, label, seed1, seed2, logoMap, isChamp, start
         ${winner ? `<span class="sub-result-pill w">${winner} wins</span>` : hasTBData ? `<span class="sub-result-pill" style="background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3)">Deciding…</span>` : ''}
       </div>
       <div class="competitor ${higherCls} ${winner===s1?'win':winner===s2?'loss':''}">
-        ${logoHtml(s1,logoMap)}
+        ${logoHtml(s1)}
         <span class="comp-name">${s1}</span>
         ${winner===s1?'<span class="crown">👑</span>':''}
         ${tbN1!==null ? `<span class="score-disp ${winner===s1?'win':winner===s2?'loss':'none'}">${tbN1}</span>` : ''}
       </div>
       <div class="competitor ${lowerCls} ${winner===s2?'win':winner===s1?'loss':''}">
-        ${logoHtml(s2,logoMap)}
+        ${logoHtml(s2)}
         <span class="comp-name">${s2}</span>
         ${winner===s2?'<span class="crown">👑</span>':''}
         ${tbN2!==null ? `<span class="score-disp ${winner===s2?'win':winner===s1?'loss':'none'}">${tbN2}</span>` : ''}
@@ -773,7 +748,7 @@ function matchupCardHtml(matchData, label, seed1, seed2, logoMap, isChamp, start
   if (winner)           { barCls=isChamp?'champ':'advance'; barTxt=isChamp?`👑 ${winner} — Champions!`:`🏆 ${winner} advances`; }
   else if (needsTB && hasTBData) { barCls='tb-needed'; barTxt='🔥 Tiebreaker — score incomplete'; }
   else if (needsTB)     { barCls='tb-needed'; barTxt='🔥 Tiebreaker needed'; }
-  else if (aWin||bWin)  { barTxt=`⏳ Waiting for ${!aWin?'A Team':'B Team'} result`; }
+  else if (aWin||bWin)  { barTxt=`⏳ Waiting for ${!aWin?'ORANGE Team':'BLUE Team'} result`; }
   else if (aRes.gp>0||bRes.gp>0) { barTxt='⏳ In progress'; }
 
   const s1SeedBadge = seed1 ? `<span class="sb ${seedCls(seed1)}">#${seed1}</span>` : '';
@@ -790,19 +765,19 @@ function matchupCardHtml(matchData, label, seed1, seed2, logoMap, isChamp, start
       <div class="matchup-vs">
         <div class="matchup-team-row">
           ${s1SeedBadge}
-          ${school1 ? logoHtml(s1,logoMap) : ''}
+          ${school1 ? logoHtml(s1) : ''}
           <span class="matchup-school-name ${higherNameCls}" title="${s1}">${s1}</span>
         </div>
         <span class="vs-sep">VS</span>
         <div class="matchup-team-row">
           ${s2SeedBadge}
-          ${school2 ? logoHtml(s2,logoMap) : ''}
+          ${school2 ? logoHtml(s2) : ''}
           <span class="matchup-school-name ${lowerNameCls}" title="${s2}">${s2}</span>
         </div>
       </div>
     </div>
-    ${subSectionHtml(a.t1, a.t2, aRes, 'A Team', false, logoMap, higherCls, lowerCls)}
-    ${subSectionHtml(b.t1, b.t2, bRes, 'B Team', false, logoMap, higherCls, lowerCls)}
+    ${subSectionHtml(a.t1, a.t2, aRes, 'ORANGE Team', false, higherCls, lowerCls)}
+    ${subSectionHtml(b.t1, b.t2, bRes, 'BLUE Team', false, higherCls, lowerCls)}
     ${tbSection}
     <div class="result-bar ${barCls}">${barTxt}</div>
   </div>`;
@@ -825,17 +800,17 @@ function renderLeague(lg, d) {
   const bracketHtml = `
     <div class="bracket">
       <div class="semi-col left-semi">
-        ${matchupCardHtml(d.s1, 'Semifinal 1 · #1 vs #4', 1, 4, lg.logoMap, false, times.s1)}
+        ${matchupCardHtml(d.s1, 'Semifinal 1 · #1 vs #4', 1, 4, false, times.s1)}
         <div class="semi-arrow">▶ ▶</div>
       </div>
       <div class="champ-col">
         <div class="champ-trophy">🏆</div>
         <div class="champ-eyebrow">Grand Final</div>
         <div class="champ-lbl">Championship</div>
-        ${matchupCardHtml(d.fin, 'Championship Final', null, null, lg.logoMap, true, times.fin, finT1IsHigher)}
+        ${matchupCardHtml(d.fin, 'Championship Final', null, null, true, times.fin, finT1IsHigher)}
       </div>
       <div class="semi-col right-semi">
-        ${matchupCardHtml(d.s2, 'Semifinal 2 · #2 vs #3', 2, 3, lg.logoMap, false, times.s2)}
+        ${matchupCardHtml(d.s2, 'Semifinal 2 · #2 vs #3', 2, 3, false, times.s2)}
         <div class="semi-arrow">◀ ◀</div>
       </div>
     </div>`;
@@ -889,6 +864,13 @@ function highlightCurrentScheduleItem() {
 }
 
 async function refresh() {
+  // Bracket tab for this season is not published yet — nothing to poll for.
+  if (!LEAGUES.some(lg => lg.sheetId && lg.gid)) {
+    document.getElementById('update-msg').textContent =
+      'Bracket opens once the regular season ends.';
+    return;
+  }
+
   try {
     await Promise.all(LEAGUES.map(async lg => {
       const rows = await fetchCSV(lg.sheetId, lg.gid);
@@ -904,7 +886,16 @@ async function refresh() {
 }
 
 function initCountdown() {
-  const target = new Date('2026-05-09T09:00:00'), el = document.getElementById('cd');
+  // Read the date from data/leagues.js rather than hardcoding it — a stale
+  // literal here is why this box read "It's Finals Day!" all summer.
+  const target = PSD.finalsStart(), el = document.getElementById('cd');
+
+  // 2026-27 finals day is TBA. Say so instead of counting down to nothing.
+  if (!target) {
+    el.innerHTML = `<div class="cd-done">Championship date to be announced</div>`;
+    return;
+  }
+
   function tick() {
     const d = target - new Date();
     if (d <= 0) { el.innerHTML=`<div class="cd-done">🚀 It's Finals Day!</div>`; return; }

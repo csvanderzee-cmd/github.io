@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PSD Esports Showcase | Fall Season</title>
-    <meta name="description" content="Official home of PSD Esports. View the upcoming Fall Rocket League schedule, season standings, and championship finals replays.">
+    <title>PSD Esports | 2026-27 Fall Season</title>
+    <meta name="description" content="Official home of the Palmdale Promise Esports League. Rocket League standings, schedules, player stats and championship replays for the 2026-27 fall season.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -52,8 +52,6 @@
         .skip-link { position: absolute; top: -40px; left: 0; background: #FDB913; color: #000; padding: 8px; z-index: 100; font-weight: bold; transition: top 0.3s; }
         .skip-link:focus { top: 0; }
         .glass-panel { background: rgba(21, 27, 38, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .tilt-card { transition: transform 0.1s ease-out, box-shadow 0.3s ease-out; transform-style: preserve-3d; }
-        .tilt-inner { transform: translateZ(20px); }
         ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: #0B0E14; }
         ::-webkit-scrollbar-thumb { background: #555; border-radius: 5px; border: 2px solid #0B0E14; }
@@ -67,25 +65,28 @@
             .animate-marquee { display: flex; width: 100%; overflow-x: auto; transform: none; animation: none; }
             .animate-float { animation: none; transform: none; }
             #particleCanvas { display: none; }
-            .tilt-card { transform: none !important; }
         }
-        .clip-slant { clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); }
         .video-wrapper { position: relative; width: 100%; padding-bottom: 56.25%; border-radius: 1rem; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08); }
         .video-wrapper iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
         .benefit-card { position: relative; overflow: hidden; }
         .benefit-card::before { content: ""; position: absolute; inset: -1px; background: radial-gradient(circle at top, rgba(253,185,19,0.12), transparent 55%); opacity: 0; transition: opacity 0.3s ease-out; pointer-events: none; }
         .benefit-card:hover::before { opacity: 1; }
-        .custom-scrollbar { scrollbar-width: thin; scrollbar-color: #333 #0B0E14; }
-        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-        .match-shimmer { background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%); background-size: 200% 100%; animation: shimmer 3s ease-in-out infinite; }
         @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(253,185,19,0.3), 0 0 40px rgba(253,185,19,0.1); } 50% { box-shadow: 0 0 30px rgba(253,185,19,0.6), 0 0 60px rgba(253,185,19,0.2); } }
         .season-started-banner { animation: pulse-glow 2s ease-in-out infinite; }
-        @keyframes finals-glow { 0%, 100% { box-shadow: 0 0 20px rgba(253,185,19,0.2), 0 0 40px rgba(200,16,46,0.1); } 50% { box-shadow: 0 0 40px rgba(253,185,19,0.5), 0 0 80px rgba(200,16,46,0.3); } }
-        .finals-glow { animation: finals-glow 3s ease-in-out infinite; }
-        @keyframes finals-stripe { 0% { background-position: 0 0; } 100% { background-position: 60px 0; } }
-        .finals-stripe-bg { background-image: repeating-linear-gradient(135deg, transparent, transparent 10px, rgba(253,185,19,0.03) 10px, rgba(253,185,19,0.03) 20px); background-size: 60px 60px; animation: finals-stripe 4s linear infinite; }
-        /* Contact bar */
         .contact-bar-link:hover .contact-email { color: #FFD166; }
+
+        /* ── Season timeline ── */
+        .week-strip { display: flex; gap: .75rem; overflow-x: auto; padding-bottom: .75rem; scrollbar-width: thin; scrollbar-color: #333 #0B0E14; }
+        .week-chip { flex: 0 0 auto; min-width: 140px; background: #151B26; border: 1px solid rgba(255,255,255,.08); border-radius: .85rem; padding: .9rem 1rem; transition: border-color .2s, background .2s; }
+        .week-chip.is-next { border-color: rgba(253,185,19,.55); background: linear-gradient(135deg, rgba(253,185,19,.12), rgba(21,27,38,.9)); }
+        .week-chip.is-done { opacity: .45; }
+        .week-chip .wk-num { font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: #6b7280; }
+        .week-chip.is-next .wk-num { color: #FFD166; }
+        .week-chip .wk-date { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.05rem; color: #fff; line-height: 1.2; margin-top: .2rem; }
+        .week-chip .wk-sub { font-size: .68rem; color: #6b7280; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; margin-top: .15rem; }
+
+        /* ── School pills ── */
+        .school-pill { display: inline-flex; align-items: center; gap: .4rem; padding: .3rem .7rem; border-radius: 9999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); font-size: .74rem; font-weight: 700; color: #d1d5db; white-space: nowrap; }
     </style>
 </head>
 
@@ -151,22 +152,22 @@
     <a href="index.html" class="nav-brand">PSD <span>Esports</span></a>
     <ul class="nav-links" role="list">
 
-      <li class="nav-item pl-item">
-        <span class="nav-link" tabindex="0" role="button" aria-haspopup="true">Promise League <span class="nav-chevron">▼</span></span>
-        <div class="nav-dropdown" role="menu">
-          <div class="dd-game-header">🚀 Rocket League</div>
-          <a href="rocket-league/promise-league.html" data-page="promise-league"><span class="dd-dot" style="background:#4DABF7"></span>Standings</a>
-          <a href="rocket-league/promise-league-schedule.html" data-page="promise-league-schedule"><span class="dd-dot" style="background:#4DABF7"></span>Schedule</a>
-          <a href="rocket-league/promise-league-stats.html" data-page="promise-league-stats"><span class="dd-dot" style="background:#4DABF7"></span>Player Stats</a>
-        </div>
-      </li>
       <li class="nav-item jrpl-item">
-        <span class="nav-link" tabindex="0" role="button" aria-haspopup="true">Jr Promise League <span class="nav-chevron">▼</span></span>
+        <span class="nav-link" tabindex="0" role="button" aria-haspopup="true">Early Release <span class="nav-chevron">▼</span></span>
         <div class="nav-dropdown" role="menu">
-          <div class="dd-game-header">🚀 Rocket League</div>
+          <div class="dd-game-header">🚀 Rocket League · Tue 2:00 PM</div>
           <a href="rocket-league/jr-promise-league.html" data-page="jr-promise-league"><span class="dd-dot" style="background:#FF6B6B"></span>Standings</a>
           <a href="rocket-league/jr-promise-league-schedule.html" data-page="jr-promise-league-schedule"><span class="dd-dot" style="background:#FF6B6B"></span>Schedule</a>
           <a href="rocket-league/jr-promise-league-stats.html" data-page="jr-promise-league-stats"><span class="dd-dot" style="background:#FF6B6B"></span>Player Stats</a>
+        </div>
+      </li>
+      <li class="nav-item pl-item">
+        <span class="nav-link" tabindex="0" role="button" aria-haspopup="true">Late Release <span class="nav-chevron">▼</span></span>
+        <div class="nav-dropdown" role="menu">
+          <div class="dd-game-header">🚀 Rocket League · Mon 4:00 PM</div>
+          <a href="rocket-league/promise-league.html" data-page="promise-league"><span class="dd-dot" style="background:#4DABF7"></span>Standings</a>
+          <a href="rocket-league/promise-league-schedule.html" data-page="promise-league-schedule"><span class="dd-dot" style="background:#4DABF7"></span>Schedule</a>
+          <a href="rocket-league/promise-league-stats.html" data-page="promise-league-stats"><span class="dd-dot" style="background:#4DABF7"></span>Player Stats</a>
         </div>
       </li>
     </ul>
@@ -183,16 +184,14 @@
 </nav>
 <div id="psd-nav-drawer" aria-hidden="true">
   <a href="index.html" data-page="index">Home</a>
-  <div class="drawer-section">Promise League</div>
-  <div class="drawer-section" style="font-size:.55rem;color:#374151;padding-top:.1rem">🚀 Rocket League</div>
-  <a href="rocket-league/promise-league.html" class="drawer-indent" data-page="promise-league">Standings</a>
-  <a href="rocket-league/promise-league-schedule.html" class="drawer-indent" data-page="promise-league-schedule">Schedule</a>
-  <a href="rocket-league/promise-league-stats.html" class="drawer-indent" data-page="promise-league-stats">Player Stats</a>
-  <div class="drawer-section">Jr Promise League</div>
-  <div class="drawer-section" style="font-size:.55rem;color:#374151;padding-top:.1rem">🚀 Rocket League</div>
+  <div class="drawer-section">Early Release · Tue 2:00 PM</div>
   <a href="rocket-league/jr-promise-league.html" class="drawer-indent" data-page="jr-promise-league">Standings</a>
   <a href="rocket-league/jr-promise-league-schedule.html" class="drawer-indent" data-page="jr-promise-league-schedule">Schedule</a>
   <a href="rocket-league/jr-promise-league-stats.html" class="drawer-indent" data-page="jr-promise-league-stats">Player Stats</a>
+  <div class="drawer-section">Late Release · Mon 4:00 PM</div>
+  <a href="rocket-league/promise-league.html" class="drawer-indent" data-page="promise-league">Standings</a>
+  <a href="rocket-league/promise-league-schedule.html" class="drawer-indent" data-page="promise-league-schedule">Schedule</a>
+  <a href="rocket-league/promise-league-stats.html" class="drawer-indent" data-page="promise-league-stats">Player Stats</a>
   <div class="drawer-section">More</div>
   <a href="rocket-league/finals.html" data-page="finals">🏆 Finals</a>
   <a href="champions.html" data-page="champions">🏅 Champions</a>
@@ -240,34 +239,35 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
                 <div class="max-w-3xl">
+                    <!-- Status badge — one of these is shown by setPhase() -->
                     <div id="status-badge-preseason" role="status" class="inline-flex items-center gap-3 px-5 py-2 rounded-sm bg-esports-blue/10 border-l-4 border-esports-blue-text text-esports-blue-text font-display font-bold tracking-widest mb-5">
                         <span class="relative flex h-3 w-3" aria-hidden="true">
                           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75 motion-reduce:animate-none"></span>
                           <span class="relative inline-flex rounded-full h-3 w-3 bg-esports-blue-text"></span>
                         </span>
-                        <span>FALL SEASON COMING SOON</span>
+                        <span>SEASON STARTS SEPTEMBER 21</span>
                     </div>
-                    <div id="status-badge-live" role="status" class="hidden inline-flex items-center gap-3 px-5 py-2 rounded-sm bg-esports-yellow/10 border-l-4 border-esports-yellow-text text-esports-yellow-text font-display font-bold tracking-widest mb-5">
+                    <div id="status-badge-live" role="status" class="hidden items-center gap-3 px-5 py-2 rounded-sm bg-esports-yellow/10 border-l-4 border-esports-yellow-text text-esports-yellow-text font-display font-bold tracking-widest mb-5">
                         <span class="relative flex h-3 w-3" aria-hidden="true">
                           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75 motion-reduce:animate-none"></span>
                           <span class="relative inline-flex rounded-full h-3 w-3 bg-esports-yellow-text"></span>
                         </span>
-                        <span>SEASON LIVE</span>
+                        <span id="status-badge-live-text">SEASON LIVE</span>
                     </div>
 
                     <h1 class="font-display font-black uppercase leading-[0.9] mb-6 tracking-tight">
-                        <span class="block text-4xl md:text-5xl lg:text-6xl text-gray-400 font-bold tracking-[0.15em] mb-2">Rocket League</span>
+                        <span class="block text-3xl md:text-4xl lg:text-5xl text-gray-400 font-bold tracking-[0.15em] mb-2">Rocket League · 2026-27</span>
                         <span class="block text-6xl md:text-8xl lg:text-9xl text-white">Fall</span>
                         <span class="block text-6xl md:text-8xl lg:text-9xl text-transparent bg-clip-text bg-gradient-to-r from-esports-red-text via-esports-yellow-text to-esports-blue-text" role="img" aria-label="Season">Season</span>
                     </h1>
 
                     <div id="hero-copy-preseason" class="flex flex-col md:flex-row gap-8 items-start md:items-center border-l-4 border-esports-yellow pl-6 mb-6 bg-gradient-to-r from-esports-yellow/10 to-transparent py-4 rounded-r-xl">
                         <p class="text-xl text-gray-200 font-light max-w-xl">
-                            The engines are warming up.
-                            <strong class="text-white font-bold block mt-1">Fall season schedule coming soon.</strong>
+                            Thirteen schools. Nine weeks. One arena at the end of it.
+                            <strong class="text-white font-bold block mt-1">The 2026-27 season kicks off September 21.</strong>
                         </p>
                     </div>
-                    <div id="hero-copy-live" class="hidden flex flex-col md:flex-row gap-8 items-start md:items-center border-l-4 border-esports-red pl-6 mb-6 bg-gradient-to-r from-esports-red/10 to-transparent py-4 rounded-r-xl">
+                    <div id="hero-copy-live" class="hidden flex-col md:flex-row gap-8 items-start md:items-center border-l-4 border-esports-red pl-6 mb-6 bg-gradient-to-r from-esports-red/10 to-transparent py-4 rounded-r-xl">
                         <p class="text-xl text-gray-200 font-light max-w-xl">
                             The race for the championship is on.
                             <strong class="text-white font-bold block mt-1">Season is live — championship finals ahead.</strong>
@@ -275,8 +275,8 @@
                     </div>
 
                     <div class="max-w-lg mb-4">
-                      <!-- Countdown hidden until fall dates are set -->
-                      <div id="countdown-wrapper" class="hidden" aria-label="Countdown to Fall Season">
+                      <!-- Countdown to first match of the season -->
+                      <div id="countdown-wrapper" class="hidden" aria-label="Countdown to the first match of the season">
                         <div class="bg-gradient-to-r from-esports-blue via-esports-yellow to-esports-red p-[1px] rounded-lg">
                           <div class="grid grid-cols-4 gap-2 bg-esports-dark rounded-lg p-3">
                             <div class="bg-white/5 border border-white/10 p-3 text-center rounded">
@@ -295,23 +295,15 @@
                               <div id="seconds" class="font-display font-bold text-3xl text-esports-red-text" aria-hidden="true">00</div>
                               <div class="text-[10px] uppercase tracking-widest text-gray-400 font-bold" aria-hidden="true">Secs</div>
                             </div>
-                            <div class="col-span-4 text-center text-xs text-gray-400 uppercase pt-1 font-medium" aria-hidden="true">Until Season Starts</div>
+                            <div class="col-span-4 text-center text-xs text-gray-400 uppercase pt-1 font-medium" aria-hidden="true">Until First Match · Mon Sept 21, 4:00 PM</div>
                           </div>
                         </div>
+                        <p class="sr-only" id="countdown-sr">The season begins Monday, September 21, 2026 at 4:00 PM.</p>
                       </div>
 
-                      <!-- Dates TBA state (shown when no season dates set) -->
-                      <div id="dates-tba-banner" class="bg-gradient-to-r from-esports-blue/10 via-white/5 to-transparent border border-white/10 rounded-lg p-4 flex items-center gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-esports-blue/20 flex items-center justify-center">
-                          <i data-lucide="calendar" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
-                        </div>
-                        <div>
-                          <div class="font-display font-black text-white uppercase tracking-wider text-lg leading-tight">Fall Season Dates</div>
-                          <div class="text-gray-400 text-xs uppercase tracking-widest font-bold mt-0.5">To Be Announced</div>
-                        </div>
-                      </div>
-
-                      <div id="finals-hero-wrapper" aria-label="Countdown to Championship Finals" class="hidden">
+                      <!-- Shown once the season is under way. Counts down to the
+                           finals when a date is set, and otherwise says TBA. -->
+                      <div id="finals-hero-wrapper" class="hidden" aria-label="Countdown to Championship Finals">
                         <div class="bg-gradient-to-r from-esports-red via-esports-yellow to-esports-blue p-[1px] rounded-lg">
                           <div class="grid grid-cols-4 gap-2 bg-esports-dark rounded-lg p-3">
                             <div class="bg-white/5 border border-white/10 p-3 text-center rounded">
@@ -339,6 +331,17 @@
                         </div>
                       </div>
 
+                      <!-- Finals date not announced yet (rulebook says TBA). -->
+                      <div id="finals-tba-banner" class="hidden bg-gradient-to-r from-esports-yellow/10 via-white/5 to-transparent border border-white/10 rounded-lg p-4 items-center gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-esports-yellow/20 flex items-center justify-center">
+                          <i data-lucide="trophy" class="w-5 h-5 text-esports-yellow-text" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                          <div class="font-display font-black text-white uppercase tracking-wider text-lg leading-tight">Championship Finals</div>
+                          <div class="text-gray-400 text-xs uppercase tracking-widest font-bold mt-0.5">Date TBA · Quail Valley Esports Arena</div>
+                        </div>
+                      </div>
+
                       <div id="finals-day-banner" class="hidden">
                         <div class="season-started-banner bg-gradient-to-r from-esports-yellow/20 via-esports-red/10 to-transparent border border-esports-yellow/50 rounded-lg p-4 text-center">
                           <div class="flex items-center justify-center gap-3 mb-1">
@@ -352,41 +355,44 @@
                     </div>
                 </div>
 
-                <div class="hidden lg:flex justify-center lg:justify-end relative" aria-hidden="true">
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-esports-blue/20 blur-[80px] rounded-full -z-10"></div>
+                <!-- Season-at-a-glance card -->
+                <div class="hidden lg:flex justify-center lg:justify-end relative">
+                    <div aria-hidden="true" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-esports-blue/20 blur-[80px] rounded-full -z-10"></div>
                     <div class="animate-float relative w-full max-w-md bg-esports-dark/80 backdrop-blur-xl border border-white/20 rounded-3xl p-7 shadow-2xl transform -rotate-1 hover:rotate-0 transition-all duration-500">
                         <div class="flex items-center gap-2 mb-5 pb-3 border-b border-white/20">
-                            <i data-lucide="trophy" class="w-5 h-5 text-esports-yellow-text"></i>
-                            <span class="text-white font-display font-bold uppercase tracking-widest text-sm">25-26 Champions</span>
-                            <span class="ml-auto text-esports-yellow-text text-xs uppercase tracking-widest font-bold px-2 py-1 rounded border border-esports-yellow/40 bg-esports-yellow/10">Final</span>
+                            <i data-lucide="calendar-days" class="w-5 h-5 text-esports-yellow-text" aria-hidden="true"></i>
+                            <span class="text-white font-display font-bold uppercase tracking-widest text-sm">Season at a Glance</span>
+                            <span class="ml-auto text-esports-blue-text text-xs uppercase tracking-widest font-bold px-2 py-1 rounded border border-esports-blue/40 bg-esports-blue/10">9 Weeks</span>
                         </div>
 
                         <div class="mb-4">
                             <div class="flex items-center gap-2 mb-2">
-                                <i data-lucide="trophy" class="w-3 h-3 text-esports-blue-text"></i>
-                                <span class="text-esports-blue-text text-[10px] uppercase tracking-widest font-bold">Promise League</span>
+                                <i data-lucide="star" class="w-3 h-3 text-esports-red-text" aria-hidden="true"></i>
+                                <span class="text-esports-red-text text-[10px] uppercase tracking-widest font-bold">Early Release</span>
+                                <span class="ml-auto text-gray-500 text-[10px] uppercase tracking-widest font-bold">9 Schools</span>
                             </div>
-                            <div class="flex items-center gap-3 bg-gradient-to-r from-esports-yellow/10 to-transparent border border-esports-yellow/20 rounded-lg px-4 py-3">
-                                <i data-lucide="award" class="w-5 h-5 text-esports-yellow-text flex-shrink-0"></i>
-                                <span class="font-display font-black text-xl uppercase text-esports-yellow-text">Shadow Hills</span>
+                            <div class="flex items-center gap-3 bg-gradient-to-r from-esports-red/10 to-transparent border border-esports-red/20 rounded-lg px-4 py-3">
+                                <i data-lucide="clock" class="w-5 h-5 text-esports-red-text flex-shrink-0" aria-hidden="true"></i>
+                                <span class="font-display font-black text-lg uppercase text-white">Tuesdays · 2:00 PM</span>
                             </div>
                         </div>
 
                         <div class="mb-5">
                             <div class="flex items-center gap-2 mb-2">
-                                <i data-lucide="star" class="w-3 h-3 text-esports-red-text"></i>
-                                <span class="text-esports-red-text text-[10px] uppercase tracking-widest font-bold">Jr Promise League</span>
+                                <i data-lucide="trophy" class="w-3 h-3 text-esports-blue-text" aria-hidden="true"></i>
+                                <span class="text-esports-blue-text text-[10px] uppercase tracking-widest font-bold">Late Release</span>
+                                <span class="ml-auto text-gray-500 text-[10px] uppercase tracking-widest font-bold">4 Schools</span>
                             </div>
-                            <div class="flex items-center gap-3 bg-gradient-to-r from-esports-yellow/10 to-transparent border border-esports-yellow/20 rounded-lg px-4 py-3">
-                                <i data-lucide="award" class="w-5 h-5 text-esports-yellow-text flex-shrink-0"></i>
-                                <span class="font-display font-black text-xl uppercase text-esports-yellow-text">Desert Rose</span>
+                            <div class="flex items-center gap-3 bg-gradient-to-r from-esports-blue/10 to-transparent border border-esports-blue/20 rounded-lg px-4 py-3">
+                                <i data-lucide="clock" class="w-5 h-5 text-esports-blue-text flex-shrink-0" aria-hidden="true"></i>
+                                <span class="font-display font-black text-lg uppercase text-white">Mondays · 4:00 PM</span>
                             </div>
                         </div>
 
                         <div class="pt-3 border-t border-white/20">
                             <div class="flex items-center justify-center gap-2 text-xs text-gray-500 uppercase tracking-wider font-bold">
-                                <i data-lucide="calendar" class="w-3 h-3"></i>
-                                <span>Fall Season Coming Soon</span>
+                                <i data-lucide="map-pin" class="w-3 h-3" aria-hidden="true"></i>
+                                <span>Finals · Quail Valley Esports Arena</span>
                             </div>
                         </div>
                     </div>
@@ -397,19 +403,19 @@
 
     <main id="main-content">
 
-        <!-- ─── NEXT SEASON CONTACT BAR ─── -->
-        <div class="bg-gradient-to-r from-esports-blue/20 via-esports-card to-esports-yellow/10 border-b border-white/10 relative z-30" role="complementary" aria-label="Next season information">
+        <!-- ─── CONTACT BAR ─── -->
+        <div class="bg-gradient-to-r from-esports-blue/20 via-esports-card to-esports-yellow/10 border-b border-white/10 relative z-30" role="complementary" aria-label="League contact information">
             <div class="max-w-7xl mx-auto px-4 py-5">
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-center sm:text-left">
                     <div class="flex items-center gap-2 text-esports-yellow-text font-display font-bold uppercase tracking-widest text-base flex-shrink-0">
                         <i data-lucide="calendar-plus" class="w-5 h-5" aria-hidden="true"></i>
-                        <span>Interested in the Fall Season?</span>
+                        <span>Questions About the Season?</span>
                     </div>
                     <div class="hidden sm:block w-px h-6 bg-white/20" aria-hidden="true"></div>
                     <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-6">
                         <a href="mailto:drhubler@palmdalesd.org"
                            class="contact-bar-link flex items-center gap-2 text-gray-300 hover:text-esports-yellow-text transition-colors duration-200 font-semibold group"
-                           aria-label="Email Mr. Hubler for next season info">
+                           aria-label="Email Mr. Hubler, league administrator">
                             <i data-lucide="mail" class="w-4 h-4 text-esports-blue-text group-hover:text-esports-yellow-text transition-colors" aria-hidden="true"></i>
                             <span class="font-bold text-white text-base">Mr. Hubler</span>
                             <span class="contact-email text-gray-400 text-sm transition-colors">drhubler@palmdalesd.org</span>
@@ -417,7 +423,7 @@
                         <div class="hidden sm:block w-px h-5 bg-white/20" aria-hidden="true"></div>
                         <a href="mailto:csvanderzee@palmdalesd.org"
                            class="contact-bar-link flex items-center gap-2 text-gray-300 hover:text-esports-yellow-text transition-colors duration-200 font-semibold group"
-                           aria-label="Email Mr. Vanderzee for next season info">
+                           aria-label="Email Mr. Vanderzee, league administrator">
                             <i data-lucide="mail" class="w-4 h-4 text-esports-blue-text group-hover:text-esports-yellow-text transition-colors" aria-hidden="true"></i>
                             <span class="font-bold text-white text-base">Mr. Vanderzee</span>
                             <span class="contact-email text-gray-400 text-sm transition-colors">csvanderzee@palmdalesd.org</span>
@@ -432,31 +438,27 @@
             <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-esports-red via-esports-yellow to-esports-blue" aria-hidden="true"></div>
             <div class="flex items-center whitespace-nowrap animate-marquee font-display font-bold text-lg uppercase tracking-widest" aria-hidden="true">
                 <div class="flex items-center gap-12 px-4">
-                    <span class="text-esports-blue-text">24-25 ROCKET LEAGUE CHAMPIONS: DGM</span>
+                    <span class="text-esports-yellow-text">2026-27 FALL SEASON BEGINS SEPTEMBER 21</span>
                     <span class="text-gray-600">///</span>
-                    <span class="text-esports-red-text">25-26 SMASH CHAMPIONS: SAGE</span>
+                    <span class="text-esports-blue-text">DEFENDING LATE RELEASE CHAMPIONS: SHADOW HILLS</span>
                     <span class="text-gray-600">///</span>
-                    <span class="text-esports-yellow-text">25-26 ROCKET LEAGUE CHAMPIONS: SHADOW HILLS</span>
+                    <span class="text-esports-red-text">DEFENDING EARLY RELEASE CHAMPIONS: DESERT ROSE</span>
                     <span class="text-gray-600">///</span>
-                    <span class="text-esports-blue-text">25-26 ROCKET LEAGUE JR CHAMPIONS: DESERT ROSE</span>
+                    <span class="text-esports-yellow-text">13 SCHOOLS · 9 WEEKS · ONE ARENA</span>
                     <span class="text-gray-600">///</span>
-                    <span class="text-esports-red-text">25-26 SMASH JR CHAMPIONS: CACTUS</span>
-                    <span class="text-gray-600">///</span>
-                    <span class="text-esports-yellow-text">CONGRATULATIONS TO ALL 25-26 COMPETITORS</span>
+                    <span class="text-esports-blue-text">WELCOME TO THE LEAGUE, MESQUITE</span>
                     <span class="text-gray-600">///</span>
                 </div>
                 <div class="flex items-center gap-12 px-4">
-                    <span class="text-esports-blue-text">24-25 ROCKET LEAGUE CHAMPIONS: DGM</span>
+                    <span class="text-esports-yellow-text">2026-27 FALL SEASON BEGINS SEPTEMBER 21</span>
                     <span class="text-gray-600">///</span>
-                    <span class="text-esports-red-text">25-26 SMASH CHAMPIONS: SAGE</span>
+                    <span class="text-esports-blue-text">DEFENDING LATE RELEASE CHAMPIONS: SHADOW HILLS</span>
                     <span class="text-gray-600">///</span>
-                    <span class="text-esports-yellow-text">25-26 ROCKET LEAGUE CHAMPIONS: SHADOW HILLS</span>
+                    <span class="text-esports-red-text">DEFENDING EARLY RELEASE CHAMPIONS: DESERT ROSE</span>
                     <span class="text-gray-600">///</span>
-                    <span class="text-esports-blue-text">25-26 ROCKET LEAGUE JR CHAMPIONS: DESERT ROSE</span>
+                    <span class="text-esports-yellow-text">13 SCHOOLS · 9 WEEKS · ONE ARENA</span>
                     <span class="text-gray-600">///</span>
-                    <span class="text-esports-red-text">25-26 SMASH JR CHAMPIONS: CACTUS</span>
-                    <span class="text-gray-600">///</span>
-                    <span class="text-esports-yellow-text">CONGRATULATIONS TO ALL 25-26 COMPETITORS</span>
+                    <span class="text-esports-blue-text">WELCOME TO THE LEAGUE, MESQUITE</span>
                     <span class="text-gray-600">///</span>
                 </div>
             </div>
@@ -511,6 +513,26 @@
         })();
         </script>
 
+        <!-- ─── SEASON TIMELINE ─── -->
+        <section class="py-14 bg-esports-dark border-t border-white/10 relative z-20" aria-labelledby="timeline-heading">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
+                    <div>
+                        <span class="text-esports-yellow-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">September 21 – November 17</span>
+                        <h2 id="timeline-heading" class="font-display text-4xl md:text-5xl font-black uppercase text-white">The Road to the Arena</h2>
+                    </div>
+                    <p class="text-gray-400 text-sm max-w-sm">
+                        Nine weeks of regular season play. The top four schools in each division earn a spot at the
+                        championship event at Quail Valley Esports Arena.
+                    </p>
+                </div>
+
+                <div class="week-strip custom-scrollbar" id="week-strip" role="list" aria-label="Regular season weeks">
+                    <!-- filled by renderWeekStrip() -->
+                </div>
+            </div>
+        </section>
+
         <!-- ─── LEAGUE HUB ─── -->
         <section class="py-14 bg-esports-dark border-t border-white/10 relative z-20" aria-labelledby="hub-heading">
             <div class="max-w-7xl mx-auto px-4">
@@ -518,45 +540,19 @@
                 <div class="text-center mb-10">
                     <span class="text-esports-blue-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">🚀 Rocket League</span>
                     <h2 id="hub-heading" class="font-display text-4xl md:text-6xl font-black uppercase text-white">Explore the League</h2>
+                    <p class="text-gray-400 text-sm mt-3 max-w-2xl mx-auto">
+                        The Promise League splits into two divisions by release time. Every school fields an
+                        <span class="text-orange-400 font-bold">ORANGE</span> and a
+                        <span class="text-esports-blue-text font-bold">BLUE</span> team, and both records count toward the standings.
+                    </p>
                 </div>
 
-                <!-- League cards -->
+                <!-- Division cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
 
-                    <!-- Promise League -->
-                    <article class="group relative bg-esports-card border border-esports-blue/30 rounded-2xl overflow-hidden shadow-2xl hover:border-esports-blue/60 transition-all duration-300">
-                        <img src="https://wallpapers.com/images/hd/rocket-league-rocket-powered-car-1920x1080-xbjxok5dk6itr8eo.jpg" alt="Rocket League" class="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:opacity-25 group-hover:scale-105 transition-all duration-700" loading="lazy">
-                        <div class="absolute inset-0 bg-gradient-to-br from-esports-blue/20 via-transparent to-transparent" aria-hidden="true"></div>
-                        <div class="relative p-8 z-10">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-10 h-10 rounded-xl bg-esports-blue/20 border border-esports-blue/40 flex items-center justify-center flex-shrink-0">
-                                    <i data-lucide="trophy" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-display font-black text-2xl uppercase text-white leading-none">Promise League</h3>
-                                    <span class="text-esports-blue-text text-[10px] font-bold uppercase tracking-widest">Varsity · Rocket League</span>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-3 gap-3 mt-6">
-                                <a href="rocket-league/promise-league.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-blue/20 hover:border-esports-blue/40 transition-all duration-200 no-underline group/link">
-                                    <i data-lucide="bar-chart-2" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
-                                    <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Standings</span>
-                                </a>
-                                <a href="rocket-league/promise-league-schedule.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-blue/20 hover:border-esports-blue/40 transition-all duration-200 no-underline group/link">
-                                    <i data-lucide="calendar" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
-                                    <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Schedule</span>
-                                </a>
-                                <a href="rocket-league/promise-league-stats.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-blue/20 hover:border-esports-blue/40 transition-all duration-200 no-underline group/link">
-                                    <i data-lucide="user" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
-                                    <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Player Stats</span>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Jr Promise League -->
+                    <!-- Early Release -->
                     <article class="group relative bg-esports-card border border-esports-red/30 rounded-2xl overflow-hidden shadow-2xl hover:border-esports-red/60 transition-all duration-300">
-                        <img src="https://wallpapers.com/images/featured/rocket-league-q83tcwb7har0kh5h.webp" alt="Rocket League" class="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:opacity-25 group-hover:scale-105 transition-all duration-700" loading="lazy">
+                        <img src="https://wallpapers.com/images/featured/rocket-league-q83tcwb7har0kh5h.webp" alt="" class="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:opacity-25 group-hover:scale-105 transition-all duration-700" loading="lazy">
                         <div class="absolute inset-0 bg-gradient-to-br from-esports-red/20 via-transparent to-transparent" aria-hidden="true"></div>
                         <div class="relative p-8 z-10">
                             <div class="flex items-center gap-3 mb-4">
@@ -564,11 +560,24 @@
                                     <i data-lucide="star" class="w-5 h-5 text-esports-red-text" aria-hidden="true"></i>
                                 </div>
                                 <div>
-                                    <h3 class="font-display font-black text-2xl uppercase text-white leading-none">Jr Promise League</h3>
-                                    <span class="text-esports-red-text text-[10px] font-bold uppercase tracking-widest">Junior Varsity · Rocket League</span>
+                                    <h3 class="font-display font-black text-2xl uppercase text-white leading-none">Early Release</h3>
+                                    <span class="text-esports-red-text text-[10px] font-bold uppercase tracking-widest">Tuesdays · 2:00 PM · 9 Schools</span>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-3 gap-3 mt-6">
+
+                            <div class="flex flex-wrap gap-2 mb-5" role="list" aria-label="Early Release schools">
+                                <span class="school-pill" role="listitem">Cimarron</span>
+                                <span class="school-pill" role="listitem">Desert Rose</span>
+                                <span class="school-pill" role="listitem">Innovations Academy</span>
+                                <span class="school-pill" role="listitem">Los Amigos</span>
+                                <span class="school-pill" role="listitem">Manzanita</span>
+                                <span class="school-pill" role="listitem">Mesquite</span>
+                                <span class="school-pill" role="listitem">Palmtree</span>
+                                <span class="school-pill" role="listitem">Tumbleweed</span>
+                                <span class="school-pill" role="listitem">Yucca</span>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3">
                                 <a href="rocket-league/jr-promise-league.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-red/20 hover:border-esports-red/40 transition-all duration-200 no-underline group/link">
                                     <i data-lucide="bar-chart-2" class="w-5 h-5 text-esports-red-text" aria-hidden="true"></i>
                                     <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Standings</span>
@@ -584,17 +593,66 @@
                             </div>
                         </div>
                     </article>
+
+                    <!-- Late Release -->
+                    <article class="group relative bg-esports-card border border-esports-blue/30 rounded-2xl overflow-hidden shadow-2xl hover:border-esports-blue/60 transition-all duration-300">
+                        <img src="https://wallpapers.com/images/hd/rocket-league-rocket-powered-car-1920x1080-xbjxok5dk6itr8eo.jpg" alt="" class="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:opacity-25 group-hover:scale-105 transition-all duration-700" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-br from-esports-blue/20 via-transparent to-transparent" aria-hidden="true"></div>
+                        <div class="relative p-8 z-10">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 rounded-xl bg-esports-blue/20 border border-esports-blue/40 flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="trophy" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-display font-black text-2xl uppercase text-white leading-none">Late Release</h3>
+                                    <span class="text-esports-blue-text text-[10px] font-bold uppercase tracking-widest">Mondays · 4:00 PM · 4 Schools</span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-2 mb-5" role="list" aria-label="Late Release schools">
+                                <span class="school-pill" role="listitem">Cactus</span>
+                                <span class="school-pill" role="listitem">David G Millen</span>
+                                <span class="school-pill" role="listitem">Sage</span>
+                                <span class="school-pill" role="listitem">Shadow Hills</span>
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3">
+                                <a href="rocket-league/promise-league.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-blue/20 hover:border-esports-blue/40 transition-all duration-200 no-underline group/link">
+                                    <i data-lucide="bar-chart-2" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
+                                    <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Standings</span>
+                                </a>
+                                <a href="rocket-league/promise-league-schedule.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-blue/20 hover:border-esports-blue/40 transition-all duration-200 no-underline group/link">
+                                    <i data-lucide="calendar" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
+                                    <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Schedule</span>
+                                </a>
+                                <a href="rocket-league/promise-league-stats.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-blue/20 hover:border-esports-blue/40 transition-all duration-200 no-underline group/link">
+                                    <i data-lucide="user" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
+                                    <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Player Stats</span>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
                 </div>
 
                 <!-- Feature cards row -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <a href="rocket-league/rules.html" class="group flex items-center gap-4 p-5 bg-esports-card border border-esports-blue/20 rounded-xl hover:border-esports-blue/50 hover:bg-esports-blue/5 transition-all duration-200 no-underline">
+                        <div class="w-10 h-10 rounded-xl bg-esports-blue/10 border border-esports-blue/30 flex items-center justify-center flex-shrink-0 group-hover:bg-esports-blue/20 transition-colors">
+                            <i data-lucide="book-open" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
+                        </div>
+                        <div>
+                            <div class="font-display font-black text-base uppercase text-white group-hover:text-esports-blue-text transition-colors leading-tight">Rulebook</div>
+                            <div class="text-gray-500 text-xs uppercase tracking-wider font-bold mt-0.5">2026-27 official rules</div>
+                        </div>
+                        <i data-lucide="arrow-right" class="w-4 h-4 text-gray-600 group-hover:text-esports-blue-text group-hover:translate-x-1 transition-all ml-auto flex-shrink-0" aria-hidden="true"></i>
+                    </a>
                     <a href="rocket-league/finals.html" class="group flex items-center gap-4 p-5 bg-esports-card border border-esports-yellow/20 rounded-xl hover:border-esports-yellow/50 hover:bg-esports-yellow/5 transition-all duration-200 no-underline">
                         <div class="w-10 h-10 rounded-xl bg-esports-yellow/10 border border-esports-yellow/30 flex items-center justify-center flex-shrink-0 group-hover:bg-esports-yellow/20 transition-colors">
                             <i data-lucide="trophy" class="w-5 h-5 text-esports-yellow-text" aria-hidden="true"></i>
                         </div>
                         <div>
-                            <div class="font-display font-black text-base uppercase text-white group-hover:text-esports-yellow-text transition-colors leading-tight">Finals Archive</div>
-                            <div class="text-gray-500 text-xs uppercase tracking-wider font-bold mt-0.5">Championship replays</div>
+                            <div class="font-display font-black text-base uppercase text-white group-hover:text-esports-yellow-text transition-colors leading-tight">Finals</div>
+                            <div class="text-gray-500 text-xs uppercase tracking-wider font-bold mt-0.5">Championship bracket</div>
                         </div>
                         <i data-lucide="arrow-right" class="w-4 h-4 text-gray-600 group-hover:text-esports-yellow-text group-hover:translate-x-1 transition-all ml-auto flex-shrink-0" aria-hidden="true"></i>
                     </a>
@@ -620,6 +678,44 @@
                     </a>
                 </div>
 
+            </div>
+        </section>
+
+        <!-- ─── HOW IT WORKS ─── -->
+        <section class="py-14 bg-esports-dark border-t border-white/10 relative z-20" aria-labelledby="format-heading">
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="text-center mb-10">
+                    <span class="text-esports-blue-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">Match Format</span>
+                    <h2 id="format-heading" class="font-display text-4xl md:text-6xl font-black uppercase text-white">How a Match Day Works</h2>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6" role="list">
+                    <div class="bg-esports-card rounded-2xl p-7 border border-white/10" role="listitem">
+                        <div class="font-display font-black text-5xl text-esports-blue-text/30 leading-none mb-3">01</div>
+                        <h3 class="text-lg font-display font-black text-white uppercase mb-2">Six Players, Two Teams</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Each school fields three players on ORANGE and three on BLUE. A player sticks with one color for the whole series.</p>
+                    </div>
+                    <div class="bg-esports-card rounded-2xl p-7 border border-white/10" role="listitem">
+                        <div class="font-display font-black text-5xl text-esports-yellow-text/30 leading-none mb-3">02</div>
+                        <h3 class="text-lg font-display font-black text-white uppercase mb-2">Check In</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Coaches confirm readiness 15 minutes before the match over Gmail Chat. The home team creates the lobby.</p>
+                    </div>
+                    <div class="bg-esports-card rounded-2xl p-7 border border-white/10" role="listitem">
+                        <div class="font-display font-black text-5xl text-esports-red-text/30 leading-none mb-3">03</div>
+                        <h3 class="text-lg font-display font-black text-white uppercase mb-2">Best of Three</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Both series run at the same time on DFH Stadium. A third game only happens if the series is tied 1-1.</p>
+                    </div>
+                    <div class="bg-esports-card rounded-2xl p-7 border border-white/10" role="listitem">
+                        <div class="font-display font-black text-5xl text-purple-400/30 leading-none mb-3">04</div>
+                        <h3 class="text-lg font-display font-black text-white uppercase mb-2">Report Scores</h3>
+                        <p class="text-gray-400 text-sm leading-relaxed">Both coaches post final stats to Google Classroom. Combined ORANGE and BLUE records set the standings.</p>
+                    </div>
+                </div>
+                <div class="text-center mt-8">
+                    <a href="rocket-league/rules.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-esports-blue/30 bg-esports-blue/10 text-esports-blue-text hover:bg-esports-blue/20 transition-all duration-200 font-display font-bold text-sm uppercase tracking-widest no-underline">
+                        Read the full rulebook
+                        <i data-lucide="arrow-right" class="w-4 h-4" aria-hidden="true"></i>
+                    </a>
+                </div>
             </div>
         </section>
 
@@ -663,17 +759,15 @@
             </div>
         </section>
 
-        <!-- ─── FINALS ARCHIVE (cleaned up) ─── -->
+        <!-- ─── FINALS ARCHIVE ─── -->
         <section class="bg-esports-dark py-14 border-y border-white/10 relative z-20" aria-labelledby="video-heading">
             <div class="max-w-7xl mx-auto px-4">
 
-                <!-- Section header -->
                 <div class="text-center mb-10">
                     <span class="text-esports-yellow-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">Championship Rewind</span>
                     <h2 id="video-heading" class="font-display text-4xl md:text-6xl font-black uppercase mb-3 text-white">The Finals Archive</h2>
                 </div>
 
-                <!-- Videos grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
                     <!-- Main: 25-26 Championship Livestream -->
@@ -700,7 +794,6 @@
                     <!-- Sidebar: past videos + channel link -->
                     <div class="flex flex-col gap-5">
 
-                        <!-- Season recap -->
                         <div class="bg-esports-card border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-300 group">
                             <a href="https://www.youtube.com/watch?v=12PhyAoZbJU"
                                target="_blank" rel="noopener noreferrer"
@@ -722,7 +815,6 @@
                             </a>
                         </div>
 
-                        <!-- 24-25 Championship -->
                         <div class="bg-esports-card border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-300 group">
                             <a href="https://www.youtube.com/watch?v=xvIg684JPc4"
                                target="_blank" rel="noopener noreferrer"
@@ -744,7 +836,6 @@
                             </a>
                         </div>
 
-                        <!-- More on YouTube -->
                         <a href="https://www.youtube.com/@LevelUpPSD"
                            target="_blank" rel="noopener noreferrer"
                            class="flex items-center justify-center gap-2 py-3 rounded-xl border border-red-500/30 bg-red-600/10 text-red-400 hover:bg-red-600/20 hover:text-red-300 transition-all duration-200 text-sm font-bold uppercase tracking-wider no-underline group">
@@ -764,315 +855,182 @@
     <script>
     lucide.createIcons();
 
-    const WEEK_DATES = PSD.weekDates('pl').map(w => ({ week: w.week, plDate: w.date }));
+    /* ── Season timeline ────────────────────────────────────────────────────
+       Both divisions run the same nine weeks, one day apart, so the strip
+       shows a week at a time with both match days on it. Built from config so
+       it can never drift from what the schedule pages say.
+       ---------------------------------------------------------------------- */
+    function renderWeekStrip() {
+      var strip = document.getElementById('week-strip');
+      if (!strip) return;
 
-    const FINALS_DATE = PSD.localDateTime(PSD.config.finalsDate, PSD.config.finalsTipoff);
-    const SEASON_OVER_DATE = PSD.localDate(PSD.config.seasonEndDate);
+      var fmt = { month: 'short', day: 'numeric' };
+      var today = new Date(); today.setHours(0, 0, 0, 0);
 
-    function getCurrentWeek() {
-      const now = new Date();
-      let current = 1;
-      for (const wd of WEEK_DATES) { if (now >= wd.plDate) current = wd.week; }
-      return current;
-    }
-
-    function getPLDateForWeek(weekNum) {
-      const entry = WEEK_DATES.find(wd => wd.week === weekNum);
-      return entry ? entry.plDate : null;
-    }
-
-    function getUpcomingWeek() {
-      const today = new Date(); today.setHours(0,0,0,0);
-      for (const wd of WEEK_DATES) {
-        const d = new Date(wd.plDate); d.setHours(0,0,0,0);
-        if (today <= d) return wd.week;
-      }
-      return WEEK_DATES[WEEK_DATES.length - 1].week;
-    }
-
-    let heroSwitched = false, finalsArrived = false;
-
-    function switchToSeasonLive() {
-      if (heroSwitched) return; heroSwitched = true;
-      document.getElementById('countdown-wrapper').classList.add('hidden');
-      document.getElementById('status-badge-preseason').classList.add('hidden');
-      document.getElementById('hero-copy-preseason').classList.add('hidden');
-      document.getElementById('finals-hero-wrapper').classList.remove('hidden');
-      document.getElementById('status-badge-live').classList.remove('hidden');
-      document.getElementById('hero-copy-live').classList.remove('hidden');
-      const wk = getCurrentWeek();
-      const label = document.getElementById('hero-week-label');
-      if (label) label.textContent = `Week ${wk} in progress`;
-      lucide.createIcons();
-    }
-
-    function switchToFinalsDay() {
-      if (finalsArrived) return; finalsArrived = true;
-      switchToSeasonLive();
-      document.getElementById('finals-hero-wrapper').classList.add('hidden');
-      document.getElementById('finals-day-banner').classList.remove('hidden');
-      const badge = document.getElementById('status-badge-live');
-      if (badge) {
-        badge.querySelector('span:last-child').textContent = 'CHAMPIONSHIP FINALS TODAY';
-        badge.classList.remove('bg-esports-yellow/10','border-esports-yellow-text','text-esports-yellow-text');
-        badge.classList.add('bg-esports-red/10','border-esports-red-text','text-esports-red-text');
-      }
-      lucide.createIcons();
-    }
-
-    function switchToPostSeason() {
-        document.getElementById('finals-day-banner').classList.remove('hidden');
-        document.getElementById('finals-banner-text').textContent = "Season Concluded";
-        document.getElementById('finals-banner-sub').textContent = "Congratulations to all our competitors!";
-        const badge = document.getElementById('status-badge-live');
-        if (badge) badge.querySelector('span:last-child').textContent = 'SEASON COMPLETE';
-    }
-
-    function updateCountdown() {
-      const seasonTarget = PSD.localDateTime(
-        PSD.config.league('pl').weeks[0].startDate, PSD.config.kickoffTime).getTime();
-      const finalsTarget = FINALS_DATE.getTime();
-      const now = new Date().getTime();
-
-      const isPastFinals = now > (finalsTarget + 86400000);
-
-      if (isPastFinals) {
-          switchToPostSeason();
-          return;
-      }
-
-      if (now < seasonTarget) {
-        const gap = seasonTarget - now;
-        document.getElementById('days').innerText    = Math.floor(gap / 86400000);
-        document.getElementById('hours').innerText   = Math.floor((gap % 86400000) / 3600000);
-        document.getElementById('minutes').innerText = Math.floor((gap % 3600000) / 60000);
-        document.getElementById('seconds').innerText = Math.floor((gap % 60000) / 1000);
-        return;
-      }
-      switchToSeasonLive();
-      if (now < finalsTarget) {
-        const gap = finalsTarget - now;
-        document.getElementById('finals-days').innerText    = Math.floor(gap / 86400000);
-        document.getElementById('finals-hours').innerText   = Math.floor((gap % 86400000) / 3600000);
-        document.getElementById('finals-minutes').innerText = Math.floor((gap % 3600000) / 60000);
-        document.getElementById('finals-seconds').innerText = Math.floor((gap % 60000) / 1000);
-        return;
-      }
-      switchToFinalsDay();
-    }
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-
-    function autoUpdateScheduleUI() {
-      const upcomingWeek = getUpcomingWeek();
-      const plDate = getPLDateForWeek(upcomingWeek);
-      const jrDate = plDate ? new Date(plDate.getTime() + 86400000) : null;
-      const dateOpts = { month: 'short', day: 'numeric' };
-      const jrB = document.getElementById('jr-week-badge'), jrBtn = document.getElementById('jr-week-btn');
-      // plB/plBtn were referenced without being declared, which threw a
-      // ReferenceError here and stopped loadFeaturedMatch() below from ever
-      // running. These elements were dropped in the hub redesign, so the
-      // lookups return null and the guards below simply skip.
-      const plB = document.getElementById('pl-week-badge'), plBtn = document.getElementById('pl-week-btn');
-      if (jrB) jrB.innerHTML = `<i data-lucide="star" class="w-3 h-3"></i>Week ${upcomingWeek}`;
-      if (jrBtn) jrBtn.innerHTML = `<i data-lucide="external-link" class="w-4 h-4 mr-2"></i> View Week ${upcomingWeek} Schedule`;
-      if (plB) plB.innerHTML = `<i data-lucide="trophy" class="w-3 h-3"></i>Week ${upcomingWeek}`;
-      if (plBtn) plBtn.innerHTML = `<i data-lucide="external-link" class="w-4 h-4 mr-2"></i> View Week ${upcomingWeek} Schedule`;
-      lucide.createIcons();
-    }
-
-    const LEAGUE_CONFIG = PSD.config.leagues.map(lg => ({
-      name:    lg.name,
-      sheetId: lg.matchSheet,
-      weeks:   lg.weeks.map(w => ({ week: w.week, gid: w.gid })),
-    }));
-
-    async function fetchSheetCSV(sheetId, gid) {
-      try { return await PSD.fetchCSV(sheetId, gid); } catch(e) { return null; }
-    }
-
-    function isFFCell(v) { const s = String(v||'').trim().toUpperCase(); return s==='F'||s==='FF'||s==='FORFEIT'; }
-
-    function parseWeekSheet(csvText, configWeek) {
-      const lines = csvText.trim().split('\n').map(l => {
-        const res=[]; let cur='', iQ=false;
-        for (let i=0; i<l.length; i++) {
-          if (l[i]==='"') iQ=!iQ;
-          else if (l[i]===','&&!iQ) { res.push(cur.trim()); cur=''; }
-          else cur+=l[i];
-        }
-        res.push(cur.trim()); return res;
-      });
-      if (lines.length < 2) return null;
-      let matchDate=null, parsedWeek=null;
-      for (const line of lines) {
-        const row=line.join(' ');
-        const dm=row.match(/(\d{1,2}\/\d{1,2}\/\d{4})/), wm=row.match(/Week\s*(\d+)/i);
-        if (dm&&!matchDate) matchDate=new Date(dm[1]);
-        if (wm&&!parsedWeek) parsedWeek=parseInt(wm[1]);
-      }
-      const validRows=[];
-      for (const row of lines) {
-        const col0=(row[0]||'').trim().toLowerCase();
-        if (col0==='team'||col0.startsWith('week')) continue;
-        validRows.push(row);
-      }
-      const matchups=[]; let vi=0;
-      while (vi < validRows.length-1) {
-        const r1=validRows[vi], r2=validRows[vi+1];
-        const t1=(r1[0]||'').trim(), t2=(r2[0]||'').trim();
-        if (!t1||!t2) { vi++; continue; }
-        let w1=0, w2=0, isForfeit=false, isDoubleFF=false;
-        for (const idx of [1,2,3]) {
-          const v1=isFFCell(r1[idx]), v2=isFFCell(r2[idx]);
-          if (v1||v2) {
-            isForfeit=true;
-            if (v1&&v2) isDoubleFF=true;
-            else if (v1) w2=2;
-            else w1=2;
-            break;
-          }
-          const s1=parseInt(r1[idx],10), s2=parseInt(r2[idx],10);
-          if (!isNaN(s1)&&!isNaN(s2)) { if(s1>s2)w1++; else if(s2>s1)w2++; }
-        }
-        const played=isForfeit||(w1+w2)>0;
-        let winner=null, loser=null;
-        if (!isDoubleFF&&(w1+w2)>0) {
-          if (w1>w2) { winner=t1; loser=t2; } else if (w2>w1) { winner=t2; loser=t1; }
-        }
-        matchups.push({ team1:t1, team2:t2, played, winner, loser, isDoubleFF, team1GamesWon:w1, team2GamesWon:w2 });
-        vi+=2;
-      }
-      return { matchDate, weekNum: configWeek||parsedWeek, matchups };
-    }
-
-    async function loadFeaturedMatch() {
-      const cL=document.getElementById('card-loading'), cC=document.getElementById('card-content'), cF=document.getElementById('card-fallback');
-
-      // The featured-match card was removed in the hub redesign. Until/unless
-      // it comes back, there is nothing to fill in — bail out before touching
-      // elements that no longer exist.
-      if (!cL || !cC) return;
-
-      if (new Date() >= SEASON_OVER_DATE) {
-        document.getElementById('pl-match').classList.add('hidden');
-        document.getElementById('jr-match').classList.add('hidden');
-        document.getElementById('card-footer').classList.add('hidden');
-        document.getElementById('card-week-badge').textContent = 'OFF-SEASON';
-        const el = document.getElementById('season-concluded-ui');
-        el.innerHTML = `
-          <i data-lucide="award" class="w-10 h-10 text-esports-yellow-text mx-auto mb-3"></i>
-          <h4 class="font-display font-black text-xl text-white uppercase tracking-wider">Season Complete</h4>
-          <p class="text-gray-400 text-xs mt-1 uppercase font-bold tracking-widest">See you next season!</p>`;
-        el.classList.remove('hidden');
-        cL.classList.add('hidden'); cC.classList.remove('hidden');
-        lucide.createIcons();
-        return;
-      }
-
-      try {
-        const fP=[], fM=[];
-        LEAGUE_CONFIG.forEach(l => l.weeks.forEach(w => { fM.push({l:l.name,w:w.week}); fP.push(fetchSheetCSV(l.sheetId,w.gid)); }));
-        const results = await Promise.all(fP);
-        const teamRecs={}, upcoming=[];
-        const getSchool = n => n.replace(/\s+[AB]$/i,'').trim();
-        results.forEach((csv,idx) => {
-          if (!csv) return;
-          const parsed=parseWeekSheet(csv,fM[idx].w);
-          if (!parsed) return;
-          parsed.matchups.forEach(m => {
-            if (!teamRecs[m.team1]) teamRecs[m.team1]={w:0,l:0,lg:fM[idx].l};
-            if (!teamRecs[m.team2]) teamRecs[m.team2]={w:0,l:0,lg:fM[idx].l};
-            if (m.played) {
-              if (m.isDoubleFF) { teamRecs[m.team1].l++; teamRecs[m.team2].l++; }
-              else if (m.winner) { teamRecs[m.winner].w++; teamRecs[m.loser].l++; }
-            }
-            if (!m.played) upcoming.push({...m,school1:getSchool(m.team1),school2:getSchool(m.team2),league:fM[idx].l,week:parsed.weekNum,date:parsed.matchDate});
+      // Pair each week number with every division's date for that week.
+      var byWeek = {};
+      PSD.config.leagues.forEach(function (lg) {
+        lg.weeks.forEach(function (w) {
+          (byWeek[w.week] = byWeek[w.week] || []).push({
+            day:  lg.matchDay.slice(0, 3),
+            date: PSD.localDate(w.startDate)
           });
         });
-        const schoolRecs={};
-        Object.entries(teamRecs).forEach(([name,r]) => {
-          const k=`${r.lg}|||${getSchool(name)}`;
-          if (!schoolRecs[k]) schoolRecs[k]={w:0,l:0};
-          schoolRecs[k].w+=r.w; schoolRecs[k].l+=r.l;
-        });
-        const scored=[], seen=new Set();
-        upcoming.forEach(m => {
-          const k=`${m.league}|||${m.week}|||${[m.school1,m.school2].sort().join(' vs ')}`;
-          if (!seen.has(k)) {
-            const r1=schoolRecs[`${m.league}|||${m.school1}`]||{w:0,l:0}, r2=schoolRecs[`${m.league}|||${m.school2}`]||{w:0,l:0};
-            scored.push({...m,r1,r2,score:(r1.w/(r1.w+r1.l||1))+(r2.w/(r2.w+r2.l||1))}); seen.add(k);
-          }
-        });
-        const calWeek=getCurrentWeek();
-        const plM=scored.filter(m=>m.league==='Promise League'&&m.week>=calWeek).sort((a,b)=>a.week-b.week||b.score-a.score);
-        const jrM=scored.filter(m=>m.league==='Jr Promise League'&&m.week>=calWeek).sort((a,b)=>a.week-b.week||b.score-a.score);
-        const plF=plM[0], jrF=jrM[0];
+      });
 
-        if (!plF && !jrF) {
-          document.getElementById('pl-match').classList.add('hidden');
-          document.getElementById('jr-match').classList.add('hidden');
-          document.getElementById('card-footer').classList.add('hidden');
-          document.getElementById('card-week-badge').textContent = 'FINALS';
-          const el = document.getElementById('season-concluded-ui');
-          el.innerHTML = `
-            <i data-lucide="trophy" class="w-10 h-10 text-esports-yellow-text mx-auto mb-3"></i>
-            <h4 class="font-display font-black text-2xl text-esports-yellow-text uppercase tracking-wider mb-1">Championship Finals</h4>
-            <p class="text-gray-300 text-xs uppercase font-bold tracking-widest mb-4">Championship Finals</p>
-            <a href="https://www.psdesports.com/finals" target="_blank" rel="noopener noreferrer"
-               class="inline-flex items-center justify-center w-full py-3 bg-gradient-to-r from-yellow-500 to-yellow-400 text-black font-display font-black text-sm uppercase tracking-widest rounded-lg shadow-lg shadow-yellow-500/30 hover:shadow-yellow-400/50 hover:scale-105 transition-all duration-300 no-underline">
-              <i data-lucide="trophy" class="w-4 h-4 mr-2"></i> View Live Bracket
-            </a>`;
-          el.classList.remove('hidden');
-        } else {
-          document.getElementById('card-week-badge').textContent=`Week ${plF?.week||jrF?.week||calWeek}`;
-          const dOpts={weekday:'short',month:'short',day:'numeric'};
-          if (plF) {
-            document.getElementById('pl-team1').textContent=plF.school1; document.getElementById('pl-team2').textContent=plF.school2;
-            document.getElementById('pl-record1').textContent=`(${plF.r1.w}-${plF.r1.l})`; document.getElementById('pl-record2').textContent=`(${plF.r2.w}-${plF.r2.l})`;
-            document.getElementById('pl-date').textContent=plF.date?plF.date.toLocaleDateString('en-US',dOpts):'';
-            document.getElementById('pl-match').classList.remove('hidden');
-          } else document.getElementById('pl-match').classList.add('hidden');
-          if (jrF) {
-            document.getElementById('jr-team1').textContent=jrF.school1; document.getElementById('jr-team2').textContent=jrF.school2;
-            document.getElementById('jr-record1').textContent=`(${jrF.r1.w}-${jrF.r1.l})`; document.getElementById('jr-record2').textContent=`(${jrF.r2.w}-${jrF.r2.l})`;
-            document.getElementById('jr-date').textContent=jrF.date?jrF.date.toLocaleDateString('en-US',dOpts):'';
-            document.getElementById('jr-match').classList.remove('hidden');
-          } else document.getElementById('jr-match').classList.add('hidden');
-          const tag=document.getElementById('card-tagline');
-          const bS=Math.max(plF?plF.score:0,jrF?jrF.score:0);
-          tag.textContent=bS>=1.5?'Top Tier Matchup':bS>=1.0?'Crucial Conference Clash':"Don't Miss These";
-        }
-        cL.classList.add('hidden'); cC.classList.remove('hidden'); lucide.createIcons();
-      } catch(e) { cL.classList.add('hidden'); if(cF) cF.classList.remove('hidden'); }
+      var weekNums = Object.keys(byWeek).map(Number).sort(function (a, b) { return a - b; });
+
+      // The "next" week is the first whose last match day has not passed.
+      var nextWeek = null;
+      weekNums.forEach(function (n) {
+        if (nextWeek !== null) return;
+        var latest = byWeek[n].reduce(function (m, d) { return d.date > m ? d.date : m; }, byWeek[n][0].date);
+        if (today <= latest) nextWeek = n;
+      });
+
+      strip.innerHTML = weekNums.map(function (n) {
+        var days = byWeek[n].slice().sort(function (a, b) { return a.date - b.date; });
+        var cls  = 'week-chip';
+        if (n === nextWeek) cls += ' is-next';
+        else if (nextWeek === null || n < nextWeek) cls += ' is-done';
+
+        var dateLine = days.map(function (d) {
+          return d.day + ' ' + d.date.toLocaleDateString('en-US', fmt);
+        }).join('<br>');
+
+        return '<div class="' + cls + '" role="listitem">' +
+                 '<div class="wk-num">' + (n === nextWeek ? 'Up Next · ' : '') + 'Week ' + n + '</div>' +
+                 '<div class="wk-date">' + dateLine + '</div>' +
+                 '<div class="wk-sub">' + days.length + ' match days</div>' +
+               '</div>';
+      }).join('');
+
+      // Bring the upcoming week into view without yanking the whole page.
+      var next = strip.querySelector('.is-next');
+      if (next && next.offsetLeft > strip.clientWidth / 2) {
+        strip.scrollLeft = next.offsetLeft - 24;
+      }
     }
 
-    autoUpdateScheduleUI();
-    loadFeaturedMatch();
+    /* ── Hero state machine ─────────────────────────────────────────────────
+       Four states, driven entirely by dates in data/leagues.js:
 
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (!mq.matches) {
-        const canvas=document.getElementById('particleCanvas'), ctx=canvas.getContext('2d');
-        let w, h, p=[];
-        const C=[{r:77,g:171,b:247},{r:255,g:209,b:102},{r:255,g:107,b:107},{r:255,g:255,b:255}];
-        function rs() { w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight; }
-        window.addEventListener('resize',rs); rs();
-        class Part {
-            constructor() { this.reset(); }
-            reset() { this.x=Math.random()*w; this.y=Math.random()*h; const c=C[Math.floor(Math.random()*C.length)]; this.r=c.r; this.g=c.g; this.b=c.b; this.s=Math.random()*2+1; this.vx=(Math.random()-0.5)*0.5; this.vy=(Math.random()-0.5)*0.5; this.a=Math.random(); }
-            up() { this.x+=this.vx; this.y+=this.vy; if(this.x<0||this.x>w||this.y<0||this.y>h)this.reset(); }
-            dr() { ctx.fillStyle=`rgba(${this.r},${this.g},${this.b},${this.a})`; ctx.beginPath(); ctx.arc(this.x,this.y,this.s,0,Math.PI*2); ctx.fill(); }
+         preseason   countdown to the first match of week 1
+         live        countdown to finals, or a "finals TBA" card when the
+                     championship date has not been announced
+         finals-day  banner
+         postseason  season complete banner
+
+       Finals day is TBA for 2026-27, so `live` currently resolves to the TBA
+       card. Filling in finalsDate switches it to a countdown with no other
+       change needed.
+       ---------------------------------------------------------------------- */
+    var EL = {};
+    ['status-badge-preseason','status-badge-live','status-badge-live-text',
+     'hero-copy-preseason','hero-copy-live','countdown-wrapper','finals-hero-wrapper',
+     'finals-tba-banner','finals-day-banner','finals-banner-text','finals-banner-sub',
+     'hero-week-label','days','hours','minutes','seconds',
+     'finals-days','finals-hours','finals-minutes','finals-seconds'
+    ].forEach(function (id) { EL[id] = document.getElementById(id); });
+
+    function show(el, on, display) {
+      if (!el) return;
+      el.classList.toggle('hidden', !on);
+      if (on && display) el.classList.add(display);
+    }
+
+    function writeClock(gap, ids) {
+      var d = Math.floor(gap / 86400000),
+          h = Math.floor((gap % 86400000) / 3600000),
+          m = Math.floor((gap % 3600000) / 60000),
+          s = Math.floor((gap % 60000) / 1000);
+      if (EL[ids[0]]) EL[ids[0]].textContent = d;
+      if (EL[ids[1]]) EL[ids[1]].textContent = h;
+      if (EL[ids[2]]) EL[ids[2]].textContent = m;
+      if (EL[ids[3]]) EL[ids[3]].textContent = s;
+    }
+
+    function renderHero() {
+      var now    = new Date();
+      var phase  = PSD.seasonPhase(now);
+      var start  = PSD.seasonStart();
+      var finals = PSD.finalsStart();
+
+      var pre = phase === 'preseason';
+
+      show(EL['status-badge-preseason'], pre, 'inline-flex');
+      show(EL['hero-copy-preseason'],    pre, 'flex');
+      show(EL['countdown-wrapper'],      pre);
+
+      show(EL['status-badge-live'], !pre, 'inline-flex');
+      show(EL['hero-copy-live'],    !pre, 'flex');
+
+      // Season is under way — pick the right card for where we are. These are
+      // set on every pass, including in preseason, so a state change never
+      // leaves a stale card from the previous phase on screen.
+      var onFinalsDay = phase === 'finals-day';
+      var over        = phase === 'postseason';
+      var counting    = !pre && phase === 'live' && !!finals && now < finals;
+
+      show(EL['finals-hero-wrapper'], counting);
+      show(EL['finals-tba-banner'],   !pre && phase === 'live' && !finals, 'flex');
+      show(EL['finals-day-banner'],   onFinalsDay || over);
+
+      if (pre) {
+        writeClock(start - now, ['days','hours','minutes','seconds']);
+        return;
+      }
+
+      if (counting) {
+        writeClock(finals - now, ['finals-days','finals-hours','finals-minutes','finals-seconds']);
+        if (EL['hero-week-label']) {
+          EL['hero-week-label'].textContent = 'Week ' + PSD.currentWeek('pl') + ' in progress';
         }
-        for(let i=0;i<100;i++) p.push(new Part());
-        function anim() { ctx.clearRect(0,0,w,h); p.forEach(pt=>{pt.up();pt.dr();}); requestAnimationFrame(anim); } anim();
-        document.querySelectorAll('.tilt-card').forEach(c => {
-            c.addEventListener('mousemove',(e)=>{
-                const r=c.getBoundingClientRect();
-                const x=((e.clientX-r.left)/r.width-0.5)*10, y=((e.clientY-r.top)/r.height-0.5)*-10;
-                c.style.transform=`perspective(1000px) rotateX(${y}deg) rotateY(${x}deg)`;
-            });
-            c.addEventListener('mouseleave',()=>c.style.transform='none');
-        });
+      }
+
+      if (EL['status-badge-live-text']) {
+        EL['status-badge-live-text'].textContent =
+          over ? 'SEASON COMPLETE' : onFinalsDay ? 'CHAMPIONSHIP FINALS TODAY' : 'SEASON LIVE';
+      }
+
+      if (over && EL['finals-banner-text']) {
+        EL['finals-banner-text'].textContent = 'Season Concluded';
+        EL['finals-banner-sub'].textContent  = 'Congratulations to all our competitors!';
+      }
+    }
+
+    renderWeekStrip();
+    renderHero();
+    setInterval(renderHero, 1000);
+    lucide.createIcons();
+
+    /* ── Ambient particles ── */
+    var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (!mq.matches) {
+        var canvas = document.getElementById('particleCanvas'), ctx = canvas.getContext('2d');
+        var w, h, p = [];
+        var C = [{r:77,g:171,b:247},{r:255,g:209,b:102},{r:255,g:107,b:107},{r:255,g:255,b:255}];
+        function rs() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+        window.addEventListener('resize', rs); rs();
+        function Part() { this.reset(); }
+        Part.prototype.reset = function () {
+            this.x = Math.random()*w; this.y = Math.random()*h;
+            var c = C[Math.floor(Math.random()*C.length)];
+            this.r = c.r; this.g = c.g; this.b = c.b;
+            this.s = Math.random()*2+1;
+            this.vx = (Math.random()-0.5)*0.5; this.vy = (Math.random()-0.5)*0.5;
+            this.a = Math.random();
+        };
+        Part.prototype.up = function () {
+            this.x += this.vx; this.y += this.vy;
+            if (this.x<0||this.x>w||this.y<0||this.y>h) this.reset();
+        };
+        Part.prototype.dr = function () {
+            ctx.fillStyle = 'rgba('+this.r+','+this.g+','+this.b+','+this.a+')';
+            ctx.beginPath(); ctx.arc(this.x, this.y, this.s, 0, Math.PI*2); ctx.fill();
+        };
+        for (var i=0;i<100;i++) p.push(new Part());
+        (function anim(){ ctx.clearRect(0,0,w,h); p.forEach(function(pt){pt.up();pt.dr();}); requestAnimationFrame(anim); })();
     }
     </script>
 <style>
@@ -1101,29 +1059,22 @@
   }
 
   document.addEventListener('DOMContentLoaded',function(){
-    /* season blocks */
     markAndObserve('.season','io-reveal');
-    /* champion cards — stagger within their grid */
     document.querySelectorAll('.champ-grid').forEach(function(g){
       g.classList.add('io-stagger');
-      markAndObserve('.champ-card',   'io-reveal', g);
+      markAndObserve('.champ-card','io-reveal', g);
     });
-    /* schedule rows */
     document.querySelectorAll('.schedule-table tbody, .sched-body').forEach(function(tb){
       tb.classList.add('io-stagger');
       markAndObserve('tr','io-reveal',tb);
     });
-    /* standings table rows */
     document.querySelectorAll('.standings-table tbody, .standings-body').forEach(function(tb){
       tb.classList.add('io-stagger');
       markAndObserve('tr','io-reveal',tb);
     });
-    /* stat cards / leaderboard rows */
     markAndObserve('.stat-card','io-reveal');
     markAndObserve('.leaderboard-row','io-reveal');
-    /* section headers */
     markAndObserve('.season-header','io-reveal-left');
-    /* generic cards on other pages */
     markAndObserve('.badge-card','io-reveal');
     markAndObserve('.finals-card','io-reveal');
   });
@@ -1131,7 +1082,3 @@
 </script>
 </body>
 </html>
-
-
-
-

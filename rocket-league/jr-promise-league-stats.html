@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -424,48 +424,17 @@ function getLastCompletedWeek() {
   return last;
 }
 
-const SCHOOL_LOGOS = {
-  'Cimarron':             'https://3.files.edl.io/bfd5/24/01/30/203122-a5d549fc-84c8-4af4-9e2a-4ca56e0f02ee.png',
-  'Desert Rose':          'https://3.files.edl.io/bbc0/24/01/30/203123-f1eb745a-e767-4d91-80a4-2923ab07654d.png',
-  'Innovations Academy':  'https://3.files.edl.io/5b29/24/01/30/203127-760b8684-7411-463d-84d0-38653baa5249.png',
-  'Innovations':          'https://3.files.edl.io/5b29/24/01/30/203127-760b8684-7411-463d-84d0-38653baa5249.png',
-  'Los Amigos':           'https://3.files.edl.io/aa2d/24/01/30/203128-f79f02e7-682b-4e43-975d-d6ac2b210779.png',
-  'Manzanita':            'https://3.files.edl.io/78d0/24/11/12/173918-dbf6ddaa-bf7b-408d-aa49-db4cdecdc9bb.png',
-  'Palm Tree':            'https://3.files.edl.io/deef/24/01/30/203132-727d82ee-15ae-4e4a-9e3b-95f7e677e038.png',
-  'Palmtree':             'https://3.files.edl.io/deef/24/01/30/203132-727d82ee-15ae-4e4a-9e3b-95f7e677e038.png',
-  'Tumbleweed':           'https://3.files.edl.io/419d/25/10/02/220537-89da6677-8013-4232-bf2b-62aab2b64d29.png',
-  'Yucca':                'https://3.files.edl.io/c0fd/24/01/30/203144-7cccf38b-4ea6-4ca5-ac4e-1c5cb2ecdc53.png',
-};
-
-const SCHOOL_COLORS = {
-  'Cimarron':             '#b45309',
-  'Desert Rose':          '#be185d',
-  'Innovations Academy':  '#0369a1',
-  'Innovations':          '#0369a1',
-  'Los Amigos':           '#15803d',
-  'Manzanita':            '#7c2d12',
-  'Palm Tree':            '#047857',
-  'Palmtree':             '#047857',
-  'Tumbleweed':           '#92400e',
-  'Yucca':                '#4d7c0f',
-};
+// ── SCHOOL BADGES ────────────────────────────────────────────────────────────
+// Logos and accent colours live in data/leagues.js so one school edit reaches
+// every page. Both lookups accept any spelling the sheets use.
+const FALLBACK_ACCENT = '#C8102E';
 
 function getSchoolColor(name) {
-  if (!name) return '#C8102E';
-  const n = name.toUpperCase();
-  for (const [key, color] of Object.entries(SCHOOL_COLORS)) {
-    if (n.includes(key.toUpperCase())) return color;
-  }
-  return '#C8102E';
+  return PSD.config.schoolColor(name) || FALLBACK_ACCENT;
 }
 
 function getLogo(name) {
-  if (!name) return null;
-  const n = name.toUpperCase();
-  for (const [key, url] of Object.entries(SCHOOL_LOGOS)) {
-    if (n.includes(key.toUpperCase())) return url;
-  }
-  return null;
+  return PSD.config.schoolLogo(name);
 }
 
 function logoHtml(schoolName, imgClass, fallbackClass) {
@@ -494,6 +463,13 @@ document.getElementById('player-search-input').addEventListener('keyup', updateD
 
 async function loadAndProcessData() {
   const statusDiv = document.getElementById('status');
+
+  // Stats workbook for this season is not published yet.
+  if (!PSD.config.hasLiveStats('jrpl')) {
+    statusDiv.textContent = 'Player stats open September 22 — Early Release plays Tuesdays at 2:00 PM.';
+    return;
+  }
+
   statusDiv.textContent = 'Fetching latest data…';
   try {
     const csvTexts = await PSD.fetchAllCSV(sheetId, tabGids);

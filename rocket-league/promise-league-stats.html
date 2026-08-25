@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -459,46 +459,17 @@ function getLastCompletedWeek() {
   return last;
 }
 
-const SCHOOL_LOGOS = {
-  'Cactus':                  'https://3.files.edl.io/63ab/24/01/30/203120-a87c60bc-37da-483c-b392-238488c963de.png',
-  'David G Millen':          'https://3.files.edl.io/8dc4/24/01/30/203122-5a3b347a-0d9f-434d-afcb-d500e246f4e3.png',
-  'DGM':                     'https://3.files.edl.io/8dc4/24/01/30/203122-5a3b347a-0d9f-434d-afcb-d500e246f4e3.png',
-  'Ocotillo':                'https://3.files.edl.io/cca4/24/01/30/203131-fbd479f1-cdfe-47b0-b95a-05f2cc28e867.png',
-  'Palmdale Learning Plaza':  'https://3.files.edl.io/330f/24/01/30/203134-48db1f14-cb8d-4f6b-aa74-94648928b58a.png',
-  'PLP':                     'https://3.files.edl.io/330f/24/01/30/203134-48db1f14-cb8d-4f6b-aa74-94648928b58a.png',
-  'Sage':                    'https://3.files.edl.io/e005/24/01/30/203135-3f3e9191-5b83-4ba9-a47c-124e5d54428c.png',
-  'Shadow Hills':            'https://3.files.edl.io/88eb/24/01/30/203136-53ac6114-93b7-46a0-8fae-f78daf6287de.png',
-  'Cole':                    'https://cole.eastsideusd.org/pics/school_logo.png',
-};
-
-const SCHOOL_COLORS = {
-  'Cactus':                  '#2e7d32',
-  'David G Millen':          '#1565c0',
-  'DGM':                     '#1565c0',
-  'Ocotillo':                '#6a1b9a',
-  'Palmdale Learning Plaza':  '#e65100',
-  'PLP':                     '#e65100',
-  'Sage':                    '#00695c',
-  'Shadow Hills':            '#c62828',
-  'Cole':                    '#1976d2',
-};
+// ── SCHOOL BADGES ────────────────────────────────────────────────────────────
+// Logos and accent colours live in data/leagues.js so one school edit reaches
+// every page. Both lookups accept any spelling the sheets use.
+const FALLBACK_ACCENT = '#005696';
 
 function getSchoolColor(name) {
-  if (!name) return '#005696';
-  const n = name.toUpperCase();
-  for (const [key, color] of Object.entries(SCHOOL_COLORS)) {
-    if (n.includes(key.toUpperCase())) return color;
-  }
-  return '#005696';
+  return PSD.config.schoolColor(name) || FALLBACK_ACCENT;
 }
 
 function getLogo(name) {
-  if (!name) return null;
-  const n = name.toUpperCase();
-  for (const [key, url] of Object.entries(SCHOOL_LOGOS)) {
-    if (n.includes(key.toUpperCase())) return url;
-  }
-  return null;
+  return PSD.config.schoolLogo(name);
 }
 
 function logoHtml(schoolName, imgClass, fallbackClass) {
@@ -527,6 +498,13 @@ document.getElementById('player-search-input').addEventListener('keyup', updateD
 
 async function loadAndProcessData() {
   const statusDiv = document.getElementById('status');
+
+  // Stats workbook for this season is not published yet.
+  if (!PSD.config.hasLiveStats('pl')) {
+    statusDiv.textContent = 'Player stats open September 21 — Late Release plays Mondays at 4:00 PM.';
+    return;
+  }
+
   statusDiv.textContent = 'Fetching latest data…';
   try {
     const csvTexts = await PSD.fetchAllCSV(sheetId, tabGids);

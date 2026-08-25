@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -395,39 +395,13 @@
 <script src="/data/leagues.js"></script>
 <script src="/data/psd-data.js"></script>
 <script>
-const SCHOOL_LOGOS = {
-  'Cimarron':             'https://3.files.edl.io/bfd5/24/01/30/203122-a5d549fc-84c8-4af4-9e2a-4ca56e0f02ee.png',
-  'Desert Rose':          'https://3.files.edl.io/bbc0/24/01/30/203123-f1eb745a-e767-4d91-80a4-2923ab07654d.png',
-  'Innovations Academy':  'https://3.files.edl.io/5b29/24/01/30/203127-760b8684-7411-463d-84d0-38653baa5249.png',
-  'Innovations':          'https://3.files.edl.io/5b29/24/01/30/203127-760b8684-7411-463d-84d0-38653baa5249.png',
-  'Los Amigos':           'https://3.files.edl.io/aa2d/24/01/30/203128-f79f02e7-682b-4e43-975d-d6ac2b210779.png',
-  'Manzanita':            'https://3.files.edl.io/78d0/24/11/12/173918-dbf6ddaa-bf7b-408d-aa49-db4cdecdc9bb.png',
-  'Palm Tree':            'https://3.files.edl.io/deef/24/01/30/203132-727d82ee-15ae-4e4a-9e3b-95f7e677e038.png',
-  'Palmtree':             'https://3.files.edl.io/deef/24/01/30/203132-727d82ee-15ae-4e4a-9e3b-95f7e677e038.png',
-  'Tumbleweed':           'https://3.files.edl.io/419d/25/10/02/220537-89da6677-8013-4232-bf2b-62aab2b64d29.png',
-  'Yucca':                'https://3.files.edl.io/c0fd/24/01/30/203144-7cccf38b-4ea6-4ca5-ac4e-1c5cb2ecdc53.png',
-};
-
-const SCHOOL_COLORS = {
-  'Cimarron':             '#b45309', // amber
-  'Desert Rose':          '#be185d', // pink
-  'Innovations Academy':  '#0369a1', // sky blue
-  'Innovations':          '#0369a1',
-  'Los Amigos':           '#15803d', // green
-  'Manzanita':            '#7c2d12', // burnt orange
-  'Palm Tree':            '#047857', // emerald
-  'Palmtree':             '#047857',
-  'Tumbleweed':           '#92400e', // brown
-  'Yucca':                '#4d7c0f', // lime green
-};
+// ── SCHOOL BADGES ────────────────────────────────────────────────────────────
+// Logos and accent colours live in data/leagues.js so one school edit reaches
+// every page. Both lookups accept any spelling the sheets use.
+const FALLBACK_ACCENT = '#C8102E';
 
 function getSchoolColor(name) {
-  if (!name) return '#C8102E';
-  const n = name.toUpperCase();
-  for (const [key, color] of Object.entries(SCHOOL_COLORS)) {
-    if (n.includes(key.toUpperCase())) return color;
-  }
-  return '#C8102E';
+  return PSD.config.schoolColor(name) || FALLBACK_ACCENT;
 }
 
 function calcStreak(results) {
@@ -464,12 +438,7 @@ function goalDiffBar(gf, ga) {
 }
 
 function getLogo(name) {
-  if (!name) return null;
-  const n = name.toUpperCase();
-  for (const [key, url] of Object.entries(SCHOOL_LOGOS)) {
-    if (n.includes(key.toUpperCase())) return url;
-  }
-  return null;
+  return PSD.config.schoolLogo(name);
 }
 
 function logoHtml(schoolName, imgClass, fallbackClass) {
@@ -507,8 +476,19 @@ function trapFocus(e) {
 }
 
 function lockScroll(lock) { document.body.style.overflow = lock ? 'hidden' : ''; }
-function getSchoolName(t) { return t.replace(/\s+[AB]$/i, '').trim(); }
-function getTeamSuffix(t) { const m = t.match(/\s+([AB])$/i); return m ? m[1].toUpperCase() : ''; }
+/* Team records are keyed "SCHOOL SIDE" — "YUCCA BLUE", "MESQUITE ORANGE".
+   The A/B spellings are last season's and stay recognised. */
+function getSchoolName(t) { return t.replace(/\s+(ORANGE|BLUE|[AB])$/i, '').trim(); }
+function getTeamSuffix(t) { const m = t.match(/\s+(ORANGE|BLUE|[AB])$/i); return m ? m[1].toUpperCase() : ''; }
+
+/**
+ * A school name as typed in the sheet -> the roster spelling from
+ * data/leagues.js, so "Cimmaron"/"Cimarron" and "Palm Tree"/"Palmtree" each
+ * stay one school. See PSD_CONFIG.canonicalSchool for why this is centralised.
+ */
+function normalizeSchool(name) {
+  return PSD.config.canonicalSchool('jrpl', name);
+}
 
 function buildSchoolData(allTeams) {
   const schools = {};
@@ -665,12 +645,38 @@ function loadAndProcessAllData(sheetId, gids) {
   const rankingsBody = document.getElementById('rankings-body');
   const lastUpdatedSpan = document.getElementById('last-updated');
   const loadStatus = document.getElementById('load-status');
+
+  // Results workbook for this season is not published yet. Say so, rather
+  // than showing an empty table under a "Fetching…" spinner that never ends.
+  if (!PSD.config.hasLiveData('jrpl')) {
+    rankingsBody.innerHTML = `<tr><td colspan="14" style="padding:2.5rem;text-align:center;color:#9ca3af" role="status">
+      <div style="font-family:Rajdhani,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.1em;font-size:1.35rem;color:#fff;margin-bottom:.4rem">Standings open September 22</div>
+      <div style="font-size:.9rem">Early Release plays Tuesdays at 2:00 PM. Records appear here after week 1.</div>
+    </td></tr>`;
+    if (lastUpdatedSpan) lastUpdatedSpan.textContent = '—';
+    if (loadStatus) loadStatus.textContent = 'The 2026-27 season has not started yet.';
+    return;
+  }
+
   rankingsBody.innerHTML = `<tr><td colspan="14" class="loader" role="status">Fetching latest rankings…</td></tr>`;
 
   PSD.fetchAllCSV(sheetId, gids)
     .then(allCsvText => {
-      const combined = allCsvText.filter(Boolean).join('\n');
-      allTeamsData = processData(combined);
+      // Tab by tab rather than one joined blob, so each week's label can come
+      // from leagues.js instead of the tab's own title cell — a duplicated tab
+      // can carry the previous week's number.
+      const weeks = PSD.config.league('jrpl').weeks;
+      const teams = {};
+      allCsvText.forEach((csv, i) => {
+        if (!csv) return;
+        const w = weeks[i];
+        const d = w ? PSD.localDate(w.startDate) : null;
+        const label = w
+          ? `Week ${w.week}` + (d ? ` - ${d.toLocaleDateString('en-US', { day:'numeric', month:'short', year:'numeric' })}` : '')
+          : '';
+        processData(csv, teams, label);
+      });
+      allTeamsData = teams;
       schoolData   = buildSchoolData(allTeamsData);
       const sorted = sortTeams(Object.values(schoolData));
       renderTable(sorted);
@@ -685,24 +691,97 @@ function loadAndProcessAllData(sheetId, gids) {
     });
 }
 
-function processData(csvText) {
-  const teams = {};
+/**
+ * All week tabs, joined, -> team records.
+ *
+ * 2026-27 layout, with the header on row 3 of every tab:
+ *
+ *     Team   | Team   | Location | Points | Points | Points
+ *     Yucca  | Blue   | Home     |   G1   |   G2   |   G3
+ *
+ * Column A is the school and column B the ORANGE/BLUE side; last season both
+ * lived in one cell as "Yucca A" / "Yucca B", which is why scores used to be
+ * read straight out of columns B-D. Records stay keyed "SCHOOL SIDE" so
+ * buildSchoolData and the match modal are unchanged.
+ */
+function processData(csvText, teams, weekLabel) {
+  teams = teams || {};
   const rows  = csvText.trim().split('\n').filter(r => r.trim() !== '');
-  let currentWeek = '';
+  let currentWeek = weekLabel || '';
   const cleaned = [];
+
+  // Columns are located by header label rather than by number, so the layout
+  // gaining or moving a column does not silently shift the scores again.
+  let scoreCols = [], sideCol = -1, locCol = -1;
+  function readHeader(cols) {
+    const cs = [];
+    let sc = -1, lc = -1;
+    cols.forEach((cell, i) => {
+      const h = (cell || '').toLowerCase();
+      if (h === 'points' || /^game\s*\d+$/.test(h)) cs.push(i);
+      else if (h === 'location')                    lc = i;
+      else if (h === 'team' && i > 0)               sc = i;
+    });
+    if (cs.length) { scoreCols = cs; sideCol = sc; locCol = lc; }
+  }
+
   for (const raw of rows) {
     const cols  = raw.split(',').map(c => c.replace(/"/g, '').trim());
     const first = (cols[0] || '').toLowerCase();
-    if (first.startsWith('week')) { currentWeek = cols[0]; continue; }
-    if (first === 'team' || first === '') continue;
+    // The tab's own title row is ignored when the caller supplied a label.
+    if (first.startsWith('week')) { if (!weekLabel) currentWeek = cols[0]; continue; }
+    if (first === 'team') { readHeader(cols); continue; }
+    if (first === '') continue;
     cleaned.push({ cols, week: currentWeek });
   }
-  const scoreCols = [1, 2, 3];
+  if (!scoreCols.length) scoreCols = [3, 4, 5];
+
+  /* The side is not a school, so it does not go through canonicalSchool. It
+     is upper-cased because the bye rows below build their keys the same way,
+     and "Cimarron Blue" vs "Cimarron BLUE" would be two separate records. */
+  const normalizeSide = s => String(s || '').trim().toUpperCase();
+  const keyOf = c => [normalizeSchool(c[0]), sideCol >= 0 ? normalizeSide(c[sideCol]) : '']
+                       .filter(Boolean).join(' ');
+
+  /* Nine schools means one sits out each week. The sheet writes that as a
+     final row with the school in column A and BYE in every other column.
+     Pull those out before pairing: left in place an odd row would pair with
+     whatever follows it, and the school would gain a phantom opponent. */
+  const SIDES = ['BLUE', 'ORANGE'];
+  const play  = [];
+  for (const entry of cleaned) {
+    const marker = sideCol >= 0 ? (entry.cols[sideCol] || '').trim() : '';
+    if (!/^bye$/i.test(marker)) { play.push(entry); continue; }
+
+    const school = normalizeSchool(entry.cols[0]);
+    if (!school) continue;
+    // The whole school is off that week, so both sides get the bye. It is
+    // recorded as a match row for the modal but never counts as a game.
+    for (const side of SIDES) {
+      const key = `${school} ${side}`;
+      if (!teams[key]) teams[key] = baseTeam(key);
+      teams[key].matches.push({
+        week: entry.week, opponent: '— BYE —', games: [null, null, null],
+        gamesWon: 0, gamesLost: 0, gf: 0, ga: 0, result: 'BYE'
+      });
+    }
+  }
+  cleaned.length = 0;
+  cleaned.push(...play);
+
   for (let i = 0; i < cleaned.length - 1;) {
-    const r1 = cleaned[i], r2 = cleaned[i + 1];
+    let r1 = cleaned[i], r2 = cleaned[i + 1];
+
+    // Believe the Location column over row order about which side is home.
+    if (locCol >= 0 && /away/i.test(r1.cols[locCol] || '') && /home/i.test(r2.cols[locCol] || '')) {
+      const swap = r1; r1 = r2; r2 = swap;
+    }
+
     const c1 = r1.cols, c2 = r2.cols;
-    const team1Name = c1[0], team2Name = c2[0];
+    const team1Name = keyOf(c1), team2Name = keyOf(c2);
     if (!team1Name || !team2Name) { i++; continue; }
+    // Shown in the match list, where the side is already the section header.
+    const team1School = getSchoolName(team1Name), team2School = getSchoolName(team2Name);
     if (!teams[team1Name]) teams[team1Name] = baseTeam(team1Name);
     if (!teams[team2Name]) teams[team2Name] = baseTeam(team2Name);
     const t1 = teams[team1Name], t2 = teams[team2Name];
@@ -733,18 +812,18 @@ function processData(csvText) {
       if (forfeitWinner === 't1') {
         t1.w++; t2.l++; t1.gp++; t2.gp++; t1.results.push('W'); t2.results.push('L');
         t1.headToHead[team2Name].w++; t2.headToHead[team1Name].l++;
-        t1.matches.push({ week, opponent: team2Name, games: ['Forfeit-win','–','–'], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'W' });
-        t2.matches.push({ week, opponent: team1Name, games: ['Forfeit-loss','–','–'], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'L' });
+        t1.matches.push({ week, opponent: team2School, games: ['Forfeit-win','–','–'], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'W' });
+        t2.matches.push({ week, opponent: team1School, games: ['Forfeit-loss','–','–'], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'L' });
       } else if (forfeitWinner === 't2') {
         t2.w++; t1.l++; t1.gp++; t2.gp++; t2.results.push('W'); t1.results.push('L');
         t2.headToHead[team1Name].w++; t1.headToHead[team2Name].l++;
-        t2.matches.push({ week, opponent: team1Name, games: ['Forfeit-win','–','–'], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'W' });
-        t1.matches.push({ week, opponent: team2Name, games: ['Forfeit-loss','–','–'], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'L' });
+        t2.matches.push({ week, opponent: team1School, games: ['Forfeit-win','–','–'], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'W' });
+        t1.matches.push({ week, opponent: team2School, games: ['Forfeit-loss','–','–'], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'L' });
       } else {
         t1.l++; t2.l++; t1.gp++; t2.gp++; t1.results.push('L'); t2.results.push('L');
         t1.headToHead[team2Name].l++; t2.headToHead[team1Name].l++;
-        t1.matches.push({ week, opponent: team2Name, games: ['Double-forfeit','–','–'], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'L' });
-        t2.matches.push({ week, opponent: team1Name, games: ['Double-forfeit','–','–'], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'L' });
+        t1.matches.push({ week, opponent: team2School, games: ['Double-forfeit','–','–'], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'L' });
+        t2.matches.push({ week, opponent: team1School, games: ['Double-forfeit','–','–'], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'L' });
       }
       i += 2; continue;
     }
@@ -761,12 +840,12 @@ function processData(csvText) {
         t2.w++; t1.l++; t2.results.push('W'); t1.results.push('L');
         t2.headToHead[team1Name].w++; t1.headToHead[team2Name].l++;
       }
-      t1.matches.push({ week, opponent: team2Name, games: numericGameScores, gamesWon: t1GW, gamesLost: t2GW, gf: t1GF, ga: t2GF, result: t1GW > t2GW ? 'W' : 'L' });
-      t2.matches.push({ week, opponent: team1Name, games: numericGameScores.map(s => s ? s.split('-').reverse().join('-') : null), gamesWon: t2GW, gamesLost: t1GW, gf: t2GF, ga: t1GF, result: t2GW > t1GW ? 'W' : 'L' });
+      t1.matches.push({ week, opponent: team2School, games: numericGameScores, gamesWon: t1GW, gamesLost: t2GW, gf: t1GF, ga: t2GF, result: t1GW > t2GW ? 'W' : 'L' });
+      t2.matches.push({ week, opponent: team1School, games: numericGameScores.map(s => s ? s.split('-').reverse().join('-') : null), gamesWon: t2GW, gamesLost: t1GW, gf: t2GF, ga: t1GF, result: t2GW > t1GW ? 'W' : 'L' });
       i += 2; continue;
     }
-    t1.matches.push({ week, opponent: team2Name, games: [null,null,null], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'-' });
-    t2.matches.push({ week, opponent: team1Name, games: [null,null,null], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'-' });
+    t1.matches.push({ week, opponent: team2School, games: [null,null,null], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'-' });
+    t2.matches.push({ week, opponent: team1School, games: [null,null,null], gamesWon:0, gamesLost:0, gf:0, ga:0, result:'-' });
     i += 2;
   }
   return teams;

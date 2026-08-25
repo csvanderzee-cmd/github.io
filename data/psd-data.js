@@ -27,6 +27,10 @@
      ------------------------------------------------------------------------ */
 
   function localDate(iso) {
+    // Dates that are not set yet (finals day is TBA until announced) come
+    // through as null. Return null rather than an Invalid Date so callers can
+    // test for "not scheduled" instead of guarding every arithmetic result.
+    if (!iso) return null;
     var p = String(iso).split('-');
     return new Date(+p[0], +p[1] - 1, +p[2]);
   }
@@ -34,6 +38,7 @@
   /** 'YYYY-MM-DD' + 'HH:MM:SS' -> Date at that LOCAL wall-clock time. */
   function localDateTime(iso, time) {
     var d = localDate(iso);
+    if (!d) return null;
     var t = String(time || '00:00:00').split(':');
     d.setHours(+t[0] || 0, +t[1] || 0, +t[2] || 0, 0);
     return d;
@@ -46,6 +51,82 @@
     });
   }
 
+  /* ---- season-wide moments ------------------------------------------------
+
+     The two divisions no longer share a kickoff: Late Release plays Mondays at
+     4:00 PM and Early Release Tuesdays at 2:00 PM. "The season starts" means
+     the first match of whichever division goes first, so these walk every
+     league rather than reading one season-wide field.
+     ------------------------------------------------------------------------ */
+
+  /** First match of week 1, across all divisions. Null if no weeks are set. */
+  function seasonStart() {
+    var earliest = null;
+    CONFIG.leagues.forEach(function (lg) {
+      var w1 = lg.weeks[0];
+      if (!w1) return;
+      var d = localDateTime(w1.startDate, lg.matchTime);
+      if (d && (!earliest || d < earliest)) earliest = d;
+    });
+    return earliest;
+  }
+
+  /** Last match day of the regular season, across all divisions. */
+  function seasonEnd() {
+    var latest = null;
+    CONFIG.leagues.forEach(function (lg) {
+      var last = lg.weeks[lg.weeks.length - 1];
+      if (!last) return;
+      var d = localDateTime(last.startDate, lg.matchTime);
+      if (d && (!latest || d > latest)) latest = d;
+    });
+    return latest;
+  }
+
+  /** Championship tip-off, or null while the date is still TBA. */
+  function finalsStart() {
+    return localDateTime(CONFIG.finalsDate, CONFIG.finalsTipoff);
+  }
+
+  /**
+   * Where the season is right now: 'preseason' | 'live' | 'finals-day' |
+   * 'postseason'. The homepage swaps its hero on this.
+   *
+   * With finals TBA, there is no known end point, so the season stays 'live'
+   * after the last regular-season match instead of guessing an off-season
+   * date. Filling in finalsDate turns the finals states back on by itself.
+   */
+  function seasonPhase(now) {
+    now = now || new Date();
+    var start  = seasonStart();
+    var finals = finalsStart();
+
+    if (start && now < start) return 'preseason';
+
+    if (finals) {
+      var finalsDay = localDate(CONFIG.finalsDate);
+      var dayAfter  = new Date(finalsDay.getTime() + 86400000);
+      if (now >= dayAfter) return 'postseason';
+      if (now >= finalsDay) return 'finals-day';
+    }
+
+    var end = localDate(CONFIG.seasonEndDate);
+    if (end && now >= end) return 'postseason';
+
+    return 'live';
+  }
+
+  /** Week number a division is on right now (1-based, clamped to the season). */
+  function currentWeek(leagueId) {
+    var now = new Date();
+    var wks = weekDates(leagueId);
+    var wk = 1;
+    for (var i = 0; i < wks.length; i++) {
+      if (now >= wks[i].date) wk = wks[i].week;
+    }
+    return wk;
+  }
+
   /* ---- fetching ---------------------------------------------------------- */
 
   function liveUrl(sheetId, gid) {
@@ -55,6 +136,14 @@
 
   /** One published tab, as CSV text. Rejects on network error or timeout. */
   function fetchCSV(sheetId, gid) {
+    // Between seasons the workbook does not exist yet and every id in
+    // leagues.js is null. Building a URL out of those nulls asks Google for
+    // ".../d/e/null/pub?gid=null", which 404s once per tab and fills the
+    // console with noise. Fail immediately instead, without a request.
+    if (!sheetId || gid === null || gid === undefined || gid === '') {
+      return Promise.reject(new Error('No sheet published yet for gid ' + gid));
+    }
+
     // AbortController so a hanging request can't leave the page spinning
     // forever on slow school wifi.
     var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -82,9 +171,12 @@
    * single tab failing genuinely is an error worth surfacing.
    */
   function fetchAllCSV(sheetId, gids) {
+    // An unpublished season is an expected state, not a failure, so it does
+    // not get a warning per tab — only genuine fetch problems do.
+    var published = !!sheetId;
     return Promise.all(gids.map(function (gid) {
       return fetchCSV(sheetId, gid).catch(function (err) {
-        if (root.console && console.warn) {
+        if (published && root.console && console.warn) {
           console.warn('[PSD] gid ' + gid + ' failed, skipping:', err.message);
         }
         return '';
@@ -99,7 +191,12 @@
     liveUrl:       liveUrl,
     weekDates:     weekDates,
     localDate:     localDate,
-    localDateTime: localDateTime
+    localDateTime: localDateTime,
+    seasonStart:   seasonStart,
+    seasonEnd:     seasonEnd,
+    finalsStart:   finalsStart,
+    seasonPhase:   seasonPhase,
+    currentWeek:   currentWeek
   };
 
 })(window);

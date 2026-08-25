@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -561,49 +561,16 @@
 <script src="/data/leagues.js"></script>
 <script src="/data/psd-data.js"></script>
 <script>
-// ── SCHOOL LOGOS ─────────────────────────────────────────────────────────────
-const SCHOOL_LOGOS = {
-  'Cactus':                  'https://3.files.edl.io/63ab/24/01/30/203120-a87c60bc-37da-483c-b392-238488c963de.png',
-  'David G Millen':          'https://3.files.edl.io/8dc4/24/01/30/203122-5a3b347a-0d9f-434d-afcb-d500e246f4e3.png',
-  'DGM':                     'https://3.files.edl.io/8dc4/24/01/30/203122-5a3b347a-0d9f-434d-afcb-d500e246f4e3.png',
-  'Ocotillo':                'https://3.files.edl.io/cca4/24/01/30/203131-fbd479f1-cdfe-47b0-b95a-05f2cc28e867.png',
-  'Palmdale Learning Plaza':  'https://3.files.edl.io/330f/24/01/30/203134-48db1f14-cb8d-4f6b-aa74-94648928b58a.png',
-  'PLP':                     'https://3.files.edl.io/330f/24/01/30/203134-48db1f14-cb8d-4f6b-aa74-94648928b58a.png',
-  'Sage':                    'https://3.files.edl.io/e005/24/01/30/203135-3f3e9191-5b83-4ba9-a47c-124e5d54428c.png',
-  'Shadow Hills':            'https://3.files.edl.io/88eb/24/01/30/203136-53ac6114-93b7-46a0-8fae-f78daf6287de.png',
-  'Cole':                    'https://cole.eastsideusd.org/pics/school_logo.png',
-};
-
-// ── SCHOOL ACCENT COLORS ──────────────────────────────────────────────────────
-// Primary accent used to theme the modal per school. Falls back to PSD blue.
-const SCHOOL_COLORS = {
-  'Cactus':                  '#2e7d32', // green
-  'David G Millen':          '#1565c0', // blue
-  'DGM':                     '#1565c0',
-  'Ocotillo':                '#6a1b9a', // purple
-  'Palmdale Learning Plaza':  '#e65100', // orange
-  'PLP':                     '#e65100',
-  'Sage':                    '#00695c', // teal
-  'Shadow Hills':            '#c62828', // red
-  'Cole':                    '#1976d2', // blue
-};
-
+const FALLBACK_ACCENT = '#005696';
+// ── SCHOOL BADGES ────────────────────────────────────────────────────────────
+// Logos and accent colours live in data/leagues.js so one school edit reaches
+// every page. Both lookups accept any spelling the sheets use.
 function getSchoolColor(name) {
-  if (!name) return '#005696';
-  const n = name.toUpperCase();
-  for (const [key, color] of Object.entries(SCHOOL_COLORS)) {
-    if (n.includes(key.toUpperCase())) return color;
-  }
-  return '#005696';
+  return PSD.config.schoolColor(name) || FALLBACK_ACCENT;
 }
 
 function getLogo(name) {
-  if (!name) return null;
-  const n = name.toUpperCase();
-  for (const [key, url] of Object.entries(SCHOOL_LOGOS)) {
-    if (n.includes(key.toUpperCase())) return url;
-  }
-  return null;
+  return PSD.config.schoolLogo(name);
 }
 
 function logoHtml(schoolName, sizeClass, fallbackClass) {
@@ -646,8 +613,19 @@ function trapFocus(e) {
 }
 function lockScroll(lock) { document.body.style.overflow = lock ? 'hidden' : ''; }
 
-function getSchoolName(t) { return t.replace(/\s+[AB]$/i,'').trim(); }
-function getTeamSuffix(t) { const m = t.match(/\s+([AB])$/i); return m ? m[1].toUpperCase() : ''; }
+/* Team records are keyed "SCHOOL SIDE" — "DGM BLUE", "SAGE ORANGE". The A/B
+   spellings are last season's and stay recognised so older tabs still read. */
+function getSchoolName(t) { return t.replace(/\s+(ORANGE|BLUE|[AB])$/i,'').trim(); }
+function getTeamSuffix(t) { const m = t.match(/\s+(ORANGE|BLUE|[AB])$/i); return m ? m[1].toUpperCase() : ''; }
+
+/**
+ * A school name as typed in the sheet -> the roster spelling from
+ * data/leagues.js, so "SAGE" and "Sage" stay one school. See
+ * PSD_CONFIG.canonicalSchool for why this is centralised.
+ */
+function normalizeSchool(name) {
+  return PSD.config.canonicalSchool('pl', name);
+}
 
 function buildSchoolData(allTeams){
   const schools = {};
@@ -874,12 +852,35 @@ function loadAndProcessAllData(sheetId, gids){
   const rankingsBody = document.getElementById('rankings-body');
   const lastUpdatedSpan = document.getElementById('last-updated');
   const loadStatus = document.getElementById('load-status');
+
+  // Results workbook for this season is not published yet. Say so, rather
+  // than showing an empty table under a "Fetching…" spinner that never ends.
+  if (!PSD.config.hasLiveData('pl')){
+    rankingsBody.innerHTML = `<tr><td colspan="14" style="padding:2.5rem;text-align:center;color:#9ca3af" role="status">
+      <div style="font-family:Rajdhani,sans-serif;font-weight:900;text-transform:uppercase;letter-spacing:.1em;font-size:1.35rem;color:#fff;margin-bottom:.4rem">Standings open September 21</div>
+      <div style="font-size:.9rem">Late Release plays Mondays at 4:00 PM. Records appear here after week 1.</div>
+    </td></tr>`;
+    if (lastUpdatedSpan) lastUpdatedSpan.textContent = '—';
+    if (loadStatus) loadStatus.textContent = 'The 2026-27 season has not started yet.';
+    return;
+  }
+
   rankingsBody.innerHTML = `<tr><td colspan="14" class="loader" role="status">Fetching latest rankings…</td></tr>`;
 
   PSD.fetchAllCSV(sheetId, gids)
     .then(allCsvText => {
       const teams = {};
-      for (const csvText of allCsvText) processSheetData(csvText, teams);
+      // fetchAllCSV resolves in gid order, which is week order in leagues.js,
+      // so the week label comes from config rather than the tab's title cell.
+      const weeks = PSD.config.league('pl').weeks;
+      allCsvText.forEach((csvText, i) => {
+        const w = weeks[i];
+        const d = w ? PSD.localDate(w.startDate) : null;
+        const label = w
+          ? `Week ${w.week}` + (d ? ` - ${d.toLocaleDateString('en-US', { day:'numeric', month:'short', year:'numeric' })}` : '')
+          : '';
+        processSheetData(csvText, teams, label);
+      });
       allTeamsData = teams;
       schoolData   = buildSchoolData(allTeamsData);
       const sorted = sortTeams(Object.values(schoolData));
@@ -895,35 +896,66 @@ function loadAndProcessAllData(sheetId, gids){
     });
 }
 
-function processSheetData(csvText, teams){
-  const rows = csvText.trim().split('\n').filter(r => r.trim() !== '');
-  let currentWeek = '';
-  const cleaned = [];
+/**
+ * One week tab -> team records, merged into `teams`.
+ *
+ * 2026-27 layout, with the header on row 3:
+ *
+ *     Team | Team   | Location | Points | Points | Points
+ *     DGM  | Blue   | Home     |   G1   |   G2   |   G3
+ *     ...
+ *
+ * Column A is the school and column B the ORANGE/BLUE side. Last season both
+ * lived in one cell as "DGM A" / "DGM B", which is why the old parser read
+ * scores straight out of columns B-D. Records are still keyed "SCHOOL SIDE",
+ * so buildSchoolData and the match modal are untouched — only the reading of
+ * the sheet changed.
+ *
+ * `weekLabel` comes from data/leagues.js rather than the tab's own title
+ * cell: a duplicated tab can carry the wrong week number, and the standings
+ * should not inherit that.
+ */
+function processSheetData(csvText, teams, weekLabel){
+  const rows = csvText.trim().split('\n')
+    .filter(r => r.trim() !== '')
+    .map(raw => raw.split(',').map(c => c.replace(/"/g,'').trim()));
+  if (!rows.length) return;
 
-  for (const raw of rows){
-    const cols  = raw.split(',').map(c => c.replace(/"/g,'').trim());
-    const first = (cols[0]||'').toLowerCase();
-    if (first.startsWith('week')){ currentWeek = cols[0]; continue; }
-    if (first === 'team' || first === '') continue;
-    cleaned.push({ cols, week: currentWeek });
-  }
-  if (!cleaned.length) return;
+  // Locate columns by their header label. Hardcoded column numbers are what
+  // broke when the sheet gained the side and location columns, so every
+  // column below is found by name and a future move costs nothing.
+  const headerIdx = rows.findIndex(r => (r[0]||'').toLowerCase() === 'team');
+  const header    = headerIdx === -1 ? [] : rows[headerIdx];
 
-  const scoreCols = [1,2,3];
+  const scoreCols = [];
+  let sideCol = -1, locCol = -1;
+  header.forEach((cell, i) => {
+    const h = cell.toLowerCase();
+    if (h === 'points' || /^game\s*\d+$/.test(h)) scoreCols.push(i);
+    else if (h === 'location')                    locCol  = i;
+    else if (h === 'team' && i > 0)               sideCol = i;
+  });
+  if (!scoreCols.length) scoreCols.push(3, 4, 5);
+
+  const week = weekLabel || (rows[0] && rows[0][0]) || '';
+
+  const data = rows
+    .slice(headerIdx === -1 ? 0 : headerIdx + 1)
+    .filter(r => r[0] && !/^week/i.test(r[0]) && r[0].toLowerCase() !== 'team');
+  if (!data.length) return;
+
   const ensureTeam = name => { if (!teams[name]) teams[name] = baseTeam(name); return teams[name]; };
+  // The side is not a school, so it does not go through canonicalSchool; it is
+  // upper-cased so one team can never be keyed two ways.
+  const normalizeSide = s => String(s || '').trim().toUpperCase();
+  const keyOf = r => [normalizeSchool(r[0]), sideCol >= 0 ? normalizeSide(r[sideCol]) : '']
+                       .filter(Boolean).join(' ');
 
-  const weekBuckets = {};
-  for (const entry of cleaned){
-    const w = entry.week || '__noweek__';
-    if (!weekBuckets[w]) weekBuckets[w] = [];
-    weekBuckets[w].push(entry);
-  }
-
-  for (const [week, entries] of Object.entries(weekBuckets)){
-    for (let i = 0; i < entries.length; i += 2){
-      const r1 = entries[i], r2 = entries[i + 1];
+  {
+    for (let i = 0; i < data.length; i += 2){
+      let r1 = data[i], r2 = data[i + 1];
       if (!r2){
-        const byeTeamName = r1.cols[0]?.trim();
+        const byeTeamName = keyOf(r1);
         if (!byeTeamName) continue;
         const byeTeam = ensureTeam(byeTeamName);
         const alreadyHasMatch = byeTeam.matches.some(m => m.week === week && m.result !== 'BYE');
@@ -931,9 +963,17 @@ function processSheetData(csvText, teams){
         continue;
       }
 
-      const homeRow = r1.cols, awayRow = r2.cols;
-      const homeName = homeRow[0]?.trim(), awayName = awayRow[0]?.trim();
+      // Believe the Location column over row order about which side is home.
+      if (locCol >= 0 && /away/i.test(r1[locCol]||'') && /home/i.test(r2[locCol]||'')){
+        const swap = r1; r1 = r2; r2 = swap;
+      }
+
+      const homeRow = r1, awayRow = r2;
+      const homeName = keyOf(r1), awayName = keyOf(r2);
       if (!homeName || !awayName) continue;
+
+      // Shown in the match list, where the side is already the section header.
+      const homeSchool = getSchoolName(homeName), awaySchool = getSchoolName(awayName);
 
       const home = ensureTeam(homeName), away = ensureTeam(awayName);
       if (!home.headToHead[awayName]) home.headToHead[awayName] = {w:0,l:0};
@@ -966,14 +1006,14 @@ function processSheetData(csvText, teams){
           home.w++; away.l++; home.gp++; away.gp++;
           home.results.push('W'); away.results.push('L');
           home.headToHead[awayName].w++; away.headToHead[homeName].l++;
-          home.matches.push({week,opponent:awayName,games:['Forfeit-win','–','–'],gamesWon:0,gamesLost:0,gf:0,ga:0,result:'W'});
-          away.matches.push({week,opponent:homeName,games:['Forfeit-loss','–','–'],gamesWon:0,gamesLost:0,gf:0,ga:0,result:'L'});
+          home.matches.push({week,opponent:awaySchool,games:['Forfeit-win','–','–'],gamesWon:0,gamesLost:0,gf:0,ga:0,result:'W'});
+          away.matches.push({week,opponent:homeSchool,games:['Forfeit-loss','–','–'],gamesWon:0,gamesLost:0,gf:0,ga:0,result:'L'});
         } else if (forfeitWinner==='away'){
           away.w++; home.l++; home.gp++; away.gp++;
           away.results.push('W'); home.results.push('L');
           away.headToHead[homeName].w++; home.headToHead[awayName].l++;
-          away.matches.push({week,opponent:homeName,games:['Forfeit-win','–','–'],gamesWon:0,gamesLost:0,gf:0,ga:0,result:'W'});
-          home.matches.push({week,opponent:awayName,games:['Forfeit-loss','–','–'],gamesWon:0,gamesLost:0,gf:0,ga:0,result:'L'});
+          away.matches.push({week,opponent:homeSchool,games:['Forfeit-win','–','–'],gamesWon:0,gamesLost:0,gf:0,ga:0,result:'W'});
+          home.matches.push({week,opponent:awaySchool,games:['Forfeit-loss','–','–'],gamesWon:0,gamesLost:0,gf:0,ga:0,result:'L'});
         }
         continue;
       }
@@ -994,13 +1034,13 @@ function processSheetData(csvText, teams){
           away.w++; home.l++; away.results.push('W'); home.results.push('L');
           away.headToHead[homeName].w++; home.headToHead[awayName].l++;
         }
-        home.matches.push({week,opponent:awayName,games:numericGameScores,gamesWon:homeGW,gamesLost:awayGW,gf:homeGF,ga:awayGF,result:homeGW>awayGW?'W':'L'});
-        away.matches.push({week,opponent:homeName,games:numericGameScores.map(s=>s?s.split('-').reverse().join('-'):null),gamesWon:awayGW,gamesLost:homeGW,gf:awayGF,ga:homeGF,result:awayGW>homeGW?'W':'L'});
+        home.matches.push({week,opponent:awaySchool,games:numericGameScores,gamesWon:homeGW,gamesLost:awayGW,gf:homeGF,ga:awayGF,result:homeGW>awayGW?'W':'L'});
+        away.matches.push({week,opponent:homeSchool,games:numericGameScores.map(s=>s?s.split('-').reverse().join('-'):null),gamesWon:awayGW,gamesLost:homeGW,gf:awayGF,ga:homeGF,result:awayGW>homeGW?'W':'L'});
         continue;
       }
 
-      home.matches.push({week,opponent:awayName,games:[null,null,null],gamesWon:0,gamesLost:0,gf:0,ga:0,result:'-'});
-      away.matches.push({week,opponent:homeName,games:[null,null,null],gamesWon:0,gamesLost:0,gf:0,ga:0,result:'-'});
+      home.matches.push({week,opponent:awaySchool,games:[null,null,null],gamesWon:0,gamesLost:0,gf:0,ga:0,result:'-'});
+      away.matches.push({week,opponent:homeSchool,games:[null,null,null],gamesWon:0,gamesLost:0,gf:0,ga:0,result:'-'});
     }
   }
 }
@@ -1010,6 +1050,9 @@ function baseTeam(name){
 }
 
 function sortTeams(arr){
+  // No rows yet (pre-season, or an unpublished workbook). Without this the
+  // grouping below seeds itself with arr[0] === undefined and throws.
+  if (!arr.length) return [];
   arr.sort((a,b)=>{ const wpB=b.gp>0?b.w/b.gp:0, wpA=a.gp>0?a.w/a.gp:0; if (Math.abs(wpB-wpA)>1e-9) return wpB-wpA; return 0; });
   const groups=[]; let cur=[arr[0]];
   for (let i=1;i<arr.length;i++){
