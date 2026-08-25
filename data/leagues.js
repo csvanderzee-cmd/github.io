@@ -18,10 +18,10 @@
 
    ---- 2026-2027 NOTES -----------------------------------------------------
 
-   The league is now split by RELEASE TIME, not grade level. Both divisions
-   are called "Promise League" in the rulebook; `name` is what the rulebook
-   calls them and `shortName` is what tables and nav use, because two columns
-   both reading "Promise League" would be unusable.
+   The league is now split by RELEASE TIME, not grade level. `name` is what
+   the rulebook calls a division — "Promise: Early Release" — and `shortName`
+   is what tables and nav use, since two columns both starting "Promise"
+   would be unreadable.
 
    The ids `pl` and `jrpl` are deliberately UNCHANGED so that every existing
    page, bookmark and psdesports.com link keeps working:
@@ -31,9 +31,11 @@
    a subset of the old Promise League, and Early Release is the old Jr Promise
    League plus Mesquite. Renaming the ids would break links and gain nothing.
 
-   Sheets for this season are still being built, so `matchSheet`, `statsSheet`
-   and every `gid` are null. Pages call PSD.config.hasLiveData(id) and show a
-   "coming soon" state instead of firing doomed requests at Google.
+   Match workbooks are published for both divisions. The STATS workbooks are
+   not, so `statsSheet` and every `statsGid` are still null — pages call
+   PSD.config.hasLiveStats(id) and show a "coming soon" state rather than
+   firing doomed requests at Google. Same for the finals date, which the
+   2026-2027 rulebook lists as TBA.
    ========================================================================== */
 
 (function (root) {
@@ -56,7 +58,7 @@
     leagues: [
       {
         id: 'pl',
-        name: 'Promise League: Late Release',
+        name: 'Promise: Late Release',
         shortName: 'Late Release',
         blurb: 'Late Release · Mondays',
 
@@ -101,7 +103,7 @@
 
       {
         id: 'jrpl',
-        name: 'Promise League: Early Release',
+        name: 'Promise: Early Release',
         shortName: 'Early Release',
         blurb: 'Early Release · Tuesdays',
 
@@ -172,9 +174,8 @@
     'Innovations Academy': { color: '#0369a1', logo: 'https://3.files.edl.io/5b29/24/01/30/203127-760b8684-7411-463d-84d0-38653baa5249.png', also: ['Innovations'] },
     'Los Amigos':          { color: '#15803d', logo: 'https://3.files.edl.io/aa2d/24/01/30/203128-f79f02e7-682b-4e43-975d-d6ac2b210779.png' },
     'Manzanita':           { color: '#7c2d12', logo: 'https://3.files.edl.io/78d0/24/11/12/173918-dbf6ddaa-bf7b-408d-aa49-db4cdecdc9bb.png' },
-    // New for 2026-27. No logo published yet, so pages fall back to initials
-    // on this colour — paste the Edlio URL here and every page picks it up.
-    'Mesquite':            { color: '#5b21b6', logo: null },
+    // New for 2026-27. Edlio serves this one as a .jpg, unlike the rest.
+    'Mesquite':            { color: '#5b21b6', logo: 'https://3.files.edl.io/6737/24/01/08/225238-a58895d9-74ec-4463-9225-f720109953c4.jpg' },
     'Palmtree':            { color: '#047857', logo: 'https://3.files.edl.io/deef/24/01/30/203132-727d82ee-15ae-4e4a-9e3b-95f7e677e038.png' },
     'Tumbleweed':          { color: '#92400e', logo: 'https://3.files.edl.io/419d/25/10/02/220537-89da6677-8013-4232-bf2b-62aab2b64d29.png' },
     'Yucca':               { color: '#4d7c0f', logo: 'https://3.files.edl.io/c0fd/24/01/30/203144-7cccf38b-4ea6-4ca5-ac4e-1c5cb2ecdc53.png' }
