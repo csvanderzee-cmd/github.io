@@ -80,7 +80,7 @@
         // Workbook holding week-by-week match results.
         matchSheet: '2PACX-1vQTuL_DK8CmYc8Nz_FGKw-sdFey0xiTz9IvCatndVjoJCuq74boYj22aULYdC6sQ1QS_8-cTpIZTH73',
         // Separate workbook holding per-player stats. Different tabs, different gids.
-        statsSheet: null,
+        statsSheet: '2PACX-1vTPnVnHIJLWIHRvAHnPrvC7cCOlPRU3-bwauFUuASf98Rk6KYy8JjpM7SKNGCdQ8tejYYU3__4NK51I',
 
         // Finals bracket lives on its own tab in the match workbook.
         // Formatting on this tab is expected to change for 2026-27.
@@ -89,15 +89,15 @@
 
         // 4 schools, 9 weeks: every pair meets 3 times, 2 series per week.
         weeks: [
-          { week: 1, gid: '0',          statsGid: null, startDate: '2026-09-21' },
-          { week: 2, gid: '1394279234', statsGid: null, startDate: '2026-09-28' },
-          { week: 3, gid: '1802241807', statsGid: null, startDate: '2026-10-05' },
-          { week: 4, gid: '865555826',  statsGid: null, startDate: '2026-10-12' },
-          { week: 5, gid: '510645723',  statsGid: null, startDate: '2026-10-19' },
-          { week: 6, gid: '670646977',  statsGid: null, startDate: '2026-10-26' },
-          { week: 7, gid: '1597369451', statsGid: null, startDate: '2026-11-02' },
-          { week: 8, gid: '1779418916', statsGid: null, startDate: '2026-11-09' },
-          { week: 9, gid: '1661876514', statsGid: null, startDate: '2026-11-16' }
+          { week: 1, gid: '0',          statsGid: '0', startDate: '2026-09-21' },
+          { week: 2, gid: '1394279234', statsGid: '665106399', startDate: '2026-09-28' },
+          { week: 3, gid: '1802241807', statsGid: '546424668', startDate: '2026-10-05' },
+          { week: 4, gid: '865555826',  statsGid: '1307944103', startDate: '2026-10-12' },
+          { week: 5, gid: '510645723',  statsGid: '1391377756', startDate: '2026-10-19' },
+          { week: 6, gid: '670646977',  statsGid: '1646798593', startDate: '2026-10-26' },
+          { week: 7, gid: '1597369451', statsGid: '12811573', startDate: '2026-11-02' },
+          { week: 8, gid: '1779418916', statsGid: '375424419', startDate: '2026-11-09' },
+          { week: 9, gid: '1661876514', statsGid: '400418810', startDate: '2026-11-16' }
         ]
       },
 
@@ -122,7 +122,7 @@
         aliases: { 'Cimmaron': 'Cimarron', 'Cimmarron': 'Cimarron' },
 
         matchSheet: '2PACX-1vQuwh0wsNcmLfZR0otmToNWeUwN7Rv5wsuGb69HBhaNdBctXvOkFgduDfwe3rzOrFucSEjHFMvVwrE2',
-        statsSheet: null,
+        statsSheet: '2PACX-1vT1NHFDysYXCPgoA6dDWAYIakjQXD2xdivTdJmMMIdUzyWr__hTrAPrqPD5sh8LKgMa-1KmUFS8rbhd',
 
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '2049340971',
@@ -131,15 +131,15 @@
         // 9 schools, 9 weeks: full single round robin, one bye per week. The
         // bye school is the last row on each tab, with BYE in every column.
         weeks: [
-          { week: 1, gid: '0',          statsGid: null, startDate: '2026-09-22' },
-          { week: 2, gid: '426994172',  statsGid: null, startDate: '2026-09-29' },
-          { week: 3, gid: '1433543241', statsGid: null, startDate: '2026-10-06' },
-          { week: 4, gid: '444737932',  statsGid: null, startDate: '2026-10-13' },
-          { week: 5, gid: '1415786975', statsGid: null, startDate: '2026-10-20' },
-          { week: 6, gid: '1494494803', statsGid: null, startDate: '2026-10-27' },
-          { week: 7, gid: '1784129739', statsGid: null, startDate: '2026-11-03' },
-          { week: 8, gid: '245869125',  statsGid: null, startDate: '2026-11-10' },
-          { week: 9, gid: '1127902206', statsGid: null, startDate: '2026-11-17' }
+          { week: 1, gid: '0',          statsGid: '0', startDate: '2026-09-22' },
+          { week: 2, gid: '426994172',  statsGid: '1683237523', startDate: '2026-09-29' },
+          { week: 3, gid: '1433543241', statsGid: '999575914', startDate: '2026-10-06' },
+          { week: 4, gid: '444737932',  statsGid: '1086365448', startDate: '2026-10-13' },
+          { week: 5, gid: '1415786975', statsGid: '987767974', startDate: '2026-10-20' },
+          { week: 6, gid: '1494494803', statsGid: '1930410954', startDate: '2026-10-27' },
+          { week: 7, gid: '1784129739', statsGid: '543742881', startDate: '2026-11-03' },
+          { week: 8, gid: '245869125',  statsGid: '701601160', startDate: '2026-11-10' },
+          { week: 9, gid: '1127902206', statsGid: '1276348122', startDate: '2026-11-17' }
         ]
       }
     ]

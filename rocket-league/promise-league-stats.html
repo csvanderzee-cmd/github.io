@@ -292,7 +292,6 @@
       </li>
     </ul>
     <div class="nav-right">
-      <a href="finals.html" class="nav-pill pill-finals" data-page="finals">🏆 Finals</a>
       <a href="../champions.html" class="nav-pill pill-champs" data-page="champions">🏅 Champions</a>
       <a href="rules.html" class="nav-pill pill-rules" data-page="rules">Rules</a>
 
@@ -315,7 +314,6 @@
   <a href="jr-promise-league-schedule.html" class="drawer-indent" data-page="jr-promise-league-schedule">Schedule</a>
   <a href="jr-promise-league-stats.html" class="drawer-indent" data-page="jr-promise-league-stats">Player Stats</a>
   <div class="drawer-section">More</div>
-  <a href="finals.html" data-page="finals">🏆 Finals</a>
   <a href="../champions.html" data-page="champions">🏅 Champions</a>
   <a href="rules.html" data-page="rules">Rules</a>
 
@@ -468,6 +466,41 @@ function getSchoolColor(name) {
   return PSD.config.schoolColor(name) || FALLBACK_ACCENT;
 }
 
+
+
+/**
+ * Shown when the stats workbook is reachable but has no rows yet — either
+ * pre-season, or a filter that matches nobody.
+ */
+function emptyStateHtml() {
+  const filtered = document.getElementById('player-search-input').value.trim() !== ''
+                || document.getElementById('school-filter').value !== '';
+  const heading = filtered ? 'No players match those filters' : 'Player stats open September 21';
+  const sub = filtered
+    ? 'Try clearing the search box or choosing All Schools.'
+    : 'Early Release plays Mondays at 4:00 PM. Stats appear here after week 1 is reported.'.replace('Early Release', PSD.config.league('pl').shortName);
+  return '<div style="text-align:center;padding:3rem 1.5rem;color:#9ca3af">'
+       + '<div style="font-family:\'Rajdhani\',sans-serif;font-weight:900;text-transform:uppercase;'
+       + 'letter-spacing:.1em;font-size:1.35rem;color:#fff;margin-bottom:.4rem">' + heading + '</div>'
+       + '<div style="font-size:.9rem">' + sub + '</div></div>';
+}
+/**
+ * The ORANGE/BLUE side a player was on for a given game, as a small pill.
+ *
+ * Column C of the stats sheet. A player is locked to one side for a series
+ * but may switch between weeks, so this belongs on the game row rather than
+ * on the player — their record is still aggregated across both sides.
+ */
+function sideCell(side) {
+  const s = String(side || '').trim().toUpperCase();
+  if (s !== 'ORANGE' && s !== 'BLUE') return '<span style="color:#4b5563">—</span>';
+  const c = s === 'ORANGE'
+    ? { fg:'#FBBF24', bg:'rgba(245,158,11,0.16)', bd:'rgba(245,158,11,0.4)' }
+    : { fg:'#60A5FA', bg:'rgba(59,130,246,0.16)', bd:'rgba(59,130,246,0.4)' };
+  return `<span style="display:inline-block;font-family:'Rajdhani',sans-serif;font-weight:800;`
+       + `font-size:0.62rem;letter-spacing:0.1em;padding:2px 7px;border-radius:4px;`
+       + `color:${c.fg};background:${c.bg};border:1px solid ${c.bd}">${s}</span>`;
+}
 function getLogo(name) {
   return PSD.config.schoolLogo(name);
 }
@@ -634,7 +667,9 @@ function aggregateStats(rawData) {
     const rawName = row['Student Name']; if (!rawName) return;
     const mergeKey = getMergeKey(rawName);
     const displayName = normalizeName(rawName);
-    const school = row['School'] || '';
+    // Roster spelling, so a school retyped a different way each week stays
+    // one entry in the school filter and does not split a player's record.
+    const school = PSD.config.canonicalSchool('pl', row['School'] || '');
     const key = `${mergeKey}||${school}`;
     const result = row['Win/Lose'] ? row['Win/Lose'].toUpperCase() : 'N/A';
     const isForfeit = isForfeitRow(row);
@@ -978,6 +1013,14 @@ function getBadges(player, allPlayers) {
 function renderPlayerCards(data, statMode) {
   const container = document.getElementById('player-cards-container');
   container.innerHTML = '';
+
+  // The workbook is published but empty until week 1 is played. Without this
+  // the page reads "Live data loaded" over a blank panel, which looks broken.
+  if (!data.length) {
+    container.innerHTML = emptyStateHtml();
+    return;
+  }
+
   const isAvg = statMode === 'averages';
   data.forEach((player, index) => {
     const card = document.createElement('div');
@@ -1066,7 +1109,7 @@ function showPlayerDetails(playerName, playerSchool, event) {
   const avgScore = playerData.avgScore || 1;
   const maxScore = Math.max(...sorted.filter(g=>!g.__forfeit).map(g=>parseInt(g['Score'])||0), 1);
 
-  let html = `<table><thead><tr><th>Week</th><th>Result</th><th class="score-th" data-tip="🟢 Above your avg  🟡 Near your avg  🔴 Below your avg">Score ℹ</th><th>Goals</th><th>Shots</th><th>Assists</th><th>Saves</th></tr></thead><tbody>`;
+  let html = `<table><thead><tr><th>Week</th><th>Team</th><th>Result</th><th class="score-th" data-tip="🟢 Above your avg  🟡 Near your avg  🔴 Below your avg">Score ℹ</th><th>Goals</th><th>Shots</th><th>Assists</th><th>Saves</th></tr></thead><tbody>`;
   sorted.forEach(game => {
     const result = (game['Win/Lose'] || 'N/A').toUpperCase();
     const isForfeit = !!game.__forfeit;
@@ -1085,6 +1128,7 @@ function showPlayerDetails(playerName, playerSchool, event) {
     }
     html += `<tr class="${rowClass} ${isForfeit?'forfeit':''}">
       <td>${game['Week']||'—'}</td>
+      <td>${sideCell(game['Team'])}</td>
       <td><span class="wl-pill ${pillClass}">${pillLabel}</span></td>
       <td>${scoreHtml}</td>
       <td>${d(game['Goals'])}</td><td>${d(game['Shots'])}</td><td>${d(game['Assists'])}</td><td>${d(game['Saves'])}</td>
