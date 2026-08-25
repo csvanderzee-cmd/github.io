@@ -88,6 +88,8 @@
         /* ── WEEK BUTTONS ── */
         .controls-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 2.5rem; }
         .week-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 10px; }
+        /* Forces the 9 week buttons to break 4 over 5. */
+        .week-row-break { flex-basis: 100%; height: 0; margin: 0; }
         .week-button {
             padding: 0.45rem 1.2rem; border-radius: 9999px;
             font-family: 'Rajdhani', sans-serif; font-size: 0.88rem; font-weight: 700;
@@ -452,6 +454,14 @@
         btn.dataset.index = index;
         btn.addEventListener('click', () => loadWeekByIndex(index));
         weekButtonsContainer.appendChild(btn);
+
+        // Nine weeks wrap to 8 + 1 on a wide screen, orphaning the last button.
+        // This breaks them 4 over 5 instead.
+        if (index === 3) {
+            const rowBreak = document.createElement("div");
+            rowBreak.className = "week-row-break";
+            weekButtonsContainer.appendChild(rowBreak);
+        }
     });
 
     function getRelevantWeekIndex() {

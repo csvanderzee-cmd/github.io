@@ -75,15 +75,29 @@
         .season-started-banner { animation: pulse-glow 2s ease-in-out infinite; }
         .contact-bar-link:hover .contact-email { color: #FFD166; }
 
-        /* ── Season timeline ── */
-        .week-strip { display: flex; gap: .75rem; overflow-x: auto; padding-bottom: .75rem; scrollbar-width: thin; scrollbar-color: #333 #0B0E14; }
-        .week-chip { flex: 0 0 auto; min-width: 140px; background: #151B26; border: 1px solid rgba(255,255,255,.08); border-radius: .85rem; padding: .9rem 1rem; transition: border-color .2s, background .2s; }
+        /* ── Season timeline ──
+           A grid, not a scroller. Nine chips in a scrolling row only ever hid
+           one week past the right edge, so the scrollbar bought nothing and
+           the last week was easy to miss. 5 over 4 on desktop shows the whole
+           season at once. */
+        .week-strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+        @media (min-width: 640px)  { .week-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        @media (min-width: 1024px) { .week-strip { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+        .week-chip { position: relative; background: #151B26; border: 1px solid rgba(255,255,255,.08); border-radius: .85rem; padding: 1rem; overflow: hidden; transition: border-color .2s, transform .2s, background .2s; }
+        .week-chip::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; background: rgba(255,255,255,.12); }
+        .week-chip:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.18); }
+
         .week-chip.is-next { border-color: rgba(253,185,19,.55); background: linear-gradient(135deg, rgba(253,185,19,.12), rgba(21,27,38,.9)); }
-        .week-chip.is-done { opacity: .45; }
-        .week-chip .wk-num { font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: .65rem; letter-spacing: .2em; text-transform: uppercase; color: #6b7280; }
+        .week-chip.is-next::before { background: linear-gradient(180deg, #FDB913, #FF6B6B); }
+        .week-chip.is-done { opacity: .4; }
+        .week-chip.is-done::before { background: rgba(74,222,128,.5); }
+
+        .week-chip .wk-num { font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 1.5rem; line-height: 1; color: #fff; letter-spacing: .02em; }
         .week-chip.is-next .wk-num { color: #FFD166; }
-        .week-chip .wk-date { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.05rem; color: #fff; line-height: 1.2; margin-top: .2rem; }
-        .week-chip .wk-sub { font-size: .68rem; color: #6b7280; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; margin-top: .15rem; }
+        .week-chip .wk-date { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: .92rem; color: #d1d5db; line-height: 1.35; margin-top: .5rem; }
+        .week-chip .wk-badge { position: absolute; top: .6rem; right: .6rem; font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: .55rem; letter-spacing: .14em; text-transform: uppercase; padding: 2px 6px; border-radius: 9999px; background: linear-gradient(90deg, #FDB913, #facc15); color: #0B0E14; }
+        .week-chip .wk-tick { position: absolute; top: .7rem; right: .7rem; color: #4ade80; font-size: .8rem; font-weight: 900; }
 
         /* ── School pills ── */
         .school-pill { display: inline-flex; align-items: center; gap: .4rem; padding: .3rem .7rem; border-radius: 9999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); font-size: .74rem; font-weight: 700; color: #d1d5db; white-space: nowrap; }
@@ -465,20 +479,38 @@
 
         <!-- ─── PHOTO TICKER ─── -->
         <div id="photo-ticker-section" class="bg-esports-dark border-b border-white/10 py-6 overflow-hidden relative z-20" aria-label="Community Photos">
-            <div class="max-w-7xl mx-auto px-4 mb-4">
-                <span class="text-gray-500 text-xs font-bold tracking-[0.2em] uppercase">Community Moments</span>
-            </div>
-            <div class="relative overflow-hidden">
-                <div id="photo-ticker" class="flex gap-4 w-fit" style="animation: photo-scroll 40s linear infinite;">
+            <div class="max-w-7xl mx-auto px-4">
+                <span class="text-gray-500 text-xs font-bold tracking-[0.2em] uppercase block mb-4">Community Moments</span>
+                <!-- Same container as the heading, so the strip lines up with
+                     it instead of running full-bleed past it on wide screens. -->
+                <div class="ticker-window relative overflow-hidden rounded-xl">
+                    <div id="photo-ticker" class="flex gap-4 w-fit">
+                    </div>
                 </div>
             </div>
             <div id="photo-ticker-empty" class="hidden text-center text-gray-600 text-sm py-4">No photos yet — add images to the <code>photos/</code> folder in the repo.</div>
         </div>
         <style>
-            @keyframes photo-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+            /* The strip holds the photo list twice over. Scrolling exactly one
+               copy puts the second copy where the first began, so the reset is
+               invisible. That distance is NOT 50% of the strip: the flex gap
+               sits between the two copies too, so the halfway point lands half
+               a gap short and the row visibly jumps back. Hence the -8px,
+               which is half of the 16px gap-4. */
+            @keyframes photo-scroll {
+                from { transform: translateX(0); }
+                to   { transform: translateX(calc(-50% - 8px)); }
+            }
+            /* Held until the photos have loaded — see the script below. */
+            #photo-ticker.is-running { animation: photo-scroll 60s linear infinite; will-change: transform; }
             #photo-ticker img { height: 160px; width: auto; object-fit: cover; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
+            .ticker-window:hover #photo-ticker { animation-play-state: paused; }
+            /* Fades the strip out at both ends so photos do not hard-clip. */
+            .ticker-window { -webkit-mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
+                                     mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
             @media (prefers-reduced-motion: reduce) {
                 #photo-ticker { animation: none; flex-wrap: wrap; justify-content: center; }
+                .ticker-window { -webkit-mask-image: none; mask-image: none; }
             }
         </style>
         <script>
@@ -497,15 +529,33 @@
                     if (imgs.length === 0) { ticker.style.display = 'none'; empty.classList.remove('hidden'); return; }
                     // shuffle
                     for (var i = imgs.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = imgs[i]; imgs[i] = imgs[j]; imgs[j] = tmp; }
+
+                    // A couple of dozen is plenty for a loop this long, and it
+                    // halves the request count versus posting the whole folder.
+                    imgs = imgs.slice(0, 24);
+
                     // duplicate for seamless loop
                     var all = imgs.concat(imgs);
-                    all.forEach(function(f) {
+                    var pending = all.map(function(f) {
                         var img = document.createElement('img');
-                        img.src = raw + encodeURIComponent(f.name);
                         img.alt = f.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
-                        img.loading = 'lazy';
+                        // Deliberately NOT lazy. These are laid out in a row that
+                        // is mostly off-screen, so lazy images would pop in one by
+                        // one, each widening the strip and shifting the point the
+                        // loop resets to — which is the jump this used to have.
+                        img.src = raw + encodeURIComponent(f.name);
                         ticker.appendChild(img);
+                        return new Promise(function(resolve) {
+                            if (img.complete) return resolve();
+                            img.addEventListener('load', resolve, { once: true });
+                            // A dead file must not hold the whole strip hostage.
+                            img.addEventListener('error', function() { img.remove(); resolve(); }, { once: true });
+                        });
                     });
+
+                    // Start only once every photo has a real width, so the strip
+                    // measures the same at the end of the loop as at the start.
+                    Promise.all(pending).then(function() { ticker.classList.add('is-running'); });
                 })
                 .catch(function() { section.style.display = 'none'; });
         })();
@@ -878,26 +928,23 @@
 
       strip.innerHTML = weekNums.map(function (n) {
         var days = byWeek[n].slice().sort(function (a, b) { return a.date - b.date; });
-        var cls  = 'week-chip';
-        if (n === nextWeek) cls += ' is-next';
-        else if (nextWeek === null || n < nextWeek) cls += ' is-done';
+        var done = nextWeek === null || n < nextWeek;
+        var cls  = 'week-chip' + (n === nextWeek ? ' is-next' : done ? ' is-done' : '');
 
         var dateLine = days.map(function (d) {
           return d.day + ' ' + d.date.toLocaleDateString('en-US', fmt);
         }).join('<br>');
 
+        var marker = n === nextWeek ? '<span class="wk-badge">Up Next</span>'
+                   : done          ? '<span class="wk-tick" aria-hidden="true">✓</span>'
+                   : '';
+
         return '<div class="' + cls + '" role="listitem">' +
-                 '<div class="wk-num">' + (n === nextWeek ? 'Up Next · ' : '') + 'Week ' + n + '</div>' +
+                 marker +
+                 '<div class="wk-num">Week ' + n + '</div>' +
                  '<div class="wk-date">' + dateLine + '</div>' +
-                 '<div class="wk-sub">' + days.length + ' match days</div>' +
                '</div>';
       }).join('');
-
-      // Bring the upcoming week into view without yanking the whole page.
-      var next = strip.querySelector('.is-next');
-      if (next && next.offsetLeft > strip.clientWidth / 2) {
-        strip.scrollLeft = next.offsetLeft - 24;
-      }
     }
 
     /* ── Hero state machine ─────────────────────────────────────────────────
