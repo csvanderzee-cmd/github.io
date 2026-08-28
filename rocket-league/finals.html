@@ -54,6 +54,11 @@
   .sched-hdr h2{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:clamp(1.1rem,2.5vw,1.5rem);text-transform:uppercase;letter-spacing:.12em;margin:0;color:#fff;}
   .sched-date-pill{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;padding:3px 11px;border-radius:9999px;background:rgba(255,215,0,.12);color:var(--gold);border:1px solid rgba(255,215,0,.25);}
 
+  .sched-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;}
+  .ss-item{background:rgba(255,255,255,.03);border:1px solid var(--bdr);border-radius:10px;padding:.85rem 1rem;}
+  .ss-label{font-family:'Rajdhani',sans-serif;font-weight:800;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
+  .ss-value{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:#fff;line-height:1.3;}
+  .sched-note{margin:1rem 0 0;font-size:.82rem;color:var(--muted);line-height:1.5;}
   .sched-timeline{display:grid;grid-template-columns:1fr 96px 1fr;position:relative;}
   .sched-timeline::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:1px;transform:translateX(-50%);background:linear-gradient(to bottom,transparent,rgba(255,255,255,.14) 6%,rgba(255,255,255,.14) 94%,transparent);pointer-events:none;z-index:0;}
 
@@ -447,66 +452,36 @@
 
 <div class="container">
 
-  <section id="day-of-schedule" class="schedule-section" aria-label="Day-of Schedule">
+  <section id="day-of-schedule" class="schedule-section" aria-label="Championship Day">
     <div class="sched-hdr">
       <span style="font-size:1.1rem">📅</span>
-      <h2>Day-of Schedule</h2>
-      <span class="sched-date-pill">May 9, 2026</span>
+      <h2>Championship Day</h2>
+      <span class="sched-date-pill" id="finals-date-pill">—</span>
     </div>
 
-    <div class="sched-timeline">
-      <div class="st-hdr-left"><span>Early Release</span> 🔴</div>
-      <div class="st-hdr-mid"></div>
-      <div class="st-hdr-right">🔵 <span>Late Release</span></div>
-
-      <div class="st-left"><div class="st-card tc"><div class="st-card-lbl">Check In</div><div class="st-card-sub">Early Release teams arrive</div></div></div>
-      <div class="st-mid"><div class="st-time">9:00 AM</div><div class="st-dot tc"></div></div>
-      <div class="st-right"></div>
-
-      <div class="st-left"><div class="st-card ts"><div class="st-card-lbl">Semifinal Match 1</div><div class="st-card-sub">#1 vs #4 seed · Best of 5</div></div></div>
-      <div class="st-mid"><div class="st-time">9:30 AM</div><div class="st-dot ts"></div></div>
-      <div class="st-right"></div>
-
-      <div class="st-left"><div class="st-card ts"><div class="st-card-lbl">Semifinal Match 2</div><div class="st-card-sub">#2 vs #3 seed · Best of 5</div></div></div>
-      <div class="st-mid"><div class="st-time">10:15 AM</div><div class="st-dot ts"></div></div>
-      <div class="st-right"></div>
-
-      <div class="st-left"><div class="st-card tf"><div class="st-card-lbl">Early Release Finals</div><div class="st-card-sub">Championship match · Best of 5</div></div></div>
-      <div class="st-mid"><div class="st-time">11:00 AM</div><div class="st-dot tf"></div></div>
-      <div class="st-right"><div class="st-card tc"><div class="st-card-lbl">Check In</div><div class="st-card-sub">Late Release teams arrive</div></div></div>
-
-      <div class="st-left"><div class="st-card ta"><div class="st-card-lbl">🎖️ Awards &amp; Photos</div><div class="st-card-sub">Early Release ceremony</div></div></div>
-      <div class="st-mid"><div class="st-time">11:45 AM</div><div class="st-dot ta"></div></div>
-      <div class="st-right"></div>
-
-      <div class="st-left"></div>
-      <div class="st-mid"><div class="st-time">12:00 PM</div><div class="st-dot ts"></div></div>
-      <div class="st-right"><div class="st-card ts"><div class="st-card-lbl">Semifinal Match 1</div><div class="st-card-sub">#1 vs #4 seed · Best of 5</div></div></div>
-
-      <div class="st-left"></div>
-      <div class="st-mid"><div class="st-time">12:45 PM</div><div class="st-dot ts"></div></div>
-      <div class="st-right"><div class="st-card ts"><div class="st-card-lbl">Semifinal Match 2</div><div class="st-card-sub">#2 vs #3 seed · Best of 5</div></div></div>
-
-      <div class="st-left"></div>
-      <div class="st-mid"><div class="st-time">1:30 PM</div><div class="st-dot tf"></div></div>
-      <div class="st-right"><div class="st-card tf"><div class="st-card-lbl">Late Release Finals</div><div class="st-card-sub">Championship match · Best of 5</div></div></div>
-
-      <div class="st-left"></div>
-      <div class="st-mid"><div class="st-time">2:15 PM</div><div class="st-dot ta"></div></div>
-      <div class="st-right"><div class="st-card ta"><div class="st-card-lbl">🎖️ Awards &amp; Photos</div><div class="st-card-sub">Late Release ceremony</div></div></div>
+    <!-- The per-match run of play is not published yet. It used to be a
+         hardcoded timeline carried over from last season, which contradicted
+         this season's 8:00 AM start, so it now states only what is confirmed
+         and fills the times in from data/leagues.js once they are set. -->
+    <div class="sched-summary">
+      <div class="ss-item">
+        <div class="ss-label">Date</div>
+        <div class="ss-value" id="finals-day-value">—</div>
+      </div>
+      <div class="ss-item">
+        <div class="ss-label">First Match</div>
+        <div class="ss-value" id="finals-time-value">—</div>
+      </div>
+      <div class="ss-item">
+        <div class="ss-label">Venue</div>
+        <div class="ss-value">Quail Valley Esports Arena</div>
+      </div>
+      <div class="ss-item">
+        <div class="ss-label">Format</div>
+        <div class="ss-value">Best of 5 · Top 4 per division</div>
+      </div>
     </div>
-
-    <div class="sched-mobile">
-      <div class="sched-mob-item tc"><div class="sched-mob-time">9:00 AM</div><div class="sched-mob-body"><div class="sched-mob-lbl">Check In</div><div class="sched-mob-league jrpl">Early Release</div></div></div>
-      <div class="sched-mob-item ts"><div class="sched-mob-time">9:30 AM</div><div class="sched-mob-body"><div class="sched-mob-lbl">Semifinal Match 1</div><div class="sched-mob-league jrpl">Early Release · #1 vs #4</div></div></div>
-      <div class="sched-mob-item ts"><div class="sched-mob-time">10:15 AM</div><div class="sched-mob-body"><div class="sched-mob-lbl">Semifinal Match 2</div><div class="sched-mob-league jrpl">Early Release · #2 vs #3</div></div></div>
-      <div class="sched-mob-item tf"><div class="sched-mob-time">11:00 AM</div><div class="sched-mob-body"><div class="sched-mob-lbl">Early Release Finals + PL Check In</div><div class="sched-mob-league both">Both leagues</div></div></div>
-      <div class="sched-mob-item ta"><div class="sched-mob-time">11:45 AM</div><div class="sched-mob-body"><div class="sched-mob-lbl">🎖️ Awards &amp; Photos</div><div class="sched-mob-league jrpl">Early Release</div></div></div>
-      <div class="sched-mob-item ts"><div class="sched-mob-time">12:00 PM</div><div class="sched-mob-body"><div class="sched-mob-lbl">Semifinal Match 1</div><div class="sched-mob-league pl">Late Release · #1 vs #4</div></div></div>
-      <div class="sched-mob-item ts"><div class="sched-mob-time">12:45 PM</div><div class="sched-mob-body"><div class="sched-mob-lbl">Semifinal Match 2</div><div class="sched-mob-league pl">Late Release · #2 vs #3</div></div></div>
-      <div class="sched-mob-item tf"><div class="sched-mob-time">1:30 PM</div><div class="sched-mob-body"><div class="sched-mob-lbl">Late Release Finals</div><div class="sched-mob-league pl">Late Release Championship</div></div></div>
-      <div class="sched-mob-item ta"><div class="sched-mob-time">~2:15 PM</div><div class="sched-mob-body"><div class="sched-mob-lbl">🎖️ Awards &amp; Photos</div><div class="sched-mob-league pl">Late Release</div></div></div>
-    </div>
+    <p class="sched-note">The full run of play — check-in, semifinals and finals times for each division — will be posted here and shared through Google Classroom.</p>
   </section>
 
   <section class="league-section">
@@ -828,38 +803,6 @@ function renderLeague(lg, d) {
   }
 }
 
-function highlightCurrentScheduleItem() {
-  const FINALS_DATE = '2026-05-09';
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const todayStr = `${year}-${month}-${day}`;
-  if (todayStr !== FINALS_DATE) return;
-
-  const timeSlots = [
-    { time: '09:00', endTime: '09:30', idx: 1 },
-    { time: '09:30', endTime: '10:15', idx: 2 },
-    { time: '10:15', endTime: '11:00', idx: 3 },
-    { time: '11:00', endTime: '11:45', idx: 4 },
-    { time: '11:45', endTime: '12:00', idx: 5 },
-    { time: '12:00', endTime: '12:45', idx: 6 },
-    { time: '12:45', endTime: '13:30', idx: 7 },
-    { time: '13:30', endTime: '14:15', idx: 8 },
-    { time: '14:15', endTime: '17:00', idx: 9 },
-  ];
-
-  const hhmm = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-  timeSlots.forEach(slot => {
-    if (hhmm >= slot.time && hhmm < slot.endTime) {
-      const cards = document.querySelectorAll(`.sched-timeline > div:nth-child(${slot.idx * 3 - 2}) .st-card, .sched-timeline > div:nth-child(${slot.idx * 3}) .st-card, .sched-mobile > div:nth-child(${slot.idx})`);
-      cards.forEach(el => {
-        el.style.outline = '2px solid rgba(74,222,128,.5)';
-        el.style.boxShadow = '0 0 14px rgba(74,222,128,.2)';
-      });
-    }
-  });
-}
 
 async function refresh() {
   // Bracket tab for this season is not published yet — nothing to poll for.
@@ -881,6 +824,23 @@ async function refresh() {
     console.error(e);
     document.getElementById('update-msg').textContent = 'Failed to load — will retry';
   }
+}
+
+/** Fills the Championship Day card from data/leagues.js. */
+function initChampionshipDay() {
+  const d = PSD.finalsStart();
+  const pill = document.getElementById('finals-date-pill');
+  const day  = document.getElementById('finals-day-value');
+  const time = document.getElementById('finals-time-value');
+  if (!d) {
+    if (pill) pill.textContent = 'Date TBA';
+    if (day)  day.textContent  = 'To be announced';
+    if (time) time.textContent = 'To be announced';
+    return;
+  }
+  if (pill) pill.textContent = d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+  if (day)  day.textContent  = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+  if (time) time.textContent = d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
 }
 
 function initCountdown() {
@@ -917,9 +877,9 @@ function initParticles() {
 
 document.addEventListener('DOMContentLoaded', () => {
   adjustSchedulePosition();
+  initChampionshipDay();
   initCountdown();
   if(!window.matchMedia('(prefers-reduced-motion:reduce)').matches) initParticles();
-  highlightCurrentScheduleItem();
   refresh();
   setInterval(refresh, 60000);
 });

@@ -31,11 +31,10 @@
    a subset of the old Promise League, and Early Release is the old Jr Promise
    League plus Mesquite. Renaming the ids would break links and gain nothing.
 
-   Match workbooks are published for both divisions. The STATS workbooks are
-   not, so `statsSheet` and every `statsGid` are still null — pages call
-   PSD.config.hasLiveStats(id) and show a "coming soon" state rather than
-   firing doomed requests at Google. Same for the finals date, which the
-   2026-2027 rulebook lists as TBA.
+   Both match workbooks and both stats workbooks are published, and the
+   championship is set for Saturday 16 January 2027. The one thing still
+   outstanding is the finals bracket tab, whose layout is expected to change —
+   until it is published, finals.html says so rather than polling for it.
    ========================================================================== */
 
 (function (root) {
@@ -48,12 +47,11 @@
     seasonLabel: '2026-27 Fall Season',
 
     // Season-wide dates. Local time, not UTC.
-    // Finals day is TBA in the 2026-2027 rulebook. Leave these null until the
-    // date is announced — the homepage renders a "dates TBA" card instead of a
-    // countdown, and flips to a countdown the moment a date is filled in.
-    finalsDate:    null,          // 'YYYY-MM-DD' finals tournament day
-    finalsTipoff:  '09:00:00',    // first match of finals day
-    seasonEndDate: null,          // site flips to off-season after this
+    // Championship is Saturday 16 January 2027, doors at 8:00 AM — 60 days
+    // after the regular season ends on 17 November.
+    finalsDate:    '2027-01-16',  // finals tournament day
+    finalsTipoff:  '08:00:00',    // first match of finals day
+    seasonEndDate: '2027-01-17',  // site flips to off-season after this
 
     leagues: [
       {
@@ -85,7 +83,10 @@
         // Finals bracket lives on its own tab in the match workbook.
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '672839496',
-        finalsTimes: { s1: '12:00 PM', s2: '12:45 PM', fin: '1:30 PM' },
+        // Run of play for 16 Jan 2027 is not set yet. Nulls keep the object
+        // shape while the bracket simply omits the time chip; fill these in
+        // and the times reappear on the cards.
+        finalsTimes: { s1: null, s2: null, fin: null },
 
         // 4 schools, 9 weeks: every pair meets 3 times, 2 series per week.
         weeks: [
@@ -126,7 +127,7 @@
 
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '2049340971',
-        finalsTimes: { s1: '9:30 AM', s2: '10:15 AM', fin: '11:00 AM' },
+        finalsTimes: { s1: null, s2: null, fin: null },
 
         // 9 schools, 9 weeks: full single round robin, one bye per week. The
         // bye school is the last row on each tab, with BYE in every column.
