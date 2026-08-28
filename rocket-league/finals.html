@@ -59,16 +59,9 @@
   .ss-label{font-family:'Rajdhani',sans-serif;font-weight:800;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
   .ss-value{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:#fff;line-height:1.3;}
   .sched-note{margin:1rem 0 0;font-size:.82rem;color:var(--muted);line-height:1.5;}
-  .sched-timeline{display:grid;grid-template-columns:1fr 96px 1fr;position:relative;}
-  .sched-timeline::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:1px;transform:translateX(-50%);background:linear-gradient(to bottom,transparent,rgba(255,255,255,.14) 6%,rgba(255,255,255,.14) 94%,transparent);pointer-events:none;z-index:0;}
 
-  .st-hdr-left{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red-t);display:flex;align-items:center;justify-content:flex-end;gap:.4rem;padding:0 1.25rem .9rem 0;}
-  .st-hdr-mid{padding-bottom:.9rem;}
-  .st-hdr-right{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--blue-t);display:flex;align-items:center;gap:.4rem;padding:0 0 .9rem 1.25rem;}
 
-  .st-left{display:flex;justify-content:flex-end;align-items:center;padding:0 1.25rem .65rem 0;}
   .st-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:.65rem;position:relative;z-index:2;}
-  .st-right{display:flex;justify-content:flex-start;align-items:center;padding:0 0 .65rem 1.25rem;}
 
   .st-time{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.6rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;text-align:center;white-space:nowrap;line-height:1.3;}
   .st-dot{width:10px;height:10px;border-radius:50%;margin:.25rem 0;flex-shrink:0;}
@@ -80,38 +73,10 @@
 
   /* FIX: hover scale only on devices that support hover */
   @media(hover:hover){
-    .st-card:hover{transform:scale(1.02);}
   }
-  .st-card{display:flex;flex-direction:column;gap:.15rem;padding:.65rem .9rem;border-radius:10px;width:100%;max-width:280px;transition:transform .15s;}
-  .st-card.tc{background:rgba(255,255,255,.04);border:1px solid var(--bdr);}
-  .st-card.ts{background:rgba(0,86,150,.1);border:1px solid rgba(77,171,247,.2);}
-  .st-card.tf{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);}
-  .st-card.ta{background:rgba(22,163,74,.08);border:1px solid rgba(74,222,128,.2);}
-  .st-left .st-card{text-align:right;}
-  .st-card-lbl{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.88rem;letter-spacing:.05em;text-transform:uppercase;color:#fff;line-height:1.1;}
-  .st-card.tf .st-card-lbl{color:var(--yellow-t);}
-  .st-card.ta .st-card-lbl{color:#4ade80;}
-  .st-card-sub{font-size:.68rem;color:var(--muted);letter-spacing:.02em;margin-top:.1rem;}
 
   @media(max-width:680px){
-    .sched-timeline{display:none;}
-    .sched-mobile{display:flex;flex-direction:column;gap:.5rem;}
-    .sched-mob-item{display:flex;gap:.75rem;align-items:flex-start;padding:.65rem .85rem;border-radius:10px;}
-    .sched-mob-item.tc{background:rgba(255,255,255,.04);border:1px solid var(--bdr);}
-    .sched-mob-item.ts{background:rgba(0,86,150,.1);border:1px solid rgba(77,171,247,.2);}
-    .sched-mob-item.tf{background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.25);}
-    .sched-mob-item.ta{background:rgba(22,163,74,.08);border:1px solid rgba(74,222,128,.2);}
-    .sched-mob-time{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.08em;color:var(--muted);min-width:72px;padding-top:.15rem;text-transform:uppercase;}
-    .sched-mob-body{flex:1;}
-    .sched-mob-lbl{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.88rem;text-transform:uppercase;letter-spacing:.04em;color:#fff;}
-    .sched-mob-item.tf .sched-mob-lbl{color:var(--yellow-t);}
-    .sched-mob-item.ta .sched-mob-lbl{color:#4ade80;}
-    .sched-mob-league{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;margin-top:.15rem;}
-    .sched-mob-league.jrpl{color:var(--red-t);}
-    .sched-mob-league.pl{color:var(--blue-t);}
-    .sched-mob-league.both{color:var(--yellow-t);}
   }
-  @media(min-width:681px){.sched-mobile{display:none;}}
 
   /* ── LAYOUT ── */
   .container{max-width:1280px;margin:0 auto;padding:2rem 1.25rem 4rem;}
