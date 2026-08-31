@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicons. SVG is primary and stays crisp at any size; the .ico covers
+         older browsers and the bare /favicon.ico that browsers request anyway. -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#0B0E14">
     <title>PSD Esports | 2026-27 Fall Season</title>
     <meta name="description" content="Official home of the Palmdale Promise Esports League. Rocket League standings, schedules, player stats and championship replays for the 2026-27 fall season.">
 
@@ -599,10 +605,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
 
                     <!-- Early Release -->
-                    <article class="group relative bg-esports-card border border-esports-red/30 rounded-2xl overflow-hidden shadow-2xl hover:border-esports-red/60 transition-all duration-300">
+                    <article class="group relative flex flex-col bg-esports-card border border-esports-red/30 rounded-2xl overflow-hidden shadow-2xl hover:border-esports-red/60 transition-all duration-300">
                         <img src="https://wallpapers.com/images/featured/rocket-league-q83tcwb7har0kh5h.webp" alt="" class="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:opacity-25 group-hover:scale-105 transition-all duration-700" loading="lazy">
                         <div class="absolute inset-0 bg-gradient-to-br from-esports-red/20 via-transparent to-transparent" aria-hidden="true"></div>
-                        <div class="relative p-8 z-10">
+                        <div class="relative p-8 z-10 flex flex-col flex-1">
                             <div class="flex items-center gap-3 mb-4">
                                 <div class="w-10 h-10 rounded-xl bg-esports-red/20 border border-esports-red/40 flex items-center justify-center flex-shrink-0">
                                     <i data-lucide="star" class="w-5 h-5 text-esports-red-text" aria-hidden="true"></i>
@@ -613,7 +619,7 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-wrap gap-2 mb-5" role="list" aria-label="Early Release schools">
+                            <div class="school-pills flex flex-wrap gap-2 mb-5" role="list" aria-label="Early Release schools">
                                 <span class="school-pill" role="listitem">Cimarron</span>
                                 <span class="school-pill" role="listitem">Desert Rose</span>
                                 <span class="school-pill" role="listitem">Innovations Academy</span>
@@ -625,7 +631,7 @@
                                 <span class="school-pill" role="listitem">Yucca</span>
                             </div>
 
-                            <div class="grid grid-cols-3 gap-3">
+                            <div class="grid grid-cols-3 gap-3 mt-auto">
                                 <a href="rocket-league/jr-promise-league.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-red/20 hover:border-esports-red/40 transition-all duration-200 no-underline group/link">
                                     <i data-lucide="bar-chart-2" class="w-5 h-5 text-esports-red-text" aria-hidden="true"></i>
                                     <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Standings</span>
@@ -643,10 +649,10 @@
                     </article>
 
                     <!-- Late Release -->
-                    <article class="group relative bg-esports-card border border-esports-blue/30 rounded-2xl overflow-hidden shadow-2xl hover:border-esports-blue/60 transition-all duration-300">
+                    <article class="group relative flex flex-col bg-esports-card border border-esports-blue/30 rounded-2xl overflow-hidden shadow-2xl hover:border-esports-blue/60 transition-all duration-300">
                         <img src="https://wallpapers.com/images/hd/rocket-league-rocket-powered-car-1920x1080-xbjxok5dk6itr8eo.jpg" alt="" class="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:opacity-25 group-hover:scale-105 transition-all duration-700" loading="lazy">
                         <div class="absolute inset-0 bg-gradient-to-br from-esports-blue/20 via-transparent to-transparent" aria-hidden="true"></div>
-                        <div class="relative p-8 z-10">
+                        <div class="relative p-8 z-10 flex flex-col flex-1">
                             <div class="flex items-center gap-3 mb-4">
                                 <div class="w-10 h-10 rounded-xl bg-esports-blue/20 border border-esports-blue/40 flex items-center justify-center flex-shrink-0">
                                     <i data-lucide="trophy" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
@@ -657,14 +663,14 @@
                                 </div>
                             </div>
 
-                            <div class="flex flex-wrap gap-2 mb-5" role="list" aria-label="Late Release schools">
+                            <div class="school-pills flex flex-wrap gap-2 mb-5" role="list" aria-label="Late Release schools">
                                 <span class="school-pill" role="listitem">Cactus</span>
                                 <span class="school-pill" role="listitem">David G Millen</span>
                                 <span class="school-pill" role="listitem">Sage</span>
                                 <span class="school-pill" role="listitem">Shadow Hills</span>
                             </div>
 
-                            <div class="grid grid-cols-3 gap-3">
+                            <div class="grid grid-cols-3 gap-3 mt-auto">
                                 <a href="rocket-league/promise-league.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-blue/20 hover:border-esports-blue/40 transition-all duration-200 no-underline group/link">
                                     <i data-lucide="bar-chart-2" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
                                     <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Standings</span>
