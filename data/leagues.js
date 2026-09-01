@@ -292,6 +292,22 @@
     return e ? (e.color || null) : null;
   };
 
+  /**
+   * Do two spellings name the same school?
+   *
+   * The landing page links to a school by its roster name — "David G Millen"
+   * — while the standings key that school the way the sheet writes it, "DGM",
+   * so a plain string compare would miss. Both sides are resolved through the
+   * registry first; a school with no registry entry yet still matches on a
+   * case/spacing-insensitive compare.
+   */
+  CONFIG.sameSchool = function (a, b) {
+    if (!a || !b) return false;
+    if (reduce(a) === reduce(b)) return true;
+    var ea = schoolEntry(a), eb = schoolEntry(b);
+    return !!(ea && eb && ea === eb);
+  };
+
   /** Is this league's STATS workbook published yet? */
   CONFIG.hasLiveStats = function (id) {
     var lg = CONFIG.league(id);

@@ -847,7 +847,46 @@ function closeModal(){
   backdrop.classList.remove('show');
   backdrop.setAttribute('aria-hidden','true');
   lockScroll(false);
+  clearSchoolQuery();
   if (lastFocusedElement){ lastFocusedElement.focus(); lastFocusedElement = null; }
+}
+
+/* ── Deep link ───────────────────────────────────────────────────────────────
+   The landing page links each school pill here as ?school=Cactus, so a
+   visitor lands straight on that school's record card.
+
+   The name in the link is the roster spelling, which is not always the
+   spelling the sheet uses to key the standings — the link says
+   "David G Millen" where the table says "DGM" — so the two are compared
+   through the shared registry rather than as strings. An unknown or
+   misspelled name simply leaves the standings as they are.               */
+function openSchoolFromQuery(){
+  let want;
+  try { want = new URLSearchParams(window.location.search).get('school'); }
+  catch (e) { return; }
+  if (!want) return;
+
+  const key = Object.keys(schoolData).find(k => PSD.config.sameSchool(k, want));
+  if (!key) return;
+
+  // Focus the row first: the modal returns focus to whatever was active when
+  // it opened, so this lands the visitor on that school's row on close.
+  const row = document.querySelector(`tr[data-school="${CSS.escape(key)}"]`);
+  if (row){
+    row.scrollIntoView({ block:'center' });
+    row.focus({ preventScroll:true });
+  }
+  openModal(schoolData[key]);
+}
+
+/* Drop ?school= once the card is closed, so a refresh or a back-forward
+   restore shows the standings rather than reopening the card. */
+function clearSchoolQuery(){
+  if (!window.history || !history.replaceState) return;
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has('school')) return;
+  url.searchParams.delete('school');
+  history.replaceState(null, '', url.pathname + url.search + url.hash);
 }
 
 function valOrDash(v){ return (v===null||v===undefined)?'–':v; }
@@ -892,6 +931,7 @@ function loadAndProcessAllData(sheetId, gids){
       lastUpdatedSpan.textContent = new Date().toLocaleString();
       loadStatus.textContent = `Rankings loaded. ${sorted.length} schools displayed.`;
       initializeTooltips();
+      openSchoolFromQuery();
     })
     .catch(err => {
       console.error(err);

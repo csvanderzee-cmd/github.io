@@ -107,6 +107,13 @@
 
         /* ── School pills ── */
         .school-pill { display: inline-flex; align-items: center; gap: .4rem; padding: .3rem .7rem; border-radius: 9999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); font-size: .74rem; font-weight: 700; color: #d1d5db; white-space: nowrap; }
+        /* Each pill deep-links to that school's record card on the standings page. */
+        a.school-pill { text-decoration: none; cursor: pointer; transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease; }
+        a.school-pill:hover { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.3); color: #fff; transform: translateY(-1px); }
+        a.school-pill:focus-visible { outline: 2px solid #FDB913; outline-offset: 2px; color: #fff; }
+        /* Roomier on phones — these are now tap targets, not just labels. */
+        @media (max-width: 767px) { a.school-pill { padding: .45rem .8rem; } }
+        @media (prefers-reduced-motion: reduce) { a.school-pill { transition: none; } a.school-pill:hover { transform: none; } }
     </style>
 </head>
 
@@ -620,15 +627,15 @@
                             </div>
 
                             <div class="school-pills flex flex-wrap gap-2 mb-5" role="list" aria-label="Early Release schools">
-                                <span class="school-pill" role="listitem">Cimarron</span>
-                                <span class="school-pill" role="listitem">Desert Rose</span>
-                                <span class="school-pill" role="listitem">Innovations Academy</span>
-                                <span class="school-pill" role="listitem">Los Amigos</span>
-                                <span class="school-pill" role="listitem">Manzanita</span>
-                                <span class="school-pill" role="listitem">Mesquite</span>
-                                <span class="school-pill" role="listitem">Palmtree</span>
-                                <span class="school-pill" role="listitem">Tumbleweed</span>
-                                <span class="school-pill" role="listitem">Yucca</span>
+                                <a class="school-pill" role="listitem" href="rocket-league/jr-promise-league.html?school=Cimarron" aria-label="Cimarron record">Cimarron</a>
+                                <a class="school-pill" role="listitem" href="rocket-league/jr-promise-league.html?school=Desert%20Rose" aria-label="Desert Rose record">Desert Rose</a>
+                                <a class="school-pill" role="listitem" href="rocket-league/jr-promise-league.html?school=Innovations%20Academy" aria-label="Innovations Academy record">Innovations Academy</a>
+                                <a class="school-pill" role="listitem" href="rocket-league/jr-promise-league.html?school=Los%20Amigos" aria-label="Los Amigos record">Los Amigos</a>
+                                <a class="school-pill" role="listitem" href="rocket-league/jr-promise-league.html?school=Manzanita" aria-label="Manzanita record">Manzanita</a>
+                                <a class="school-pill" role="listitem" href="rocket-league/jr-promise-league.html?school=Mesquite" aria-label="Mesquite record">Mesquite</a>
+                                <a class="school-pill" role="listitem" href="rocket-league/jr-promise-league.html?school=Palmtree" aria-label="Palmtree record">Palmtree</a>
+                                <a class="school-pill" role="listitem" href="rocket-league/jr-promise-league.html?school=Tumbleweed" aria-label="Tumbleweed record">Tumbleweed</a>
+                                <a class="school-pill" role="listitem" href="rocket-league/jr-promise-league.html?school=Yucca" aria-label="Yucca record">Yucca</a>
                             </div>
 
                             <div class="grid grid-cols-3 gap-3 mt-auto">
@@ -664,10 +671,10 @@
                             </div>
 
                             <div class="school-pills flex flex-wrap gap-2 mb-5" role="list" aria-label="Late Release schools">
-                                <span class="school-pill" role="listitem">Cactus</span>
-                                <span class="school-pill" role="listitem">David G Millen</span>
-                                <span class="school-pill" role="listitem">Sage</span>
-                                <span class="school-pill" role="listitem">Shadow Hills</span>
+                                <a class="school-pill" role="listitem" href="rocket-league/promise-league.html?school=Cactus" aria-label="Cactus record">Cactus</a>
+                                <a class="school-pill" role="listitem" href="rocket-league/promise-league.html?school=David%20G%20Millen" aria-label="David G Millen record">David G Millen</a>
+                                <a class="school-pill" role="listitem" href="rocket-league/promise-league.html?school=Sage" aria-label="Sage record">Sage</a>
+                                <a class="school-pill" role="listitem" href="rocket-league/promise-league.html?school=Shadow%20Hills" aria-label="Shadow Hills record">Shadow Hills</a>
                             </div>
 
                             <div class="grid grid-cols-3 gap-3 mt-auto">
