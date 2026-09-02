@@ -63,6 +63,14 @@
       name: 'Smash Bros',
       icon: '⚔️',
       accent: '#FDB913',
+
+      /* Not announced yet. A hidden section is left out of the nav on every
+         other page, so a visitor to the site never sees it — but it still
+         appears while you are inside it, so anyone with the direct link can
+         move between its pages and get back out to the rest of the site.
+         Delete this line to announce it. */
+      hidden: true,
+
       groups: [
         {
           label: 'One-Day Tournament',
@@ -173,11 +181,16 @@
   function render(currentId) {
     var current = sectionOf(currentId) || detectSection();
 
+    /* A hidden section is only ever shown to someone already in it. */
+    var shown = SECTIONS.filter(function (s) {
+      return !s.hidden || (current && s.id === current.id);
+    });
+
     var style = document.createElement('style');
     style.textContent = CSS;
     document.head.appendChild(style);
 
-    var items = SECTIONS.map(function (s) {
+    var items = shown.map(function (s) {
       var isCur = current && s.id === current.id;
       var dd = s.groups.map(function (g) {
         return '<div class="dd-header">' + esc(g.label) + '</div>' +
@@ -219,7 +232,7 @@
     /* The drawer lists every section in full — on a phone there is no hover,
        and burying the other titles behind a second tap helps nobody. */
     var drawerInner = '<a href="/index.html"' + (isActive('/index.html') ? ' class="active"' : '') + '>Home</a>' +
-      SECTIONS.map(function (s) {
+      shown.map(function (s) {
         return '<div class="drawer-section drawer-title">' + s.icon + ' ' + esc(s.name) + '</div>' +
           s.groups.map(function (g) {
             return '<div class="drawer-section">' + esc(g.label) + '</div>' +
