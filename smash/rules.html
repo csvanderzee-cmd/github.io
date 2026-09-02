@@ -159,15 +159,29 @@
             a { color: #000 !important; text-decoration: none !important; }
             @page { margin: 1.5cm; }
         }
-        .rule-card { background: #151B26; border: 1px solid rgba(255,255,255,.06); border-radius: 1rem;
-                     padding: 1.75rem 2rem; margin-bottom: 1.25rem; }
-        .rule-card h2 { font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 1.1rem;
-                        letter-spacing: .16em; text-transform: uppercase; color: var(--accent, #FDB913);
-                        border-bottom: 1px solid rgba(255,255,255,.1); padding-bottom: .6rem; margin-bottom: 1rem; }
-        .rule-card ul { margin: 0; padding-left: 1.15rem; }
-        .rule-card li { font-size: .9rem; line-height: 1.65; color: #d1d5db; margin-bottom: .55rem; }
-        .rule-card li:last-child { margin-bottom: 0; }
-        .rule-card li strong { color: #fff; }
+        /* quick-reference strip — the settings a ref checks before every game */
+        .fact { display:inline-flex; align-items:center; gap:.4rem; padding:.4rem .85rem; border-radius:9999px;
+                background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); color:#d1d5db;
+                font-family:'Rajdhani',sans-serif; font-weight:700; font-size:.7rem; letter-spacing:.12em;
+                text-transform:uppercase; }
+        .fact b { color:#fff; font-weight:900; }
+
+        .rule-card { background:#151B26; border:1px solid rgba(255,255,255,.06);
+                     border-left:3px solid var(--accent,#FDB913); border-radius:.9rem;
+                     padding:1.5rem 1.75rem 1.6rem; margin-bottom:1rem; }
+        .rule-head { display:flex; align-items:baseline; gap:.85rem; margin-bottom:1.1rem;
+                     border-bottom:1px solid rgba(255,255,255,.08); padding-bottom:.7rem; }
+        .rule-num { font-family:'Rajdhani',sans-serif; font-weight:900; font-size:1.6rem; line-height:1;
+                    color:var(--accent,#FDB913); opacity:.35; font-style:italic; flex-shrink:0; }
+        .rule-card h2 { font-family:'Rajdhani',sans-serif; font-weight:900; font-size:1.05rem;
+                        letter-spacing:.16em; text-transform:uppercase; color:#fff; margin:0; }
+        .rule-card ul { margin:0; padding:0; list-style:none; }
+        .rule-card li { position:relative; padding-left:1.35rem; font-size:.9rem; line-height:1.65;
+                        color:#d1d5db; margin-bottom:.7rem; }
+        .rule-card li:last-child { margin-bottom:0; }
+        .rule-card li::before { content:'▸'; position:absolute; left:0; top:-.02em;
+                                color:var(--accent,#FDB913); font-size:.85rem; }
+        .rule-card li strong { color:#fff; }
     </style>
 
     <header role="banner" class="relative py-14 overflow-hidden border-b border-white/10">
@@ -184,7 +198,17 @@
     </header>
 
     <main class="max-w-4xl mx-auto px-4 py-12">
-        <div id="rules-changed-banner" class="mb-8 hidden"></div>
+        <div class="flex flex-wrap gap-2 mb-10 no-print">
+            <span class="fact"><b>2v2</b> Doubles</span>
+            <span class="fact"><b>Best of 3</b></span>
+            <span class="fact"><b>3</b> Stock</span>
+            <span class="fact"><b>6</b> Min</span>
+            <span class="fact">Battlefield <b>Only</b></span>
+            <span class="fact">Items <b>Off</b></span>
+            <span class="fact">Team Damage <b>On</b></span>
+            <span class="fact">Stock Sharing <b>On</b></span>
+        </div>
+
         <div id="rules-content"></div>
 
         <div class="mt-10 flex flex-wrap items-center gap-3 no-print">
@@ -216,18 +240,12 @@
     document.getElementById('rules-stamp').textContent =
         'Version ' + R.version + ' · Updated ' + R.updated;
 
-    if (R.changed) {
-        var b = document.getElementById('rules-changed-banner');
-        b.className = 'mb-8';
-        b.innerHTML = '<div class="rounded-2xl border border-esports-yellow/30 bg-esports-yellow/[0.07] p-5">' +
-            '<p class="font-display font-bold uppercase tracking-[0.18em] text-xs text-esports-yellow-text mb-1">' +
-            'Changed in version ' + esc(R.version) + '</p>' +
-            '<p class="text-sm text-gray-300">' + esc(R.changed) + '</p></div>';
-    }
-
-    document.getElementById('rules-content').innerHTML = (R.sections || []).map(function (s) {
+    document.getElementById('rules-content').innerHTML = (R.sections || []).map(function (s, i) {
         return '<section class="rule-card">' +
-                 '<h2>' + esc(s.title) + '</h2><ul>' +
+                 '<div class="rule-head">' +
+                   '<span class="rule-num">' + (i + 1 < 10 ? '0' : '') + (i + 1) + '</span>' +
+                   '<h2>' + esc(s.title) + '</h2>' +
+                 '</div><ul>' +
                  s.items.map(function (it) { return '<li>' + esc(it) + '</li>'; }).join('') +
                  '</ul></section>';
     }).join('');

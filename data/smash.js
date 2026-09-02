@@ -78,54 +78,60 @@
        ---------------------------------------------------------------------- */
 
     rules: {
-      version: '1.1',
+      version: '1.0',
       updated: '2 September 2026',
       doc: 'PSD-Smash-Tournament-Rules.docx',
-      changed: 'Tied stock at time now goes to Sudden Death — the damage tiebreak was removed, because the console does not do it.',
 
+      /* VERBATIM from smash/PSD-Smash-Tournament-Rules.docx. Do not paraphrase
+         when editing: the page, the bubble and the printed handout are meant to
+         be the same words, so a referee reading the screen and a coach reading
+         the paper never find themselves quoting different rules at each other.
+         Change the document, then copy the wording across. */
       sections: [
+        { title: 'Divisions & Teams', items: [
+          'Two divisions: Grade 5 & under, and Grades 6–8. Teams play only within their division.',
+          'Schools may enter multiple teams, distinguished by a color (e.g., Shadow Hills Red, Shadow Hills Gold).',
+          'Team format: 2v2 doubles — each team is two players, plus an optional alternate. An alternate is locked to that team and may not play for any other team.'
+        ]},
         { title: 'Match Format', items: [
-          'Best of 3. First team to win 2 games wins the match — win by games only; total stock never decides a match.',
-          '2v2 doubles, 3 stock each, 6-minute timer, team damage ON.',
+          'Best of 3 games. First team to win 2 games wins the match — win-by-games only; total stock does not decide a match.',
+          '2v2, 3 stock, 6-minute timer, team damage ON.',
           'Players may switch characters between games in a series.',
-          'Coaching between games is allowed. No coaching during a game.'
+          'Coaching between games is allowed; no coaching during a game.'
         ]},
         { title: 'Game Settings', items: [
-          'Stage: Battlefield only. Stage hazards OFF.',
-          'Items OFF. Pausing OFF.',
-          'Team stock sharing ON — a defeated player may take a teammate’s spare stock with A+B on elimination.',
-          'All non-DLC (base roster) characters. Mii Fighters are banned.',
-          'Docked Switch to the Promethean board. Any provided Joy-Con or Pro Controller, any configuration, and you may switch between games. No personal controllers for match play.'
+          'Stage: random, Battlefield only. Stage hazards OFF.',
+          "Items: OFF.  Pausing: OFF.  Team stock sharing: ON — a defeated player may take a teammate's spare stock by pressing A+B on elimination (only if the teammate has one to give).",
+          'Characters: all non-DLC (base roster) characters. Mii Fighters are banned.',
+          'Equipment: docked Switch to Promethean board. Players may use any provided Joy-Con or Pro Controller, in any configuration, and may switch controllers between games. No personal controllers for match play.'
         ]},
-        { title: 'Winning a Game', items: [
-          'A game is won by eliminating the opposing team’s stock.',
-          'If the timer runs out, the team with more combined stock wins.',
-          'If stock is level at time, the console goes to Sudden Death — surviving fighters go to one stock at 300% and the next KO decides it. Damage percentages are NOT used to break a tie.',
-          'Self-destructs count as-is. A stock lost to a suicide move simply counts; no special ruling.',
-          'No game ends in a draw, so every match finishes 2–0 or 2–1.'
+        { title: 'Win Conditions & Draws', items: [
+          "A game is won by eliminating the opposing team's stock.",
+          'If the timer runs out: the team with more combined stock wins. If stock is level, the game goes to Sudden Death — the console puts the surviving fighters on one stock at 300% and the next KO decides it. Damage percentages are not used to break a tie.',
+          'Self-destructs count as-is — a stock lost to a self-destruct or suicide move simply counts; no special ruling.',
+          "Tied game (equal stock at time, or a simultaneous final KO): resolved by the game's built-in Sudden Death — surviving fighters go to one stock at 300% and the next KO wins. Applies in both the group and knockout stages; no game ends in a draw."
         ]},
         { title: 'Group Stage', items: [
-          'Groups of 3 or 4 teams, played as a round robin.',
-          'Win = 3 points, Loss = 0.',
-          'Tiebreakers in order: points, then head-to-head, then remaining-stock differential, then games won.',
-          'Remaining-stock differential is every stock a team had left across its group games, minus every stock its opponents had left.',
-          'The top two teams in each group advance.'
+          'Teams are drawn into groups (4 teams per group (odd amounts of teams will result in groups of 3 or 5) — round-robin, 6 matches per group).',
+          'Points per match: Win = 3, Loss = 0. (Every game produces a winner, so matches always finish 2–0 or 2–1.)',
+          'Tiebreakers (in order): 1) record / points, 2) head-to-head result, 3) remaining-stock differential (every stock a team had left across its group games, minus every stock its opponents had left).',
+          'Top two teams from each group advance to the elimination bracket.'
         ]},
-        { title: 'Elimination', items: [
-          'Single elimination, best of 3, same game settings.',
-          'Group winners are seeded to avoid meeting each other in the first round.',
-          'Bracket and standings are posted live on this page.'
+        { title: 'Elimination Bracket', items: [
+          'Single-elimination, best of 3, same game settings.',
+          'Seeding: group winners are seeded to avoid meeting each other in the first round.',
+          'Bracket and standings are posted live on the PSD Esports website.'
         ]},
-        { title: 'Match Operations', items: [
+        { title: 'Match Operations & Rulings', items: [
           'Wrong game settings: immediate restart of that game.',
-          'Disconnect, unplugged controller or crash: the assigned referee rules. Before the first stock is lost the ref may order a replay; after that, play continues at the ref’s discretion.',
-          'No-show: 5-minute grace period, then forfeit the first game; 10 minutes, then forfeit the match.',
-          'No warm-up on tournament stations once play begins. Teams may bring their own Switch to warm up on, not for match play.',
+          "Disconnect / controller unplug / crash: the assigned referee rules. Before the first stock is lost, the ref may order a replay. After the first stock is lost, play continues at the ref's discretion.",
+          'No-show / late: 5-minute grace period, then forfeit the first game; 10 minutes, then forfeit the match.',
+          'Warm-up: none on tournament stations once play begins. Teams may bring their own Switches for warm-up only (not for match play).',
           'A referee is present at each station. Referee decisions are final.'
         ]},
-        { title: 'Conduct', items: [
-          'Good sportsmanship is required. Disruptive, unsafe or unsportsmanlike behaviour may forfeit a game, a match or the tournament, at referee discretion.',
-          'A roped-off area surrounds each board. Only the active players and the referee inside during a game.'
+        { title: 'Conduct & Venue', items: [
+          'Good sportsmanship is required. Disruptive, unsafe, or unsportsmanlike behavior may forfeit a game, match, or the tournament at referee discretion.',
+          'A roped-off area surrounds each Promethean board; only the active players and referee inside during a game.'
         ]}
       ]
     },
