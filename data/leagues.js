@@ -80,6 +80,11 @@
         // Separate workbook holding per-player stats. Different tabs, different gids.
         statsSheet: '2PACX-1vTPnVnHIJLWIHRvAHnPrvC7cCOlPRU3-bwauFUuASf98Rk6KYy8JjpM7SKNGCdQ8tejYYU3__4NK51I',
 
+        // Fast-read ids. See FAST READS at the bottom of this file.
+        // Leave null for the normal cached publish-to-web feed.
+        matchSheetFastId: '1vRD00zWkwd5ccLCvnS_S4EfFIFEoSE2LobiMUZLAtuY',
+        statsSheetFastId: '1Orm083Obxr5ILNsXZNifiZbwQsmO3GVbDAO7HZa1uU0',
+
         // Finals bracket lives on its own tab in the match workbook.
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '672839496',
@@ -124,6 +129,10 @@
 
         matchSheet: '2PACX-1vQuwh0wsNcmLfZR0otmToNWeUwN7Rv5wsuGb69HBhaNdBctXvOkFgduDfwe3rzOrFucSEjHFMvVwrE2',
         statsSheet: '2PACX-1vT1NHFDysYXCPgoA6dDWAYIakjQXD2xdivTdJmMMIdUzyWr__hTrAPrqPD5sh8LKgMa-1KmUFS8rbhd',
+
+        // Fast-read ids. See FAST READS at the bottom of this file.
+        matchSheetFastId: '1LZerFC0RIPzVR_P6SX0yRNKLfoOk7ZKcd8xvIZrQUqw',
+        statsSheetFastId: '1cA4Cb2PbW0LXEDBcMmai4cH9kvLncmSGOwuni7_PF-M',
 
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '2049340971',
@@ -200,6 +209,47 @@
   CONFIG.statsGids = function (id) {
     return CONFIG.league(id).weeks.map(function (w) { return w.statsGid; });
   };
+
+  /* ---- FAST READS ---------------------------------------------------------
+
+     Publish-to-web CSV is served through a cache on Google's side. A score
+     typed into the sheet keeps returning the old value from that URL for a
+     few minutes, and nothing the page does can shorten it — polling more
+     often just re-fetches the same stale copy.
+
+     That is invisible for weekly standings: nobody is watching a Tuesday
+     table for a number to flip within seconds. It matters on ONE day a year,
+     the championship, where finals.html refreshes every 60 seconds and people
+     are watching the bracket in the room.
+
+     Filling in a workbook's `...FastId` switches THAT workbook to the gviz
+     endpoint, which reads the live sheet instead of a cached snapshot. The id
+     is the one in the workbook's ordinary URL:
+
+         docs.google.com/spreadsheets/d/<THIS BIT>/edit
+
+     gviz needs the workbook set to "Anyone with the link -> Viewer", so
+     anyone holding the link can open the whole workbook read-only — every
+     tab, not just what the site renders.
+
+     That was checked before turning it on: these workbooks identify players
+     by game login handle ("Falcon 1", "Pirate 23") or first name only, so
+     there is nothing in them that is not already on the public site. If a
+     future season starts recording full names, student ids, or anything else
+     personal, take that workbook OFF the fast feed by blanking its id here —
+     the site keeps working, just on the cached published URL.
+
+     The ids below are NOT the 2PACX-... publish ids. Each is the one in the
+     workbook's ordinary edit URL, and every workbook has its own.
+
+     Leave an id null and that workbook behaves exactly as it always has.
+     ------------------------------------------------------------------------ */
+
+  CONFIG.fastRead = {};
+  CONFIG.leagues.forEach(function (lg) {
+    if (lg.matchSheet && lg.matchSheetFastId) CONFIG.fastRead[lg.matchSheet] = lg.matchSheetFastId;
+    if (lg.statsSheet && lg.statsSheetFastId) CONFIG.fastRead[lg.statsSheet] = lg.statsSheetFastId;
+  });
 
   /**
    * Is this league's MATCH workbook published yet?

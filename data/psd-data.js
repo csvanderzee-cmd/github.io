@@ -129,9 +129,122 @@
 
   /* ---- fetching ---------------------------------------------------------- */
 
+  /**
+   * The URL for one tab, as CSV.
+   *
+   * Two feeds, chosen per workbook by data/leagues.js (see FAST READS there):
+   *
+   *   published  the publish-to-web snapshot. Google caches it, so a fresh
+   *              score can take a few minutes to appear. Fine for weekly
+   *              standings, and it keeps the workbook itself private.
+   *   gviz       reads the live sheet. Near-instant, but needs the workbook
+   *              shared "anyone with the link -> Viewer".
+   *
+   * A workbook only uses gviz once someone puts its raw id in leagues.js, so
+   * this defaults to exactly the behaviour the site has always had.
+   *
+   * The trailing timestamp is not what makes gviz fast — that is the endpoint
+   * itself. It is here to get past the BROWSER cache, and any caching proxy
+   * sitting between a school laptop and Google, neither of which should be
+   * handing back a stale bracket. It cannot touch Google's own cache.
+   */
   function liveUrl(sheetId, gid) {
+    var bust = '&_=' + Date.now();
+    var fastId = CONFIG.fastRead && CONFIG.fastRead[sheetId];
+
+    if (fastId) {
+      return 'https://docs.google.com/spreadsheets/d/' + fastId +
+             '/gviz/tq?tqx=out:csv&gid=' + gid + bust;
+    }
     return 'https://docs.google.com/spreadsheets/d/e/' + sheetId +
-           '/pub?output=csv&gid=' + gid;
+           '/pub?output=csv&gid=' + gid + bust;
+  }
+
+  /* ---- making the two feeds look identical -------------------------------
+
+     gviz and publish-to-web do not emit the same CSV for the same tab:
+
+       published   DGM,Blue,Home,,,
+       gviz        "DGM","Blue","Home","","",""...  (padded to the sheet width)
+
+     gviz quotes every field and pads each row out to the full column count.
+     Pages that strip quotes survived that; the schedule page does not, and
+     rendered a school as "DGM" complete with quote marks the moment its
+     workbook moved to the fast feed.
+
+     Rather than teach seven parsers about a second CSV dialect, gviz output is
+     converted back into exactly what publish-to-web would have returned. Every
+     page then sees the byte-for-byte same text it always has, and switching a
+     workbook between feeds stays a one-line change with no visible effect.
+     ------------------------------------------------------------------------ */
+
+  /** CSV text -> rows of cells, honouring quotes and embedded commas. */
+  function parseCsvRows(text) {
+    var rows = [], row = [], cur = '', inQuotes = false, i = 0;
+    var s = String(text).replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+
+    while (i < s.length) {
+      var c = s.charAt(i);
+      if (inQuotes) {
+        if (c === '"') {
+          if (s.charAt(i + 1) === '"') { cur += '"'; i++; }
+          else inQuotes = false;
+        } else cur += c;
+      } else if (c === '"') {
+        inQuotes = true;
+      } else if (c === ',') {
+        row.push(cur); cur = '';
+      } else if (c === '\n') {
+        row.push(cur); rows.push(row); row = []; cur = '';
+      } else {
+        cur += c;
+      }
+      i++;
+    }
+    if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+    return rows;
+  }
+
+  /** Quote a cell only where the CSV spec requires it, as Google's export does. */
+  function csvCell(v) {
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  }
+
+  /**
+   * gviz CSV -> the exact text publish-to-web would have returned.
+   *
+   * Both feeds pad their rows, but to different widths: gviz pads to the
+   * sheet's full column count (27 empty columns and all), while publish pads
+   * every row to the widest column actually carrying a value. So this trims
+   * back to the used width rather than stripping trailing commas outright —
+   * dropping them entirely turns "Week 1 - 21 Sep 2026,,,,," into a one-cell
+   * row, and the pages that count columns notice.
+   */
+  function normalizeGviz(text) {
+    var rows = parseCsvRows(text);
+
+    var width = 0;
+    rows.forEach(function (r) {
+      for (var i = r.length - 1; i >= 0; i--) {
+        if (r[i] !== '') { if (i + 1 > width) width = i + 1; break; }
+      }
+    });
+
+    /* a tab with no content at all is an empty document, not one blank row */
+    if (width === 0) return '';
+
+    var out = rows.map(function (r) {
+      var padded = r.slice(0, width);
+      while (padded.length < width) padded.push('');
+      return padded;
+    });
+
+    /* gviz emits the sheet's blank tail rows; publish stops at the last used one */
+    while (out.length && out[out.length - 1].every(function (c) { return c === ''; })) out.pop();
+
+    return out.map(function (r) {
+      return r.map(csvCell).join(',');
+    }).join('\n');
   }
 
   /** One published tab, as CSV text. Rejects on network error or timeout. */
@@ -152,10 +265,14 @@
     var init = { cache: 'no-store' };
     if (ctrl) init.signal = ctrl.signal;
 
+    var isFast = !!(CONFIG.fastRead && CONFIG.fastRead[sheetId]);
+
     return fetch(liveUrl(sheetId, gid), init).then(function (res) {
       clearTimeout(timer);
       if (!res.ok) throw new Error('gid ' + gid + ' -> HTTP ' + res.status);
-      return res.text();
+      return res.text().then(function (text) {
+        return isFast ? normalizeGviz(text) : text;
+      });
     }, function (err) {
       clearTimeout(timer);
       throw err;
@@ -189,6 +306,7 @@
     fetchCSV:      fetchCSV,
     fetchAllCSV:   fetchAllCSV,
     liveUrl:       liveUrl,
+    normalizeGviz: normalizeGviz,
     weekDates:     weekDates,
     localDate:     localDate,
     localDateTime: localDateTime,
