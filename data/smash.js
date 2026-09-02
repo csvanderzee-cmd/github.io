@@ -112,7 +112,7 @@
           "Tied game (equal stock at time, or a simultaneous final KO): resolved by the game's built-in Sudden Death — surviving fighters go to one stock at 300% and the next KO wins. Applies in both the group and knockout stages; no game ends in a draw."
         ]},
         { title: 'Group Stage', items: [
-          'Teams are drawn into groups (4 teams per group (odd amounts of teams will result in groups of 3 or 5) — round-robin, 6 matches per group).',
+          'Teams are drawn into groups of 4 teams (odd amounts of teams will result in groups of 3) — round-robin: a group of 4 plays 6 matches, a group of 3 plays 3.',
           'Points per match: Win = 3, Loss = 0. (Every game produces a winner, so matches always finish 2–0 or 2–1.)',
           'Tiebreakers (in order): 1) record / points, 2) head-to-head result, 3) remaining-stock differential (every stock a team had left across its group games, minus every stock its opponents had left).',
           'Top two teams from each group advance to the elimination bracket.'
