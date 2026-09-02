@@ -153,8 +153,13 @@
     var fastId = CONFIG.fastRead && CONFIG.fastRead[sheetId];
 
     if (fastId) {
+      /* headers=0 is load-bearing. Without it gviz guesses how many leading
+         rows are headers, per column, from the data types it sees, and folds
+         every guessed row into one cell. The guess changes as a sheet fills
+         up, so a tab that reads correctly while empty can silently reshape
+         itself mid-season. Ask for every row as data instead. */
       return 'https://docs.google.com/spreadsheets/d/' + fastId +
-             '/gviz/tq?tqx=out:csv&gid=' + gid + bust;
+             '/gviz/tq?tqx=out:csv&headers=0&gid=' + gid + bust;
     }
     return 'https://docs.google.com/spreadsheets/d/e/' + sheetId +
            '/pub?output=csv&gid=' + gid + bust;

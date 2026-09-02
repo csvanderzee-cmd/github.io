@@ -383,9 +383,24 @@
 
   var TIMEOUT_MS = 9000;
 
+  /**
+   * One tab, as CSV.
+   *
+   * headers=0 is not optional. Left to itself gviz GUESSES how many leading
+   * rows are headers, column by column, from the data types it finds — and
+   * then joins every row it guessed into one. On this sheet that turned
+   * column A's first five rows into the single cell
+   *
+   *     "Group 1 A B C Round Robin Matches"
+   *
+   * while column B, which had numbers in it, kept fewer. Worse, the guess
+   * CHANGES as scores are entered, so a sheet that reads perfectly during
+   * setup silently reshapes itself once the tournament starts. headers=0
+   * says "there are no header rows, give me every row as data".
+   */
   function tabUrl(gid) {
     return 'https://docs.google.com/spreadsheets/d/' + CONFIG.sheetId +
-           '/gviz/tq?tqx=out:csv&gid=' + gid + '&_=' + Date.now();
+           '/gviz/tq?tqx=out:csv&headers=0&gid=' + gid + '&_=' + Date.now();
   }
 
   function wiredDivisions() {
