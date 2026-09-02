@@ -468,10 +468,10 @@
                s.items.map(function (it) { return '<li>' + esc(it) + '</li>'; }).join('') +
                '</ul>';
       }).join('') +
-      (R.doc ? '<p style="margin-top:1.5rem;font-size:.75rem;color:#6b7280">' +
-               'This is the quick reference. The full rulebook is the authority: ' +
-               '<a href="' + esc(R.doc) + '" style="color:var(--accent,#FDB913)">' + esc(R.doc) + '</a>' +
-               '</p>' : '');
+      '<p style="margin-top:1.5rem;font-size:.75rem;color:#6b7280">' +
+        'Need it on paper? The <a href="/smash/rules.html" style="color:var(--accent,#FDB913)">full rules page</a> ' +
+        'has a print button.' +
+      '</p>';
 
     backdrop.innerHTML =
       '<div id="rules-card">' +
