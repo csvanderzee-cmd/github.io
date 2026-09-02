@@ -64,6 +64,72 @@
     maxStock: 6,           /* 2 players x 3 stock */
     refreshSeconds: 30,
 
+    /* ---- rules -----------------------------------------------------------
+
+       The rules bubble on both bracket pages is built from this. It lives here
+       rather than in the two pages so there is one copy to change, and it is
+       stamped with a version so a referee can tell at a glance whether the
+       sheet in their hand matches the one on screen.
+
+       WHEN THE RULES CHANGE: edit smash/PSD-Smash-Tournament-Rules.docx, edit
+       the summary below to match, and bump `version` and `updated`. The .docx
+       is the authoritative document; this is the quick reference beside the
+       bracket, and the two disagreeing is worse than either being wrong.
+       ---------------------------------------------------------------------- */
+
+    rules: {
+      version: '1.1',
+      updated: '2 September 2026',
+      doc: 'PSD-Smash-Tournament-Rules.docx',
+      changed: 'Tied stock at time now goes to Sudden Death — the damage tiebreak was removed, because the console does not do it.',
+
+      sections: [
+        { title: 'Match Format', items: [
+          'Best of 3. First team to win 2 games wins the match — win by games only; total stock never decides a match.',
+          '2v2 doubles, 3 stock each, 6-minute timer, team damage ON.',
+          'Players may switch characters between games in a series.',
+          'Coaching between games is allowed. No coaching during a game.'
+        ]},
+        { title: 'Game Settings', items: [
+          'Stage: Battlefield only. Stage hazards OFF.',
+          'Items OFF. Pausing OFF.',
+          'Team stock sharing ON — a defeated player may take a teammate’s spare stock with A+B on elimination.',
+          'All non-DLC (base roster) characters. Mii Fighters are banned.',
+          'Docked Switch to the Promethean board. Any provided Joy-Con or Pro Controller, any configuration, and you may switch between games. No personal controllers for match play.'
+        ]},
+        { title: 'Winning a Game', items: [
+          'A game is won by eliminating the opposing team’s stock.',
+          'If the timer runs out, the team with more combined stock wins.',
+          'If stock is level at time, the console goes to Sudden Death — surviving fighters go to one stock at 300% and the next KO decides it. Damage percentages are NOT used to break a tie.',
+          'Self-destructs count as-is. A stock lost to a suicide move simply counts; no special ruling.',
+          'No game ends in a draw, so every match finishes 2–0 or 2–1.'
+        ]},
+        { title: 'Group Stage', items: [
+          'Groups of 3 or 4 teams, played as a round robin.',
+          'Win = 3 points, Loss = 0.',
+          'Tiebreakers in order: points, then head-to-head, then remaining-stock differential, then games won.',
+          'Remaining-stock differential is every stock a team had left across its group games, minus every stock its opponents had left.',
+          'The top two teams in each group advance.'
+        ]},
+        { title: 'Elimination', items: [
+          'Single elimination, best of 3, same game settings.',
+          'Group winners are seeded to avoid meeting each other in the first round.',
+          'Bracket and standings are posted live on this page.'
+        ]},
+        { title: 'Match Operations', items: [
+          'Wrong game settings: immediate restart of that game.',
+          'Disconnect, unplugged controller or crash: the assigned referee rules. Before the first stock is lost the ref may order a replay; after that, play continues at the ref’s discretion.',
+          'No-show: 5-minute grace period, then forfeit the first game; 10 minutes, then forfeit the match.',
+          'No warm-up on tournament stations once play begins. Teams may bring their own Switch to warm up on, not for match play.',
+          'A referee is present at each station. Referee decisions are final.'
+        ]},
+        { title: 'Conduct', items: [
+          'Good sportsmanship is required. Disruptive, unsafe or unsportsmanlike behaviour may forfeit a game, a match or the tournament, at referee discretion.',
+          'A roped-off area surrounds each board. Only the active players and the referee inside during a game.'
+        ]}
+      ]
+    },
+
     /* One tab per division, and one bracket page each. Fill in `gid` and that
        division's page comes to life. A null gid is treated as "not set up
        yet" rather than an error.

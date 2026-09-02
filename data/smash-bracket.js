@@ -404,6 +404,104 @@
     });
   }
 
+  /* ==================================================================
+     Rules bubble
+
+     A floating pill that opens the rulebook summary, stamped with the
+     version it came from. Built and injected here rather than written into
+     the two bracket pages, so there is one copy of both the markup and the
+     text — the pages cannot drift apart, and neither can they drift from
+     data/smash.js.
+     ================================================================== */
+
+  var RULES_CSS =
+    '#rules-fab{position:fixed;right:1.25rem;bottom:1.25rem;z-index:1500;display:flex;align-items:center;gap:.5rem;' +
+      'padding:.6rem 1rem;border-radius:9999px;border:1px solid rgba(255,255,255,.16);background:rgba(21,27,38,.92);' +
+      'backdrop-filter:blur(10px);color:#e5e7eb;font-family:Rajdhani,sans-serif;font-weight:800;font-size:.72rem;' +
+      'letter-spacing:.14em;text-transform:uppercase;cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,.5);transition:all .18s;}' +
+    '#rules-fab:hover{background:rgba(31,40,56,.96);border-color:rgba(255,255,255,.3);transform:translateY(-1px);}' +
+    '#rules-fab .ver{opacity:.6;font-size:.66rem;}' +
+    '#rules-backdrop{position:fixed;inset:0;z-index:1600;background:rgba(5,7,11,.82);backdrop-filter:blur(4px);' +
+      'display:none;align-items:center;justify-content:center;padding:1rem;}' +
+    '#rules-backdrop.open{display:flex;}' +
+    '#rules-card{background:#151B26;border:1px solid rgba(255,255,255,.12);border-radius:1rem;width:100%;' +
+      'max-width:640px;max-height:86vh;display:flex;flex-direction:column;}' +
+    '#rules-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding:1.25rem 1.5rem;' +
+      'border-bottom:1px solid rgba(255,255,255,.1);}' +
+    '#rules-body{overflow-y:auto;padding:1.25rem 1.5rem 1.5rem;}' +
+    '#rules-body h4{font-family:Rajdhani,sans-serif;font-weight:800;font-size:.68rem;letter-spacing:.2em;' +
+      'text-transform:uppercase;color:var(--accent,#FDB913);margin:1.25rem 0 .5rem;}' +
+    '#rules-body h4:first-child{margin-top:0;}' +
+    '#rules-body ul{margin:0;padding-left:1.1rem;}' +
+    '#rules-body li{font-size:.82rem;line-height:1.55;color:#d1d5db;margin-bottom:.4rem;}' +
+    '#rules-close{background:none;border:1px solid rgba(255,255,255,.16);color:#9ca3af;border-radius:.4rem;' +
+      'width:2rem;height:2rem;font-size:1.1rem;line-height:1;cursor:pointer;flex-shrink:0;}' +
+    '#rules-close:hover{color:#fff;border-color:rgba(255,255,255,.35);}' +
+    '#rules-changed{font-size:.72rem;color:#FFD166;background:rgba(253,185,19,.1);border:1px solid rgba(253,185,19,.25);' +
+      'border-radius:.5rem;padding:.6rem .8rem;margin-bottom:.5rem;}' +
+    '@media print{#rules-fab,#rules-backdrop{display:none!important;}}' +
+    '@media (max-width:640px){#rules-fab{right:.75rem;bottom:.75rem;padding:.5rem .8rem;}}';
+
+  function buildRules() {
+    var R = CFG.rules;
+    if (!R) return;
+
+    var style = document.createElement('style');
+    style.textContent = RULES_CSS;
+    document.head.appendChild(style);
+
+    var fab = document.createElement('button');
+    fab.id = 'rules-fab';
+    fab.setAttribute('aria-haspopup', 'dialog');
+    fab.innerHTML = 'Rules <span class="ver">v' + esc(R.version) + '</span>';
+
+    var backdrop = document.createElement('div');
+    backdrop.id = 'rules-backdrop';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    backdrop.setAttribute('aria-label', 'Tournament rules');
+
+    var body = (R.changed ? '<p id="rules-changed"><strong>Changed in v' + esc(R.version) + ':</strong> ' +
+                            esc(R.changed) + '</p>' : '') +
+      (R.sections || []).map(function (s) {
+        return '<h4>' + esc(s.title) + '</h4><ul>' +
+               s.items.map(function (it) { return '<li>' + esc(it) + '</li>'; }).join('') +
+               '</ul>';
+      }).join('') +
+      (R.doc ? '<p style="margin-top:1.5rem;font-size:.75rem;color:#6b7280">' +
+               'This is the quick reference. The full rulebook is the authority: ' +
+               '<a href="' + esc(R.doc) + '" style="color:var(--accent,#FDB913)">' + esc(R.doc) + '</a>' +
+               '</p>' : '');
+
+    backdrop.innerHTML =
+      '<div id="rules-card">' +
+        '<div id="rules-head">' +
+          '<div>' +
+            '<p style="font-family:Rajdhani,sans-serif;font-weight:800;font-size:.62rem;letter-spacing:.22em;' +
+              'text-transform:uppercase;color:#6b7280;margin:0 0 .25rem">Version ' + esc(R.version) +
+              ' &middot; ' + esc(R.updated) + '</p>' +
+            '<h3 style="font-family:Rajdhani,sans-serif;font-weight:900;font-size:1.4rem;text-transform:uppercase;' +
+              'font-style:italic;margin:0">Tournament Rules</h3>' +
+          '</div>' +
+          '<button id="rules-close" aria-label="Close">&times;</button>' +
+        '</div>' +
+        '<div id="rules-body">' + body + '</div>' +
+      '</div>';
+
+    document.body.appendChild(fab);
+    document.body.appendChild(backdrop);
+
+    function open()  { backdrop.classList.add('open'); byId('rules-close').focus(); }
+    function close() { backdrop.classList.remove('open'); fab.focus(); }
+
+    fab.addEventListener('click', open);
+    byId('rules-close').addEventListener('click', close);
+    backdrop.addEventListener('click', function (e) { if (e.target === backdrop) close(); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && backdrop.classList.contains('open')) close();
+    });
+  }
+
   /**
    * Start a bracket page for one division.
    * Paints the division's name and accent into the page, then goes live.
@@ -433,6 +531,8 @@
       link.style.borderColor = other.accent;
       link.style.color = other.accent;
     }
+
+    buildRules();
 
     refresh();
     setInterval(refresh, Math.max(10, CFG.refreshSeconds || 30) * 1000);
