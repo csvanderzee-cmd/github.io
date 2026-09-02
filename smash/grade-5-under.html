@@ -9,7 +9,7 @@
     <meta name="theme-color" content="#0B0E14">
     <!-- Not linked from the site yet. noindex keeps it out of search while it is a work in progress. -->
     <meta name="robots" content="noindex">
-    <title>Smash Tournament | PSD Esports</title>
+    <title>Grade 5 &amp; Under &mdash; Smash Bracket | PSD Esports</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -280,8 +280,8 @@
     <header role="banner" class="relative py-16 overflow-hidden border-b border-white/10">
         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-esports-blue/20 via-transparent to-esports-red/20"></div>
         <div class="relative max-w-7xl mx-auto px-4 z-20">
-            <div class="inline-block px-4 py-1 bg-esports-yellow text-black font-display font-black uppercase tracking-widest text-sm clip-slant mb-6">
-                One-Day Tournament
+            <div class="inline-block px-4 py-1 text-black font-display font-black uppercase tracking-widest text-sm clip-slant mb-6" id="division-badge" style="background:#FF6B6B">
+                Grade 5 &amp; Under
             </div>
             <h1 class="font-display font-black text-5xl md:text-7xl uppercase leading-[0.85] mb-4 italic">
                 Super Smash Bros.<br/>
@@ -303,38 +303,69 @@
         </div>
     </header>
 
-    <div class="max-w-7xl mx-auto px-4 py-16">
-        <p class="text-[10px] font-display font-bold uppercase tracking-[0.3em] text-gray-600 mb-6">Choose a division</p>
-        <div id="division-links" class="grid gap-6 md:grid-cols-2"></div>
+    <div class="max-w-7xl mx-auto px-4 py-10">
 
-        <p class="text-center text-[11px] text-gray-700 pt-16">
-            Draft pages — not linked from the PSD Esports site yet.
+        <!-- division tabs + live feed status -->
+        <div class="flex flex-wrap items-center gap-3 mb-10">
+            <a id="other-division" href="#" class="div-tab no-print">Other division &rarr;</a>
+            <div id="feed-status" class="ml-auto flex items-center gap-2 no-print" role="status" aria-live="polite">
+                <span id="feed-dot" class="feed-dot"></span>
+                <span id="feed-text" class="text-[11px] font-display font-bold uppercase tracking-[0.16em] text-gray-500">Loading scores…</span>
+            </div>
+        </div>
+
+        <!-- Sheet problems worth someone's attention: a mistyped team name or
+             division would otherwise drop a match without any visible sign. -->
+        <div id="sheet-warnings" class="mb-10 hidden no-print"></div>
+
+        <!-- ── GROUP STAGE ── -->
+        <section id="group-stage" class="mb-16">
+            <div class="flex items-end justify-between border-b border-white/10 pb-4 mb-8 flex-wrap gap-3">
+                <h2 class="font-display text-3xl font-black uppercase italic text-esports-yellow-text">Group Stage</h2>
+                <p class="text-[11px] font-display font-bold uppercase tracking-[0.18em] text-gray-500">
+                    Round robin · Win = 3 pts · Top 2 advance
+                </p>
+            </div>
+            <div id="groups-wrap"></div>
+        </section>
+
+        <!-- ── KNOCKOUT ── -->
+        <section id="knockout" class="mb-16">
+            <div class="flex items-end justify-between border-b border-white/10 pb-4 mb-4 flex-wrap gap-3">
+                <h2 class="font-display text-3xl font-black uppercase italic text-esports-blue-text">Elimination Bracket</h2>
+                <p class="text-[11px] font-display font-bold uppercase tracking-[0.18em] text-gray-500">
+                    Single elimination · Best of 3
+                </p>
+            </div>
+            <p id="bracket-note" class="text-xs text-gray-500 mb-2"></p>
+            <div id="bracket-wrap"></div>
+        </section>
+
+        <!-- tiebreaker legend -->
+        <section class="mb-12">
+            <div class="bg-esports-card border border-white/5 rounded-2xl p-6 md:p-8">
+                <h3 class="font-display font-bold text-white uppercase tracking-widest text-sm mb-4">How Ties Are Broken</h3>
+                <ol class="text-sm text-gray-400 space-y-2 list-decimal list-inside">
+                    <li>Match points (Win = 3, Loss = 0)</li>
+                    <li>Head-to-head result between the tied teams</li>
+                    <li>Remaining-stock differential — stock the team had left in the games it won, minus stock its opponents had left in the games they won</li>
+                    <li>Games won across the group</li>
+                </ol>
+                <p class="text-[11px] text-gray-600 mt-4">
+                    Individual games never end in a draw: an equal-stock, equal-damage finish goes to the game's built-in
+                    Sudden Death, so every match finishes 2&ndash;0 or 2&ndash;1.
+                </p>
+            </div>
+        </section>
+
+        <p class="text-center text-[11px] text-gray-700 pb-10">
+            Draft page — not linked from the PSD Esports site yet.
         </p>
     </div>
 
-<script src="../data/smash.js"></script>
-<script>
-(function () {
-    'use strict';
-    /* The two divisions are run and drawn separately, so each gets its own
-       page. This is just the signpost to them, built from the same config so
-       a division can never appear here without a page behind it. */
-    var CFG = window.SMASH && window.SMASH.config;
-    var host = document.getElementById('division-links');
-    if (!CFG || !host) return;
 
-    host.innerHTML = CFG.divisions.map(function (d) {
-        var ready = !!d.gid;
-        return '<a href="' + d.page + '" class="block bg-esports-card border rounded-2xl p-8 transition-colors hover:bg-white/[0.04]"' +
-               ' style="border-color:' + d.accent + '44">' +
-               '<p class="font-display text-3xl font-black uppercase italic mb-2" style="color:' + d.accent + '">' +
-                 d.name.replace(/&/g, '&amp;').replace(/</g, '&lt;') +
-               '</p>' +
-               '<p class="text-sm text-gray-500">' +
-                 (ready ? 'Group tables and elimination bracket' : 'Not set up yet') +
-               '</p></a>';
-    }).join('');
-})();
-</script>
+<script src="../data/smash.js"></script>
+<script src="../data/smash-bracket.js"></script>
+<script>SMASH_PAGE.init('jr');</script>
 </body>
 </html>

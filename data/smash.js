@@ -9,34 +9,38 @@
 
    ---- Setting it up -------------------------------------------------------
 
-   1. Build the workbook with two tabs, "Teams" and "Matches". The exact
-      layout is documented under COLUMNS below. Column ORDER does not matter
-      and neither does letter case — every column is found by its header
-      text, so you can add, move or rename-around columns freely.
+   1. Share the workbook: Share > General access > "Anyone with the link",
+      set to VIEWER. Paste the id out of the normal sheet URL into `sheetId`:
+        docs.google.com/spreadsheets/d/<THIS BIT>/edit
 
-   2. Decide how the page reads it:
-
-      source: 'gviz'       Share > General access > "Anyone with the link"
-                           set to VIEWER. Paste the id out of the normal
-                           sheet URL into `sheetId`:
-                             docs.google.com/spreadsheets/d/<THIS BIT>/edit
-                           Scores appear on the site within seconds. Anyone
-                           with the link can open the workbook read-only,
-                           which is usually fine for a public bracket.
-
-      source: 'published'  File > Share > Publish to web > CSV. Paste the
-                           long "2PACX-..." id into `publishId`. The workbook
-                           itself stays private, but Google caches the CSV,
-                           so a score can take a few minutes to show up.
-
-      Use 'gviz' on tournament day. 'published' is the safer choice if the
-      workbook holds anything you would not want a visitor to read.
-
-   3. Paste each tab's gid — the number at the end of the URL after "#gid="
-      when that tab is open.
+   2. One TAB per division. Put each tab's gid — the number after "#gid="
+      when that tab is open — against the right division below.
 
    The page only ever READS. Nothing a visitor does can write back, and the
    sheet is the single source of truth for what is on screen.
+
+   ---- How the tab is read -------------------------------------------------
+
+   Nothing here depends on a fixed row or column number, because they move
+   the moment a group has three teams instead of four. Everything is found by
+   looking for landmarks:
+
+     * "Round Robin Matches" and "Elimination Matches" mark the two sections.
+     * Inside each, a header row carries R1 / R2 / R3 markers. Every "R1"
+       marks a BAND: the team names sit one column to its left and that
+       game's stock in the three columns from R1 rightwards.
+     * Under a round-robin header, team names run down the band's name
+       column. Consecutive pairs are one match.
+     * Under an elimination label ("Quarter Final 1"), the first two names in
+       that band's column are the two teams.
+
+   So four groups or ten, groups of three or four, a bracket that starts at
+   the quarter finals or the semis — all read without an edit here.
+
+   One thing to know about the feed: the gviz endpoint DROPS rows that are
+   entirely empty, so the spacer rows that make the sheet readable never
+   arrive and the row numbers here do not match the ones in Sheets. That is
+   exactly why nothing below counts rows.
    ========================================================================== */
 
 (function (root) {
@@ -47,117 +51,37 @@
     /* ---- event ---------------------------------------------------------- */
 
     eventName: 'Super Smash Bros. Tournament',
-    /* 'YYYY-MM-DD' once it is set; null keeps the date chip off the page. */
-    eventDate: null,
+    eventDate: null,       /* 'YYYY-MM-DD' once set; null hides the date chip */
     venue: null,
 
     /* ---- workbook ------------------------------------------------------- */
 
-    source: 'gviz',        /* 'gviz' | 'published' */
-
-    sheetId: null,         /* gviz mode:      docs.google.com/spreadsheets/d/<ID>/edit */
-    publishId: null,       /* published mode: the long 2PACX-... id */
-
-    tabs: {
-      teams: null,         /* gid of the Teams tab */
-      matches: null        /* gid of the Matches tab */
-    },
-
-    /* How often the page re-reads the sheet, in seconds. 30 keeps a room-
-       facing bracket feeling live without hammering Google. */
-    refreshSeconds: 30,
+    sheetId: '1xC5xlOsaStroHSUwHMzjBflQY2xsCvYCjvYVxLLfrKc',
 
     /* ---- format --------------------------------------------------------- */
 
     advance: 2,            /* teams out of each group */
     maxStock: 6,           /* 2 players x 3 stock */
-    thirdPlace: true,      /* play off for third */
+    refreshSeconds: 30,
 
+    /* One tab per division, and one bracket page each. Fill in `gid` and that
+       division's page comes to life. A null gid is treated as "not set up
+       yet" rather than an error.
+
+       The two divisions are drawn independently — different team counts,
+       different group counts, even different bracket depths are all fine,
+       because each page reads its own tab and works out the shape from what
+       is actually there. */
     divisions: [
-      {
-        id: 'jr',
-        name: 'Grade 5 & Under',
-        accent: '#FF6B6B',
-        /* Anything the Division column might say for this division. Case,
-           spaces and punctuation are ignored, so "grade 5 and under" and
-           "Grade 5 & Under" both match without an entry. */
-        aliases: ['G5', 'Grade 5', '5 and under', 'Elementary']
-      },
-      {
-        id: 'sr',
-        name: 'Grades 6–8',
-        accent: '#4DABF7',
-        aliases: ['G6-8', 'Grades 6-8', '6-8', 'Middle School', 'MS']
-      }
+      { id: 'jr', name: 'Grade 5 & Under', accent: '#FF6B6B',
+        page: 'grade-5-under.html', gid: '0' },
+      { id: 'sr', name: 'Grades 6–8', accent: '#4DABF7',
+        page: 'grades-6-8.html', gid: '86502539' }
     ]
-  };
-
-  /* ==========================================================================
-     COLUMNS
-
-     Tab "Teams"
-       Division   required   which division the team plays in
-       Team       required   the team's display name, e.g. "Shadow Hills Red"
-       Group      required   a single letter, A / B / C ...
-       Player 1   optional
-       Player 2   optional
-       Alternate  optional
-
-     Tab "Matches"
-       Division   required   as above
-       Stage      required   "Group" for a group match, otherwise the bracket
-                             slot: QF1..QF4, SF1, SF2, FINAL, THIRD, R16-1...
-       Team A     group only the two teams in a group match. LEAVE BLANK on
-       Team B                bracket rows — the page works out who is in each
-                             slot from the group tables and earlier rounds.
-       Game 1     optional   who won that game: A, B, or the team's name
-       Game 2     optional
-       Game 3     optional
-       Stock 1    optional   stock the WINNER of game 1 had left, 1-6
-       Stock 2    optional   only used for the group stock tiebreaker; blank
-       Stock 3    optional   is fine and simply scores 0
-       Station    optional   shown on the match row if present
-       Time       optional
-
-     A match with fewer than two game winners reads as "not finished yet" and
-     shows as upcoming. Nothing else needs to be filled in or cleared.
-     ========================================================================== */
-
-  var COLUMNS = {
-    teams: {
-      division:  ['division', 'div'],
-      team:      ['team', 'team name'],
-      group:     ['group', 'pool'],
-      player1:   ['player 1', 'player1', 'p1'],
-      player2:   ['player 2', 'player2', 'p2'],
-      alternate: ['alternate', 'alt', 'sub']
-    },
-    matches: {
-      division: ['division', 'div'],
-      stage:    ['stage', 'round'],
-      group:    ['group', 'pool'],
-      teamA:    ['team a', 'teama', 'team 1', 'home'],
-      teamB:    ['team b', 'teamb', 'team 2', 'away'],
-      g1:       ['game 1', 'game1', 'g1'],
-      g2:       ['game 2', 'game2', 'g2'],
-      g3:       ['game 3', 'game3', 'g3'],
-      s1:       ['stock 1', 'stock1', 's1'],
-      s2:       ['stock 2', 'stock2', 's2'],
-      s3:       ['stock 3', 'stock3', 's3'],
-      station:  ['station', 'setup', 'board'],
-      time:     ['time', 'start']
-    }
   };
 
   /* ---- text helpers ------------------------------------------------------ */
 
-  /**
-   * Lowercase, strip everything but letters and digits.
-   *
-   * "&" becomes "and" first, so "Grade 5 & Under" and "Grade 5 and Under"
-   * are the same string here. Without that they differ, and a division typed
-   * the long way in the sheet would silently match nothing.
-   */
   function norm(s) {
     return String(s == null ? '' : s)
       .toLowerCase()
@@ -165,12 +89,12 @@
       .replace(/[^a-z0-9]/g, '');
   }
 
-  function isBlank(s) { return String(s == null ? '' : s).trim() === ''; }
+  function txt(s) { return String(s == null ? '' : s).trim(); }
+  function isBlank(s) { return txt(s) === ''; }
 
   /* ---- CSV ---------------------------------------------------------------
 
-     A real parser rather than split(','), because a roster cell like
-     "Ava R., Marcus T." is quoted and carries a comma inside it.
+     A real parser rather than split(','), because gviz quotes every field.
      ------------------------------------------------------------------------ */
 
   function parseCSV(text) {
@@ -202,64 +126,273 @@
     });
   }
 
-  /**
-   * Find the header row and map canonical field names onto column indexes.
-   *
-   * The header is searched for rather than assumed to be row 1: the gviz and
-   * published endpoints do not agree on whether they emit a header line, and
-   * people leave title rows above their tables. The first row that carries at
-   * least two recognised labels wins.
-   */
-  function indexColumns(rows, spec) {
-    var keys = Object.keys(spec);
+  /* ---- grid helpers ------------------------------------------------------ */
 
-    for (var r = 0; r < Math.min(rows.length, 10); r++) {
-      var map = {}, hits = 0;
-      rows[r].forEach(function (cell, ci) {
-        var n = norm(cell);
-        if (!n) return;
-        keys.forEach(function (key) {
-          if (map[key] !== undefined) return;
-          var matched = spec[key].some(function (label) { return norm(label) === n; });
-          if (matched) { map[key] = ci; hits++; }
+  /**
+   * One cell, or '' if it is not there.
+   *
+   * Callers routinely ask for rows that do not exist — an elimination slot
+   * with nothing typed into it yet has no rows at all, so the row index comes
+   * through as undefined. That is an ordinary empty cell, not an error.
+   */
+  function at(grid, r, c) {
+    if (typeof r !== 'number' || r < 0 || r >= grid.length) return '';
+    var row = grid[r];
+    if (!row) return '';
+    if (typeof c !== 'number' || c < 0 || c >= row.length) return '';
+    return txt(row[c]);
+  }
+
+  /** First row index at or after `from` holding a cell matching `re`. */
+  function findRow(grid, re, from) {
+    for (var r = from || 0; r < grid.length; r++) {
+      for (var c = 0; c < grid[r].length; c++) {
+        if (re.test(txt(grid[r][c]))) return r;
+      }
+    }
+    return -1;
+  }
+
+  /** Rows are dense (gviz drops blanks), so "is this a header" = has an R1. */
+  function bandsIn(row) {
+    var out = [];
+    if (!row) return out;
+    row.forEach(function (cell, c) {
+      if (norm(cell) === 'r1') out.push({ nameCol: c - 1, cols: [c, c + 1, c + 2] });
+    });
+    return out;
+  }
+
+  function isHeaderRow(row) { return bandsIn(row).length > 0; }
+
+  /* ---- reading a match ---------------------------------------------------
+
+     Each team's remaining stock for a game sits on that team's own row, so a
+     game's winner is simply whichever row holds the larger number. A blank or
+     equal pair means the game has not been played.
+     ------------------------------------------------------------------------ */
+
+  function readGames(grid, rowTop, rowBottom, cols, label, warn) {
+    var games = [];
+    cols.forEach(function (c, gi) {
+      var a = at(grid, rowTop, c), b = at(grid, rowBottom, c);
+      if (isBlank(a) && isBlank(b)) return;
+
+      var na = Number(a) || 0, nb = Number(b) || 0;
+      if (na === nb) {
+        if (na > 0) {
+          warn(label + ': game ' + (gi + 1) + ' has the same stock on both rows (' +
+               na + '), so there is no winner. One of them needs correcting.');
+        }
+        return;   /* 0-0 simply means not played yet */
+      }
+      games.push({ top: na, bottom: nb, topWon: na > nb });
+    });
+    return games;
+  }
+
+  function matchScore(m) {
+    var a = 0, b = 0;
+    m.games.forEach(function (g) { if (g.topWon) a++; else b++; });
+    return { a: a, b: b, done: a === 2 || b === 2 };
+  }
+
+  /* ---- roster ------------------------------------------------------------
+
+     Above the round-robin title: a row of group names, teams listed beneath
+     each. One column per group here, unlike the four-column match bands.
+     ------------------------------------------------------------------------ */
+
+  function readRoster(grid, endRow) {
+    var groups = [];
+    if (endRow <= 0) return groups;
+
+    grid[0].forEach(function (cell, c) {
+      if (isBlank(cell)) return;
+      var teams = [];
+      for (var r = 1; r < endRow; r++) {
+        var v = at(grid, r, c);
+        if (isBlank(v)) break;
+        teams.push(v);
+      }
+      if (teams.length) groups.push({ name: txt(cell), teams: teams });
+    });
+    return groups;
+  }
+
+  /* ---- round robin ------------------------------------------------------- */
+
+  function readGroupMatches(grid, headerRow, endRow, groups, warn) {
+    var bands = bandsIn(grid[headerRow]);
+    var out = [];
+
+    bands.forEach(function (b, bi) {
+      var group = groups[bi];
+      var groupName = group ? group.name : 'Group ' + (bi + 1);
+
+      /* every named row in this band's column, in order */
+      var rows = [];
+      for (var r = headerRow + 1; r < endRow; r++) {
+        if (!isBlank(at(grid, r, b.nameCol))) rows.push(r);
+      }
+
+      if (rows.length % 2) {
+        warn(groupName + ' has an odd number of team rows (' + rows.length +
+             '), so the last one has no opponent and is being ignored.');
+      }
+
+      for (var i = 0; i + 1 < rows.length; i += 2) {
+        var top = at(grid, rows[i], b.nameCol);
+        var bottom = at(grid, rows[i + 1], b.nameCol);
+        var label = groupName + ' — ' + top + ' v ' + bottom;
+        out.push({
+          group: groupName,
+          teams: [top, bottom],
+          games: readGames(grid, rows[i], rows[i + 1], b.cols, label, warn)
         });
-      });
-      if (hits >= 2) return { headerRow: r, cols: map };
+      }
+
+      /* a name in the matches that is not on the roster is almost always a
+         typo, and would otherwise just quietly not count */
+      if (group) {
+        var known = {};
+        group.teams.forEach(function (t) { known[norm(t)] = true; });
+        out.forEach(function (m) {
+          if (m.group !== groupName) return;
+          m.teams.forEach(function (t) {
+            if (!known[norm(t)]) {
+              warn(groupName + ': "' + t + '" appears in the matches but is not in ' +
+                   'the team list at the top, so its results are not counted.');
+            }
+          });
+        });
+      }
+    });
+
+    return out;
+  }
+
+  /* ---- elimination -------------------------------------------------------
+
+     Each label row ("Quarter Final 1", "Semi Final 1", "Final", "Third")
+     carries its own R1/R2/R3 bands. The two teams are simply the first two
+     names under the label, typed in by hand as the bracket fills out.
+     ------------------------------------------------------------------------ */
+
+  var ROUND_ORDER = [
+    { re: /round\s*of\s*32/i, rank: 0, name: 'Round of 32' },
+    { re: /round\s*of\s*16/i, rank: 1, name: 'Round of 16' },
+    { re: /quarter/i,         rank: 2, name: 'Quarter-finals' },
+    { re: /semi/i,            rank: 3, name: 'Semi-finals' },
+    { re: /third|bronze|3rd/i, rank: 5, name: 'Third Place' },
+    { re: /final/i,           rank: 4, name: 'Final' }
+  ];
+
+  function roundOf(label) {
+    for (var i = 0; i < ROUND_ORDER.length; i++) {
+      if (ROUND_ORDER[i].re.test(label)) return ROUND_ORDER[i];
     }
     return null;
   }
 
-  function cell(row, cols, key) {
-    var i = cols[key];
-    return i === undefined || i === null ? '' : (row[i] === undefined ? '' : row[i]);
+  function readKnockout(grid, startRow, warn) {
+    var labelRows = [];
+    for (var r = startRow; r < grid.length; r++) {
+      if (isHeaderRow(grid[r])) labelRows.push(r);
+    }
+
+    var out = [];
+    labelRows.forEach(function (lr, idx) {
+      var bands = bandsIn(grid[lr]);
+      var endRow = (idx + 1 < labelRows.length) ? labelRows[idx + 1] : grid.length;
+
+      bands.forEach(function (b) {
+        var label = at(grid, lr, b.nameCol);
+        if (isBlank(label)) return;
+
+        var round = roundOf(label);
+        if (!round) {
+          warn('Elimination: "' + label + '" is not a round name I recognise ' +
+               '(expected Quarter Final, Semi Final, Final or Third).');
+          return;
+        }
+
+        var rows = [];
+        for (var r = lr + 1; r < endRow; r++) {
+          if (!isBlank(at(grid, r, b.nameCol))) rows.push(r);
+        }
+
+        var teams = [at(grid, rows[0], b.nameCol), at(grid, rows[1], b.nameCol)];
+        out.push({
+          label: label,
+          round: round.name,
+          rank: round.rank,
+          isThird: round.rank === 5,
+          teams: [teams[0] || '', teams[1] || ''],
+          games: rows.length >= 2
+            ? readGames(grid, rows[0], rows[1], b.cols, label, warn)
+            : []
+        });
+      });
+    });
+
+    return out;
+  }
+
+  /* ---- one tab ------------------------------------------------------------ */
+
+  function readTab(csv, warn) {
+    var grid = parseCSV(csv);
+    if (!grid.length) { warn('That tab came back empty.'); return null; }
+
+    var rrTitle = findRow(grid, /round\s*robin/i, 0);
+    var elimTitle = findRow(grid, /elimination/i, 0);
+
+    if (rrTitle === -1) {
+      warn('Could not find a "Round Robin Matches" heading on this tab.');
+      return null;
+    }
+
+    var rrHeader = -1;
+    for (var r = rrTitle + 1; r < grid.length; r++) {
+      if (isHeaderRow(grid[r])) { rrHeader = r; break; }
+    }
+    if (rrHeader === -1) {
+      warn('Found the Round Robin heading but no R1 / R2 / R3 row under it.');
+      return null;
+    }
+
+    var groups = readRoster(grid, rrTitle);
+    if (!groups.length) warn('No group/team list found above the Round Robin heading.');
+
+    var rrEnd = elimTitle === -1 ? grid.length : elimTitle;
+
+    return {
+      groups: groups,
+      groupMatches: readGroupMatches(grid, rrHeader, rrEnd, groups, warn),
+      koMatches: elimTitle === -1 ? [] : readKnockout(grid, elimTitle + 1, warn)
+    };
   }
 
   /* ---- fetching ----------------------------------------------------------
 
-     Self-contained rather than reusing PSD.fetchCSV from data/psd-data.js:
-     that helper builds a published-CSV URL internally and has no way to emit
-     a gviz one, and the eight Rocket League pages depend on it, so widening
-     it for a single tournament page is not worth the blast radius.
+     Self-contained rather than reusing PSD.fetchCSV: that helper is shared by
+     eight Rocket League pages and normalises gviz back into published-CSV
+     shape, which this reader does not want.
      ------------------------------------------------------------------------ */
 
   var TIMEOUT_MS = 9000;
 
   function tabUrl(gid) {
-    var bust = '_=' + Date.now();   /* defeats the browser cache; gviz is fresh anyway */
-    if (CONFIG.source === 'gviz') {
-      return 'https://docs.google.com/spreadsheets/d/' + CONFIG.sheetId +
-             '/gviz/tq?tqx=out:csv&gid=' + gid + '&' + bust;
-    }
-    return 'https://docs.google.com/spreadsheets/d/e/' + CONFIG.publishId +
-           '/pub?output=csv&gid=' + gid + '&' + bust;
+    return 'https://docs.google.com/spreadsheets/d/' + CONFIG.sheetId +
+           '/gviz/tq?tqx=out:csv&gid=' + gid + '&_=' + Date.now();
   }
 
-  /** True once the config points at a real workbook. */
-  function isWired() {
-    var id = CONFIG.source === 'gviz' ? CONFIG.sheetId : CONFIG.publishId;
-    if (isBlank(id)) return false;
-    return !isBlank(CONFIG.tabs.teams) && !isBlank(CONFIG.tabs.matches);
+  function wiredDivisions() {
+    return CONFIG.divisions.filter(function (d) { return !isBlank(d.gid); });
   }
+
+  function isWired() { return !isBlank(CONFIG.sheetId) && wiredDivisions().length > 0; }
 
   function fetchTab(gid) {
     var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
@@ -269,7 +402,7 @@
 
     return fetch(tabUrl(gid), init).then(function (res) {
       clearTimeout(timer);
-      if (!res.ok) throw new Error('gid ' + gid + ' → HTTP ' + res.status);
+      if (!res.ok) throw new Error('tab ' + gid + ' → HTTP ' + res.status);
       return res.text();
     }, function (err) {
       clearTimeout(timer);
@@ -277,210 +410,54 @@
     });
   }
 
-  /* ---- shaping the rows -------------------------------------------------- */
-
-  /* What the Stage column may say for a group match. Anything else is read as
-     a bracket slot. Shared with the page so the two can never disagree about
-     which rows are group matches. */
-  var GROUP_STAGE_KEYS = ['group', 'groupstage', 'groups', 'rr', 'roundrobin', 'pool'];
-
-  function isGroupStage(m) { return GROUP_STAGE_KEYS.indexOf(m.stageKey) !== -1; }
-
-  function divisionOf(text) {
-    var n = norm(text);
-    if (!n) return null;
-    var found = null;
-    CONFIG.divisions.forEach(function (d) {
-      if (found) return;
-      var candidates = [d.id, d.name].concat(d.aliases || []);
-      if (candidates.some(function (c) { return norm(c) === n; })) found = d.id;
-    });
-    return found;
-  }
+  /* ---- public API --------------------------------------------------------- */
 
   /**
-   * Read a game-winner cell into 'a', 'b' or null.
-   * Accepts A/B, 1/2, or either team's name, so a scorekeeper who types the
-   * team instead of the letter still gets a recorded result.
-   */
-  function winnerOf(text, teamA, teamB) {
-    var n = norm(text);
-    if (!n) return null;
-    if (n === 'a' || n === '1' || n === 'teama') return 'a';
-    if (n === 'b' || n === '2' || n === 'teamb') return 'b';
-    if (teamA && n === norm(teamA)) return 'a';
-    if (teamB && n === norm(teamB)) return 'b';
-    return null;
-  }
-
-  function stockOf(text) {
-    var v = parseInt(String(text).replace(/[^0-9]/g, ''), 10);
-    if (isNaN(v) || v < 1) return null;
-    return Math.min(v, CONFIG.maxStock);
-  }
-
-  function readTeams(csv, warn) {
-    var rows = parseCSV(csv);
-    var idx = indexColumns(rows, COLUMNS.teams);
-    if (!idx) {
-      warn('The Teams tab has no recognisable header row — it needs at least Division, Team and Group columns.');
-      return [];
-    }
-    var cols = idx.cols;
-
-    return rows.slice(idx.headerRow + 1).map(function (row) {
-      var name = cell(row, cols, 'team');
-      if (isBlank(name)) return null;
-
-      var rawDiv = cell(row, cols, 'division');
-      if (!divisionOf(rawDiv)) {
-        warn('Teams tab: "' + name + '" has an unrecognised division ' +
-             (isBlank(rawDiv) ? '(blank)' : '"' + rawDiv + '"') + ' and was skipped.');
-      } else if (isBlank(cell(row, cols, 'group'))) {
-        warn('Teams tab: "' + name + '" has no group and was skipped.');
-      }
-      var players = [
-        cell(row, cols, 'player1'),
-        cell(row, cols, 'player2'),
-        cell(row, cols, 'alternate')
-      ].filter(function (p) { return !isBlank(p); });
-
-      return {
-        division: divisionOf(cell(row, cols, 'division')),
-        /* the team name IS the id — it is what the Matches tab refers to */
-        id: norm(name),
-        name: name,
-        group: String(cell(row, cols, 'group')).trim().toUpperCase(),
-        players: players
-      };
-    }).filter(function (t) { return t && t.division && t.group; });
-  }
-
-  function readMatches(csv, warn) {
-    var rows = parseCSV(csv);
-    var idx = indexColumns(rows, COLUMNS.matches);
-    if (!idx) {
-      warn('The Matches tab has no recognisable header row — it needs at least Division and Stage columns.');
-      return [];
-    }
-    var cols = idx.cols;
-
-    return rows.slice(idx.headerRow + 1).map(function (row) {
-      var stage = String(cell(row, cols, 'stage')).trim();
-      if (isBlank(stage)) return null;
-
-      if (!divisionOf(cell(row, cols, 'division'))) {
-        warn('Matches tab: a "' + stage + '" row has an unrecognised division and was skipped.');
-      }
-
-      var teamA = cell(row, cols, 'teamA');
-      var teamB = cell(row, cols, 'teamB');
-
-      var games = [];
-      [['g1', 's1'], ['g2', 's2'], ['g3', 's3']].forEach(function (pair) {
-        var w = winnerOf(cell(row, cols, pair[0]), teamA, teamB);
-        if (!w) return;
-        games.push({ w: w, stock: stockOf(cell(row, cols, pair[1])) });
-      });
-
-      return {
-        division: divisionOf(cell(row, cols, 'division')),
-        stage: stage,
-        stageKey: norm(stage),
-        group: String(cell(row, cols, 'group')).trim().toUpperCase(),
-        teamA: teamA, teamAId: norm(teamA),
-        teamB: teamB, teamBId: norm(teamB),
-        games: games,
-        station: cell(row, cols, 'station'),
-        time: cell(row, cols, 'time')
-      };
-    }).filter(function (m) { return m && m.division; });
-  }
-
-  /* ---- public API -------------------------------------------------------- */
-
-  /**
-   * Read both tabs and shape them per division.
+   * Read every wired tab.
    *
-   * Resolves to { divisions: { <id>: { teams, groups, matches } }, loadedAt }.
-   * Rejects if either tab cannot be read, so the page can keep showing the
-   * last good data rather than blanking out on one dropped request.
+   * Resolves to { divisions, warnings, loadedAt }. Rejects only if nothing
+   * could be read at all, so one slow tab degrades to a missing division
+   * rather than a blank page.
    */
   function load() {
     if (!isWired()) {
       return Promise.reject(new Error('No sheet configured yet — see data/smash.js.'));
     }
 
-    return Promise.all([
-      fetchTab(CONFIG.tabs.teams),
-      fetchTab(CONFIG.tabs.matches)
-    ]).then(function (csv) {
-      /* Problems are collected rather than thrown. A single mistyped cell
-         should not blank the bracket, but it must not vanish silently either:
-         a group match whose team name does not match the Teams tab would
-         otherwise just never count, and the standings would look fine while
-         being wrong. */
-      var warnings = [];
-      var warn = function (msg) { if (warnings.indexOf(msg) === -1) warnings.push(msg); };
+    var divs = wiredDivisions();
+    var warnings = [];
+    var warn = function (msg) { if (warnings.indexOf(msg) === -1) warnings.push(msg); };
 
-      var teams = readTeams(csv[0], warn);
-      var matches = readMatches(csv[1], warn);
-
-      var out = {};
-      CONFIG.divisions.forEach(function (d) {
-        var dTeams = teams.filter(function (t) { return t.division === d.id; });
-
-        /* groups come straight from the Group column, in letter order */
-        var byGroup = {};
-        dTeams.forEach(function (t) {
-          if (!byGroup[t.group]) byGroup[t.group] = [];
-          byGroup[t.group].push(t.id);
-        });
-        var groups = Object.keys(byGroup).sort().map(function (name) {
-          return { name: name, teams: byGroup[name] };
-        });
-
-        var dMatches = matches.filter(function (m) { return m.division === d.id; });
-
-        /* A group match names its two teams. If either name is not on the
-           Teams tab the match cannot be scored, so say which one. */
-        var known = {};
-        dTeams.forEach(function (t) { known[t.id] = true; });
-        dMatches.forEach(function (m) {
-          if (GROUP_STAGE_KEYS.indexOf(m.stageKey) === -1) return;
-          [[m.teamA, m.teamAId], [m.teamB, m.teamBId]].forEach(function (pair) {
-            if (isBlank(pair[0])) {
-              warn(d.name + ': a group match row is missing a team name.');
-            } else if (!known[pair[1]]) {
-              warn(d.name + ': group match team "' + pair[0] +
-                   '" is not on the Teams tab, so that match is not being counted.');
-            }
-          });
-        });
-
-        out[d.id] = { teams: dTeams, groups: groups, matches: dMatches };
+    return Promise.all(divs.map(function (d) {
+      return fetchTab(d.gid).then(function (csv) {
+        return { id: d.id, data: readTab(csv, function (m) { warn(d.name + ' — ' + m); }) };
+      }, function (err) {
+        warn(d.name + ' — could not be read: ' + err.message);
+        return { id: d.id, data: null };
       });
-
-      return { divisions: out, loadedAt: new Date(), warnings: warnings };
+    })).then(function (results) {
+      var out = {}, any = false;
+      results.forEach(function (r) {
+        if (r.data) any = true;
+        out[r.id] = r.data || { groups: [], groupMatches: [], koMatches: [] };
+      });
+      if (!any) throw new Error('No division could be read from the sheet.');
+      return { divisions: out, warnings: warnings, loadedAt: new Date() };
     });
   }
 
   root.SMASH = {
     config: CONFIG,
-    columns: COLUMNS,
     isWired: isWired,
     load: load,
     tabUrl: tabUrl,
-    groupStageKeys: GROUP_STAGE_KEYS,
-    isGroupStage: isGroupStage,
+    matchScore: matchScore,
     /* exported for the page and for testing */
     norm: norm,
     parseCSV: parseCSV,
-    indexColumns: indexColumns,
-    readTeams: readTeams,
-    readMatches: readMatches,
-    divisionOf: divisionOf,
-    winnerOf: winnerOf
+    bandsIn: bandsIn,
+    readRoster: readRoster,
+    readTab: readTab
   };
 
 })(window);
