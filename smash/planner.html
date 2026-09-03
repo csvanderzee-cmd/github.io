@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#0B0E14">
+    <!-- Not linked from the site yet. noindex keeps it out of search while it is a work in progress. -->
+    <meta name="robots" content="noindex">
+    <title>Schedule Planner &mdash; Smash Tournament | PSD Esports</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        esports: {
+                            dark: '#0B0E14',
+                            card: '#151B26',
+                            yellow: '#FDB913',
+                            'yellow-text': '#FFD166',
+                            red: '#C8102E',
+                            'red-text': '#FF6B6B',
+                            blue: '#005696',
+                            'blue-text': '#4DABF7',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Rajdhani', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-panel { background: rgba(21, 27, 38, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .clip-slant { clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); }
+
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: #0B0E14; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; border: 2px solid #0B0E14; }
+
+        /* ---- division tabs ---- */
+        .div-tab { font-family:'Rajdhani',sans-serif; font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+                   padding:.55rem 1.4rem; border-radius:9999px; font-size:.8rem; color:#9ca3af; cursor:pointer;
+                   border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.03); transition:all .18s; }
+        .div-tab:hover { color:#fff; background:rgba(255,255,255,.08); }
+        .div-tab.active { color:#0B0E14; background:var(--accent,#FDB913); border-color:var(--accent,#FDB913); }
+
+        /* ---- group standings ---- */
+        .grp-table { width:100%; border-collapse:collapse; font-size:.8rem; }
+        .grp-table th { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:.6rem; letter-spacing:.16em;
+                        text-transform:uppercase; color:#6b7280; text-align:right; padding:.4rem .35rem; }
+        /* position and team name read left; every stat column reads right */
+        .grp-table th:first-child,    .grp-table td:first-child,
+        .grp-table th:nth-child(2),   .grp-table td:nth-child(2) { text-align:left; }
+        .grp-table td { padding:.5rem .35rem; text-align:right; border-top:1px solid rgba(255,255,255,.06);
+                        color:#d1d5db; font-variant-numeric:tabular-nums; }
+        .grp-table tr.qualified td { background:linear-gradient(90deg, rgba(253,185,19,.09), transparent); }
+        .grp-table tr.qualified td:first-child { box-shadow:inset 3px 0 0 #FDB913; }
+        .grp-table .pos { color:#4b5563; width:1.4rem; }
+        .grp-table .nm { color:#fff; font-weight:600; }
+        .grp-table .pts { color:#fff; font-weight:800; }
+
+        /* ---- fixtures ---- */
+        .fix-row { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:.5rem; width:100%;
+                   padding:.45rem .6rem; border-radius:.5rem; border:1px solid rgba(255,255,255,.05);
+                   background:rgba(255,255,255,.02); text-align:left; transition:border-color .15s, background .15s; }
+        .fix-row .side { font-size:.78rem; color:#9ca3af; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .fix-row .side.right { text-align:right; }
+        .fix-row .side.won { color:#fff; font-weight:700; }
+        .fix-score { font-family:'Rajdhani',sans-serif; font-weight:900; font-size:.85rem; letter-spacing:.05em;
+                     color:#6b7280; background:rgba(255,255,255,.05); padding:.1rem .5rem; border-radius:.3rem; white-space:nowrap; }
+        .fix-score.done { color:#FFD166; background:rgba(253,185,19,.12); }
+
+        /* ---- bracket ----
+           Each round is a flex column of equal-height slots, so a match always sits at the
+           vertical midpoint of the two matches feeding it. Connectors are drawn in the 3rem
+           gutter between rounds: a 1.5rem stub out of each match, a vertical line joining
+           each pair, and a 1.5rem stub into the match that follows. */
+        .bracket { display:flex; overflow-x:auto; padding:1rem .25rem 1.5rem; align-items:stretch; }
+        .bk-round { flex:0 0 235px; display:flex; flex-direction:column; margin-right:3rem; }
+        .bk-round:last-child { margin-right:0; }
+        .bk-round-title { font-family:'Rajdhani',sans-serif; font-weight:800; font-size:.62rem; letter-spacing:.22em;
+                          text-transform:uppercase; color:#6b7280; text-align:center; padding-bottom:.75rem; }
+        .bk-body { flex:1; display:flex; flex-direction:column; }
+        .bk-slot { flex:1; display:flex; align-items:center; position:relative; min-height:78px; }
+        .bk-round:not(:last-child) .bk-slot::after,
+        .bk-round:not(:first-child) .bk-slot::before {
+            content:''; position:absolute; top:50%; width:1.5rem; height:2px; background:rgba(255,255,255,.13);
+        }
+        .bk-round:not(:last-child) .bk-slot::after { left:100%; }
+        .bk-round:not(:first-child) .bk-slot::before { right:100%; }
+        .bk-conn { position:absolute; left:calc(100% + 1.5rem); top:50%; width:2px; height:100%;
+                   background:rgba(255,255,255,.13); display:none; }
+        .bk-round:not(:last-child) .bk-slot:nth-child(odd) .bk-conn { display:block; }
+        .bk-match { width:100%; background:#151B26; border:1px solid rgba(255,255,255,.07);
+                    border-radius:.6rem; overflow:hidden; text-align:left; transition:border-color .15s; }
+        .bk-team { display:flex; align-items:center; gap:.5rem; padding:.45rem .6rem; font-size:.78rem; color:#9ca3af; }
+        .bk-team + .bk-team { border-top:1px solid rgba(255,255,255,.06); }
+        .bk-team .nm { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .bk-team .sc { font-family:'Rajdhani',sans-serif; font-weight:900; color:#4b5563; font-variant-numeric:tabular-nums; }
+        .bk-team.won { color:#fff; font-weight:700; background:rgba(253,185,19,.07); }
+        .bk-team.won .sc { color:#FFD166; }
+        .bk-team.tbd { color:#4b5563; font-style:italic; }
+        .bk-match.final-match { border-color:rgba(253,185,19,.45); box-shadow:0 0 26px rgba(253,185,19,.13); }
+
+        /* ---- live feed status ---- */
+        .feed-dot { width:7px; height:7px; border-radius:50%; background:#4b5563; flex-shrink:0; }
+        .feed-dot.live    { background:#34d399; box-shadow:0 0 0 0 rgba(52,211,153,.5); animation:feed-pulse 2.4s infinite; }
+        .feed-dot.loading { background:#FDB913; animation:feed-blink .9s infinite; }
+        .feed-dot.stale   { background:#FDB913; }
+        .feed-dot.error   { background:#FF6B6B; }
+        .feed-dot.off     { background:#4b5563; }
+        @keyframes feed-pulse { 70% { box-shadow:0 0 0 7px rgba(52,211,153,0); } 100% { box-shadow:0 0 0 0 rgba(52,211,153,0); } }
+        @keyframes feed-blink { 50% { opacity:.35; } }
+        @media (prefers-reduced-motion: reduce) {
+            .feed-dot.live, .feed-dot.loading { animation:none; }
+        }
+
+        /* station / start time under a fixture, when the sheet supplies them */
+        .fix-meta { font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:#4b5563;
+                    font-family:'Rajdhani',sans-serif; font-weight:700; padding:.15rem .6rem 0; }
+
+        @media print {
+            #psd-nav, #psd-nav-drawer, .no-print { display:none !important; }
+            body { background:#fff; color:#000; }
+            .bracket { overflow:visible; }
+        }
+    </style>
+</head>
+
+<body class="bg-esports-dark text-gray-100 font-sans antialiased selection:bg-esports-blue">
+
+<script src="/data/psd-nav.js"></script>
+<script>PSD_NAV.init('smash');</script>
+
+    <style>
+        .fld { background:#0B0E14; border:1px solid rgba(255,255,255,.12); border-radius:.4rem; color:#e5e7eb;
+               padding:.45rem .6rem; font-size:.9rem; width:100%; font-variant-numeric:tabular-nums; }
+        .fld:focus { outline:none; border-color:#FDB913; }
+        .lbl { display:block; font-family:'Rajdhani',sans-serif; font-weight:700; font-size:.62rem;
+               letter-spacing:.18em; text-transform:uppercase; color:#6b7280; margin-bottom:.35rem; }
+        .hint { font-size:.68rem; color:#4b5563; margin-top:.3rem; line-height:1.4; }
+        .card { background:#151B26; border:1px solid rgba(255,255,255,.06); border-radius:.9rem; padding:1.5rem 1.75rem; }
+        .big { font-family:'Rajdhani',sans-serif; font-weight:900; font-style:italic; line-height:1; }
+        .wave-t { width:100%; border-collapse:collapse; font-size:.82rem; }
+        .wave-t th { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:.58rem; letter-spacing:.16em;
+                     text-transform:uppercase; color:#6b7280; text-align:right; padding:.4rem .5rem;
+                     border-bottom:1px solid rgba(255,255,255,.1); }
+        .wave-t th:first-child, .wave-t td:first-child { text-align:left; }
+        .wave-t td { padding:.45rem .5rem; text-align:right; border-top:1px solid rgba(255,255,255,.05);
+                     color:#d1d5db; font-variant-numeric:tabular-nums; }
+        .wave-t tr.phase td { background:rgba(255,255,255,.03); color:#fff; font-weight:700; }
+        .warn { border:1px solid rgba(253,185,19,.3); background:rgba(253,185,19,.07); border-radius:.6rem;
+                padding:.7rem .9rem; font-size:.8rem; color:#FFD166; }
+    </style>
+
+    <header role="banner" class="relative py-12 overflow-hidden border-b border-white/10">
+        <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-esports-yellow/10 via-transparent to-esports-blue/10"></div>
+        <div class="relative max-w-5xl mx-auto px-4 z-20">
+            <div class="inline-block px-4 py-1 bg-esports-yellow text-black font-display font-black uppercase tracking-widest text-sm clip-slant mb-5">
+                Planning Tool
+            </div>
+            <h1 class="font-display font-black text-4xl md:text-5xl uppercase leading-[0.9] mb-3 italic">
+                Schedule <span class="text-transparent bg-clip-text bg-gradient-to-r from-esports-yellow-text to-esports-blue-text">Planner</span>
+            </h1>
+            <p class="text-sm text-gray-500 max-w-2xl leading-relaxed">
+                How long the day runs, from the numbers you actually control. Change anything and
+                everything below recalculates.
+            </p>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-10">
+
+        <div class="grid lg:grid-cols-3 gap-5 mb-8">
+            <div class="card">
+                <p class="font-display font-black uppercase tracking-[0.16em] text-xs text-esports-yellow-text mb-4">Teams</p>
+                <div class="space-y-4">
+                    <div>
+                        <label class="lbl" for="tA">Grade 5 &amp; Under</label>
+                        <input id="tA" class="fld" type="number" min="0" max="200" value="16">
+                    </div>
+                    <div>
+                        <label class="lbl" for="tB">Grades 6&ndash;8</label>
+                        <input id="tB" class="fld" type="number" min="0" max="200" value="16">
+                    </div>
+                    <label class="flex items-center gap-2 text-xs text-gray-400 pt-1">
+                        <input type="checkbox" id="seq" class="w-4 h-4 accent-esports-yellow" checked>
+                        Run the divisions one after the other
+                    </label>
+                    <p class="hint">Unticked, both divisions play at once and need twice the stations.</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <p class="font-display font-black uppercase tracking-[0.16em] text-xs text-esports-yellow-text mb-4">Stations</p>
+                <div class="space-y-4">
+                    <div>
+                        <label class="lbl" for="stations">Boards running at once</label>
+                        <input id="stations" class="fld" type="number" min="1" max="40" value="8">
+                        <p class="hint">One referee each, per the rules.</p>
+                    </div>
+                    <label class="flex items-center gap-2 text-xs text-gray-400">
+                        <input type="checkbox" id="third" class="w-4 h-4 accent-esports-yellow" checked>
+                        Play a third-place match
+                    </label>
+                </div>
+            </div>
+
+            <div class="card">
+                <p class="font-display font-black uppercase tracking-[0.16em] text-xs text-esports-yellow-text mb-4">Timing</p>
+                <div class="space-y-4">
+                    <div>
+                        <label class="lbl" for="gameMin">Minutes per game</label>
+                        <input id="gameMin" class="fld" type="number" min="1" max="15" step="0.5" value="6">
+                        <p class="hint">The rules cap a game at 6. Set this to 6 if games routinely
+                           run the clock out &mdash; with 12 stock on the field in 2v2, many will.</p>
+                    </div>
+                    <div>
+                        <label class="lbl" for="perGameOh">Setup minutes per game</label>
+                        <input id="perGameOh" class="fld" type="number" min="0" max="10" step="0.5" value="2">
+                        <p class="hint">Character select, stage load, ready up.</p>
+                    </div>
+                    <div>
+                        <label class="lbl" for="changeover">Changeover minutes per match</label>
+                        <input id="changeover" class="fld" type="number" min="0" max="20" step="0.5" value="4">
+                        <p class="hint">Teams swap out, referee records the result.</p>
+                    </div>
+                    <div>
+                        <label class="lbl" for="gpm">Average games per match</label>
+                        <input id="gpm" class="fld" type="number" min="2" max="3" step="0.1" value="2.5">
+                        <p class="hint">2.0 if matches are lopsided, 3.0 if every one goes the distance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="problems" class="mb-6"></div>
+
+        <div class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="card text-center">
+                <p class="lbl">Per match</p>
+                <p id="o-match" class="big text-3xl text-esports-yellow-text"></p>
+            </div>
+            <div class="card text-center">
+                <p class="lbl">Total matches</p>
+                <p id="o-matches" class="big text-3xl text-white"></p>
+            </div>
+            <div class="card text-center">
+                <p class="lbl">Playing time</p>
+                <p id="o-play" class="big text-3xl text-white"></p>
+            </div>
+            <div class="card text-center" style="border-color:rgba(253,185,19,.4)">
+                <p class="lbl">Whole day</p>
+                <p id="o-day" class="big text-3xl text-esports-yellow-text"></p>
+            </div>
+        </div>
+
+        <div class="card mb-8">
+            <div class="flex items-baseline justify-between mb-4 flex-wrap gap-2">
+                <p class="font-display font-black uppercase tracking-[0.16em] text-xs text-esports-yellow-text">Run of Play</p>
+                <p class="text-[11px] text-gray-600">A wave is one round of matches across every station at once.</p>
+            </div>
+            <div style="overflow-x:auto"><table class="wave-t" id="waves"></table></div>
+        </div>
+
+        <div class="card">
+            <p class="font-display font-black uppercase tracking-[0.16em] text-xs text-esports-yellow-text mb-4">Non-Playing Time</p>
+            <div class="grid sm:grid-cols-4 gap-4">
+                <div><label class="lbl" for="ohCheckin">Check-in</label><input id="ohCheckin" class="fld" type="number" min="0" max="180" value="30"></div>
+                <div><label class="lbl" for="ohBrief">Rules briefing</label><input id="ohBrief" class="fld" type="number" min="0" max="120" value="15"></div>
+                <div><label class="lbl" for="ohBreak">Breaks &amp; lunch</label><input id="ohBreak" class="fld" type="number" min="0" max="180" value="45"></div>
+                <div><label class="lbl" for="ohAwards">Awards</label><input id="ohAwards" class="fld" type="number" min="0" max="120" value="25"></div>
+            </div>
+            <p class="hint mt-3">Transitions between phases are added automatically &mdash; 10 minutes each.</p>
+        </div>
+
+        <p class="text-center text-[11px] text-gray-700 pt-12">
+            Planning tool — not linked from the PSD Esports site.
+        </p>
+    </main>
+
+<script>
+(function () {
+    'use strict';
+
+    /* ---- group splitting, per the rules: groups of 4, threes take the remainder.
+       Not every team count works. 5 teams cannot be split into 3s and 4s at all,
+       and the planner says so rather than quietly rounding. */
+    function split(T) {
+        for (var b = 0; b * 3 <= T; b++) {
+            if ((T - 3 * b) % 4 === 0) {
+                var a = (T - 3 * b) / 4;
+                var g = [];
+                for (var i = 0; i < a; i++) g.push(4);
+                for (var j = 0; j < b; j++) g.push(3);
+                return g;
+            }
+        }
+        return null;
+    }
+
+    function nextPow2(n) { var s = 1; while (s < n) s *= 2; return s; }
+    function num(id) { return Number(document.getElementById(id).value) || 0; }
+    function mins(m) {
+        m = Math.round(m);
+        var h = Math.floor(m / 60), r = m % 60;
+        return h ? h + 'h ' + (r < 10 ? '0' : '') + r + 'm' : r + 'm';
+    }
+
+    /**
+     * One division's shape and how many waves it takes.
+     *
+     * Waves matter more than raw match count: a team cannot play two matches at
+     * once, so a group of 4 needs three rounds however many boards are free.
+     * The floor is therefore whichever is larger — the rounds the format demands,
+     * or the matches divided by the stations available.
+     */
+    function plan(T, stations, third) {
+        var groups = split(T);
+        if (!groups) return { bad: true, T: T };
+
+        var groupMatches = groups.reduce(function (a, s) { return a + s * (s - 1) / 2; }, 0);
+
+        /* Rounds a round robin needs, which is not the number of matches a team
+           plays. In an odd-sized group somebody sits out every round, so a group
+           of 3 takes THREE rounds to play its three matches even though each team
+           only plays twice. Even sizes take size-1. */
+        var formatRounds = Math.max.apply(null, groups.map(function (s) {
+            return s % 2 ? s : s - 1;
+        }));
+        var groupWaves = Math.max(formatRounds, Math.ceil(groupMatches / stations));
+
+        var qualifiers = groups.length * 2;
+        var size = nextPow2(qualifiers);
+        var rounds = [], n = size / 2, koMatches = 0, koWaves = 0;
+        while (n >= 1) {
+            var real = Math.min(n, Math.max(0, qualifiers - (size - 2 * n)));
+            real = n;                                  /* byes still occupy a slot in the round */
+            rounds.push(n);
+            koMatches += n;
+            koWaves += Math.ceil(n / stations);
+            n = n / 2;
+        }
+        if (third) { koMatches += 1; }                  /* runs alongside the final */
+
+        return {
+            T: T, groups: groups, groupMatches: groupMatches, groupWaves: groupWaves,
+            qualifiers: qualifiers, bracketSize: size, koRounds: rounds,
+            koMatches: koMatches, koWaves: koWaves,
+            matches: groupMatches + koMatches,
+            waves: groupWaves + koWaves
+        };
+    }
+
+    function roundName(n) {
+        if (n === 1) return 'Final' ;
+        if (n === 2) return 'Semi-finals';
+        if (n === 4) return 'Quarter-finals';
+        return 'Round of ' + (n * 2);
+    }
+
+    function recalc() {
+        var stations = Math.max(1, num('stations'));
+        var seq = document.getElementById('seq').checked;
+        var third = document.getElementById('third').checked;
+        var per = num('gpm') * (num('gameMin') + num('perGameOh')) + num('changeover');
+
+        /* running both at once splits the boards between them */
+        var perDivStations = seq ? stations : Math.max(1, Math.floor(stations / 2));
+
+        /* Name each division on its own plan. The list gets filtered before it is
+           rendered, so an array index no longer tells you which division a row is. */
+        var A = plan(num('tA'), perDivStations, third); A.name = 'Grade 5 & Under';
+        var B = plan(num('tB'), perDivStations, third); B.name = 'Grades 6–8';
+
+        var probs = [];
+        [A, B].forEach(function (d) {
+            if (d.bad) {
+                probs.push(d.name + ': ' + d.T + ' teams cannot be split into groups of 3 or 4. ' +
+                           'The nearest workable counts are ' + near(d.T) + '.');
+            }
+        });
+        var host = document.getElementById('problems');
+        host.innerHTML = probs.length
+            ? '<div class="warn">' + probs.map(function (p) { return '<p>' + p + '</p>'; }).join('') + '</div>'
+            : '';
+
+        var good = [A, B].filter(function (d) { return !d.bad && d.T > 0; });
+        var matches = good.reduce(function (a, d) { return a + d.matches; }, 0);
+
+        /* sequential: waves add up. concurrent: the slower division sets the pace. */
+        var waves = seq
+            ? good.reduce(function (a, d) { return a + d.waves; }, 0)
+            : Math.max.apply(null, good.length ? good.map(function (d) { return d.waves; }) : [0]);
+
+        var play = waves * per;
+        var phases = good.length * 2;                              /* groups + knockout each */
+        var transitions = Math.max(0, phases - 1) * 10;
+        var overhead = num('ohCheckin') + num('ohBrief') + num('ohBreak') + num('ohAwards') + transitions;
+
+        document.getElementById('o-match').textContent = Math.round(per) + 'm';
+        document.getElementById('o-matches').textContent = matches;
+        document.getElementById('o-play').textContent = mins(play);
+        document.getElementById('o-day').textContent = mins(play + overhead);
+
+        /* run of play */
+        var rows = '<thead><tr><th>Phase</th><th>Format</th><th>Matches</th><th>Waves</th><th>Time</th></tr></thead><tbody>';
+        good.forEach(function (d) {
+            rows += '<tr class="phase"><td>' + d.name + '</td><td>' + d.T + ' teams · ' +
+                    summarise(d.groups) + '</td><td>' + d.matches + '</td><td>' + d.waves +
+                    '</td><td>' + mins(d.waves * per) + '</td></tr>';
+            rows += '<tr><td style="padding-left:1.5rem;color:#9ca3af">Group stage</td><td>round robin</td><td>' +
+                    d.groupMatches + '</td><td>' + d.groupWaves + '</td><td>' + mins(d.groupWaves * per) + '</td></tr>';
+            d.koRounds.forEach(function (n) {
+                rows += '<tr><td style="padding-left:1.5rem;color:#9ca3af">' + roundName(n) +
+                        '</td><td>' + (n === 1 && third ? 'plus third place' : '&nbsp;') + '</td><td>' +
+                        (n === 1 && third ? 2 : n) + '</td><td>' + Math.ceil(n / perDivStations) +
+                        '</td><td>' + mins(Math.ceil(n / perDivStations) * per) + '</td></tr>';
+            });
+        });
+        rows += '<tr class="phase"><td>Non-playing</td><td>check-in, briefing, breaks, transitions, awards</td>' +
+                '<td>&mdash;</td><td>&mdash;</td><td>' + mins(overhead) + '</td></tr>';
+        rows += '</tbody>';
+        document.getElementById('waves').innerHTML = rows;
+    }
+
+    /** "4 groups of 4", or "3 groups of 4 + 1 of 3" when the sizes are mixed. */
+    function summarise(groups) {
+        var fours = groups.filter(function (s) { return s === 4; }).length;
+        var threes = groups.length - fours;
+        var bits = [];
+        if (fours) bits.push(fours + ' group' + (fours === 1 ? '' : 's') + ' of 4');
+        if (threes) bits.push(threes + (fours ? ' of 3' : ' group' + (threes === 1 ? '' : 's') + ' of 3'));
+        return bits.join(' + ');
+    }
+
+    /** Nearest team counts that do split into 3s and 4s. */
+    function near(T) {
+        var out = [];
+        for (var d = 1; d <= 4 && out.length < 2; d++) {
+            if (split(T - d)) out.push(T - d);
+            if (split(T + d)) out.push(T + d);
+        }
+        return out.sort(function (a, b) { return a - b; }).join(' or ');
+    }
+
+    Array.prototype.forEach.call(document.querySelectorAll('input'), function (el) {
+        el.addEventListener('input', recalc);
+        el.addEventListener('change', recalc);
+    });
+    recalc();
+})();
+</script>
+</body>
+</html>
