@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#0B0E14">
+    <!-- A 404 is not a destination; keep it out of search results. -->
+    <meta name="robots" content="noindex">
+    <title>Page Not Found | PSD Esports</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Deliberately plain CSS rather than the Tailwind CDN the other pages
+         use: this page exists to get someone unstuck, so it should paint
+         immediately without waiting on a framework it barely uses. -->
+    <style>
+        :root {
+            --bg: #0B0E14; --card: #151B26;
+            --blue: #4DABF7; --yellow: #FFD166; --red: #FF6B6B;
+            --line: rgba(255,255,255,.09);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; background: var(--bg); color: #e5e7eb;
+            font-family: 'Inter', system-ui, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            display: flex; flex-direction: column; min-height: 100vh;
+        }
+        main { flex: 1; }
+        .wrap { max-width: 900px; margin: 0 auto; padding: 4.5rem 1.25rem 5rem; }
+
+        .code {
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-style: italic;
+            font-size: clamp(5.5rem, 18vw, 10rem); line-height: .85; margin: 0;
+            background: linear-gradient(90deg, var(--blue), var(--yellow), var(--red));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        h1 {
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; text-transform: uppercase;
+            font-size: clamp(1.5rem, 4vw, 2.25rem); letter-spacing: .02em;
+            color: #fff; margin: 1rem 0 .75rem;
+        }
+        .lede { color: #9ca3af; font-size: 1rem; line-height: 1.6; max-width: 46ch; margin: 0 0 2.5rem; }
+
+        .group-label {
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; text-transform: uppercase;
+            letter-spacing: .18em; font-size: .7rem; color: #6b7280;
+            margin: 2rem 0 .85rem;
+        }
+        .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .75rem; }
+        .links a {
+            display: flex; align-items: center; gap: .6rem;
+            padding: .95rem 1.1rem; border-radius: .75rem;
+            background: var(--card); border: 1px solid var(--line);
+            color: #e5e7eb; text-decoration: none; font-weight: 600; font-size: .92rem;
+            transition: background .18s ease, border-color .18s ease, transform .18s ease;
+        }
+        .links a:hover, .links a:focus-visible {
+            background: #1b2331; border-color: rgba(255,255,255,.22);
+            color: #fff; transform: translateY(-2px);
+        }
+        .links a:focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .dot-early { background: var(--red); }
+        .dot-late  { background: var(--blue); }
+        .dot-more  { background: var(--yellow); }
+
+        footer {
+            border-top: 1px solid var(--line); padding: 1.5rem 1.25rem;
+            color: #4b5563; font-size: .8rem; text-align: center;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .links a { transition: none; }
+            .links a:hover { transform: none; }
+        }
+    </style>
+</head>
+
+<body>
+
+<script src="/data/psd-nav.js"></script>
+<script>PSD_NAV.init();</script>
+
+<main>
+    <div class="wrap">
+        <p class="code">404</p>
+        <h1>That one went wide of the net</h1>
+        <p class="lede">The page you asked for is not here. A link may be out of date, or an address may have been mistyped. Everything the league publishes is one click away below.</p>
+
+        <p class="group-label">Promise: Early Release &middot; Tuesdays 2:00 PM</p>
+        <div class="links">
+            <a href="/rocket-league/jr-promise-league.html"><span class="dot dot-early"></span> Standings</a>
+            <a href="/rocket-league/jr-promise-league-schedule.html"><span class="dot dot-early"></span> Schedule &amp; Results</a>
+            <a href="/rocket-league/jr-promise-league-stats.html"><span class="dot dot-early"></span> Player Stats</a>
+        </div>
+
+        <p class="group-label">Promise: Late Release &middot; Mondays 4:00 PM</p>
+        <div class="links">
+            <a href="/rocket-league/promise-league.html"><span class="dot dot-late"></span> Standings</a>
+            <a href="/rocket-league/promise-league-schedule.html"><span class="dot dot-late"></span> Schedule &amp; Results</a>
+            <a href="/rocket-league/promise-league-stats.html"><span class="dot dot-late"></span> Player Stats</a>
+        </div>
+
+        <p class="group-label">Everything else</p>
+        <div class="links">
+            <a href="/index.html"><span class="dot dot-more"></span> Home</a>
+            <a href="/rocket-league/rules.html"><span class="dot dot-more"></span> Rules &amp; Regulations</a>
+            <a href="/rocket-league/badges.html"><span class="dot dot-more"></span> Badge Guide</a>
+            <a href="/rocket-league/finals.html"><span class="dot dot-more"></span> Championship Finals</a>
+            <a href="/champions.html"><span class="dot dot-more"></span> Hall of Champions</a>
+        </div>
+    </div>
+</main>
+
+<footer>PSD Esports &middot; Palmdale School District</footer>
+
+</body>
+</html>

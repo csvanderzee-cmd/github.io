@@ -9,6 +9,20 @@
     <link rel="alternate icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <meta name="theme-color" content="#0B0E14">
+    <!-- Link preview. Pasted into Gmail, Google Classroom or a newsletter,
+         a page without these renders as a bare URL with no title or image. -->
+    <link rel="canonical" href="https://psdesports.com/rocket-league/jr-promise-league-schedule.html">
+    <meta name="description" content="Week-by-week schedule and results for Promise: Early Release, nine weeks of Rocket League on Tuesdays at 2:00 PM.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="PSD Esports">
+    <meta property="og:title" content="Early Release Schedule &amp; Results">
+    <meta property="og:description" content="Week-by-week schedule and results for Promise: Early Release, nine weeks of Rocket League on Tuesdays at 2:00 PM.">
+    <meta property="og:url" content="https://psdesports.com/rocket-league/jr-promise-league-schedule.html">
+    <meta property="og:image" content="https://psdesports.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="PSD Esports, Palmdale School District">
+    <meta name="twitter:card" content="summary_large_image">
     <title>Promise: Early Release Schedule & Results</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -137,6 +151,85 @@
             .bye-dash { margin: 0 10px; }
             .match-logo, .match-logo-fallback { width: 28px; height: 28px; }
         }
+
+        /* ── Print prompt (screen) ── */
+        .print-actions {
+            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+            gap: 1.5rem; margin: 3rem 0 1rem; padding: 1.75rem;
+            background: var(--bg-card, #151B26); border: 1px solid rgba(255,255,255,.06); border-radius: 1rem;
+        }
+        .print-actions h3 {
+            font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .12em; color: #fff; margin: 0 0 .4rem; font-size: 1rem;
+        }
+        .print-actions p { margin: 0; color: #9ca3af; font-size: .88rem; max-width: 46ch; line-height: 1.55; }
+        .print-actions strong { color: #e5e7eb; }
+        .print-actions button {
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; text-transform: uppercase;
+            letter-spacing: .12em; font-size: .85rem; white-space: nowrap;
+            padding: .8rem 1.6rem; border: 0; border-radius: .75rem; cursor: pointer;
+            background: var(--psd-yellow, #FDB913); color: #0B0E14;
+            transition: background .18s ease;
+        }
+        .print-actions button:hover { background: #fff; }
+        .print-actions button:focus-visible { outline: 2px solid var(--psd-yellow, #FDB913); outline-offset: 3px; }
+
+        /* The whole-season block is built on load and shown only on paper. */
+        #season-print { display: none; }
+
+        /* ── Print ────────────────────────────────────────────────────────
+           On screen this is one week of cards on a near-black background,
+           which a printer renders as white on white. Paper instead gets the
+           full season as a plain table: the interactive page is dropped and
+           #season-print takes its place. */
+        @media print {
+            @page { margin: 0.6in 0.55in; }
+
+            *, *::before, *::after {
+                background: transparent !important;
+                background-image: none !important;
+                color: #111 !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+                backdrop-filter: none !important;
+                filter: none !important;
+            }
+            html, body { background: #fff !important; font-size: 10pt; }
+
+            #psd-nav, #psd-nav-drawer, header, .controls-container, .week-title,
+            .matches-section, .print-actions, .skip-link, canvas,
+            .io-reveal, .io-reveal-left { display: none !important; }
+
+            main, .container { max-width: none !important; margin: 0 !important; padding: 0 !important; }
+
+            #season-print { display: block !important; }
+            .ps-head h2 {
+                font-family: 'Rajdhani', sans-serif; font-size: 17pt; text-transform: uppercase;
+                margin: 0 0 4pt; border-bottom: 2pt solid #111; padding-bottom: 5pt;
+            }
+            .ps-head p { margin: 4pt 0 0; font-size: 9.5pt; }
+            .ps-meta { color: #555 !important; font-size: 8.5pt !important; }
+
+            .ps-week { margin-top: 13pt; break-inside: avoid; }
+            .ps-week h3 {
+                font-family: 'Rajdhani', sans-serif; font-size: 12pt; text-transform: uppercase;
+                margin: 0 0 5pt; break-after: avoid;
+            }
+            /* Fixed layout so the columns line up down the page rather than
+               resizing to each week's longest school name. */
+            .ps-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+            .ps-table th:nth-child(1), .ps-table th:nth-child(2) { width: 34%; }
+            .ps-table th {
+                text-align: left; font-size: 8pt; text-transform: uppercase; letter-spacing: .08em;
+                border-bottom: 1pt solid #111; padding: 3pt 6pt 3pt 0;
+            }
+            .ps-table td { font-size: 10pt; padding: 3.5pt 6pt 3.5pt 0; border-bottom: .5pt solid #ddd; }
+            .ps-table th:nth-child(3), .ps-table th:nth-child(4),
+            .ps-result { text-align: right; width: 5.5em; }
+            .ps-table th:last-child, .ps-table td:last-child { padding-right: 0 !important; }
+            .ps-bye { font-size: 9pt !important; font-style: italic; color: #555 !important; }
+            .ps-note { font-size: 9.5pt; font-style: italic; color: #555 !important; }
+        }
     </style>
 </head>
 <body>
@@ -178,6 +271,17 @@
                 <div class="section-heading">Match Results</div>
                 <div id="match-results"></div>
             </div>
+
+            <div class="print-actions">
+                <div>
+                    <h3>Print the Season</h3>
+                    <p>Prints all nine weeks — matchups, home side, byes and results — as plain black on white. Choose <strong>Save as PDF</strong> in the print dialog to keep a digital copy.</p>
+                </div>
+                <button type="button" id="print-schedule">Print Schedule</button>
+            </div>
+
+            <!-- Built after the visible week renders; only ever seen on paper. -->
+            <section id="season-print" aria-hidden="true"></section>
         </div>
     </main>
 
@@ -284,9 +388,11 @@
         }
     }
 
-    function processData(csv) {
+    /* Parsing is kept separate from rendering so the print view can reuse it
+       across all nine weeks without touching what is on screen. */
+    function parseWeekMatches(csv) {
         const rows = csv.trim().split('\n').map(row => row.split(','));
-        weekTitle.textContent = WEEK_TITLE_OVERRIDE || rows[0][0]?.trim() || 'Schedule';
+        const sheetTitle = rows[0][0]?.trim() || 'Schedule';
 
         /* 2026-27 layout, header on row 3:
              Team | Team | Location | Points | Points | Points
@@ -346,7 +452,7 @@
             const ffIndex = h.findIndex((v, idx) => (v==='F' && a[idx]==='0') || (a[idx]==='F' && v==='0'));
             if (ffIndex !== -1) {
                 const homeForfeited = (h[ffIndex]==='F' && a[ffIndex]==='0');
-                matches.push({ type: 'result', home: homeName, away: awayName, side, score: homeForfeited ? 'W - FF' : 'FF - W', hClass: homeForfeited ? '' : 'winner', aClass: homeForfeited ? 'winner' : '', isFF: true, isDoubleFF: false });
+                matches.push({ type: 'result', home: homeName, away: awayName, side, score: homeForfeited ? 'W - FF' : 'FF - W', hClass: homeForfeited ? '' : 'winner', aClass: homeForfeited ? 'winner' : '', isFF: true, isDoubleFF: false, ffHome: homeForfeited });
                 continue;
             }
 
@@ -360,9 +466,16 @@
                     if (hWins === 2 || aWins === 2) break;   // series already decided
                     if (hv > av) hWins++; else if (av > hv) aWins++;
                 }
-                matches.push({ type: 'result', home: homeName, away: awayName, side, score: `${aWins} - ${hWins}`, hClass: hWins > aWins ? 'winner' : '', aClass: aWins > hWins ? 'winner' : '', isFF: false, isDoubleFF: false });
+                matches.push({ type: 'result', home: homeName, away: awayName, side, score: `${aWins} - ${hWins}`, hClass: hWins > aWins ? 'winner' : '', aClass: aWins > hWins ? 'winner' : '', isFF: false, isDoubleFF: false, hWins, aWins });
             }
         }
+
+        return { sheetTitle, matches };
+    }
+
+    function processData(csv) {
+        const { sheetTitle, matches } = parseWeekMatches(csv);
+        weekTitle.textContent = WEEK_TITLE_OVERRIDE || sheetTitle;
 
         const isWeekFinished = !matches.some(m => m.type === 'upcoming');
         let upcomingHTML = '', resultsHTML = '';
@@ -486,7 +599,106 @@
         animate();
     }
 
+    /* ── Printable season ────────────────────────────────────────────────
+       The page shows one week at a time, which is right on screen and wrong
+       on paper: a coach printing this wants the whole nine weeks for a
+       binder or a classroom wall. So every week is fetched once the visible
+       one has rendered and stacked into a print-only block, which means the
+       button and a plain Ctrl+P produce the same thing.
+
+       A week that fails to load says so in place rather than failing the
+       whole sheet — one unpublished tab should not cost you the other eight. */
+    /* Every fixture is played twice, once by each side, so the two rows name
+       the same schools. On paper they collapse into one row with a column per
+       side, which halves the length and makes a school easy to scan for. */
+    function seasonResultText(m) {
+        if (m.type !== 'result') return '—';
+        if (m.isDoubleFF) return 'FF – FF';
+        if (m.isFF)       return m.ffHome ? 'FF – W' : 'W – FF';
+        return `${m.hWins} – ${m.aWins}`;
+    }
+
+    function seasonRowsHtml(matches) {
+        const order = [], pairs = {}, byes = [];
+
+        matches.forEach(m => {
+            if (m.type === 'bye') { byes.push(m.team); return; }
+            const key = m.home + '|' + m.away;
+            if (!pairs[key]) {
+                pairs[key] = { home: m.home, away: m.away, BLUE: null, ORANGE: null, other: null };
+                order.push(key);
+            }
+            const side = (m.side || '').trim().toUpperCase();
+            const text = seasonResultText(m);
+            if (side === 'BLUE' || side === 'ORANGE') pairs[key][side] = text;
+            else pairs[key].other = text;
+        });
+
+        let html = '';
+        order.forEach(key => {
+            const p = pairs[key];
+            // A sheet that never names a side still has one result to show.
+            const cells = (p.BLUE === null && p.ORANGE === null && p.other !== null)
+                ? `<td class="ps-result" colspan="2">${p.other}</td>`
+                : `<td class="ps-result">${p.BLUE  ?? '—'}</td>
+                   <td class="ps-result">${p.ORANGE ?? '—'}</td>`;
+            html += `<tr><td>${p.home}</td><td>${p.away}</td>${cells}</tr>`;
+        });
+        byes.forEach(team => {
+            html += `<tr><td colspan="4" class="ps-bye">BYE — ${team}</td></tr>`;
+        });
+        return html;
+    }
+
+    async function buildSeasonPrint() {
+        const host = document.getElementById('season-print');
+        if (!host) return;
+
+        if (!PSD.config.hasLiveData('jrpl')) {
+            host.innerHTML = '<p class="ps-note">The season schedule has not been published yet.</p>';
+            return;
+        }
+
+        const weeks = await Promise.all(WEEKS.map(async (w, i) => {
+            try {
+                return { i, ok: true, data: parseWeekMatches(await PSD.fetchCSV(SPREADSHEET_ID, w.gid)) };
+            } catch (err) {
+                console.error('Week ' + w.name + ' could not be loaded for print:', err);
+                return { i, ok: false };
+            }
+        }));
+
+        const printed = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        let html = `<div class="ps-head">
+            <h2>Promise: Early Release — Season Schedule</h2>
+            <p>Tuesdays at 2:00 PM · Check-in 15 minutes before the match · Home team creates the lobby</p>
+            <p>Series results read <strong>home – away</strong>. FF marks a forfeit; a dash means the series has not been played.</p>
+            <p class="ps-meta">psdesports.com/rocket-league/jr-promise-league-schedule.html · printed ${printed}</p>
+        </div>`;
+
+        weeks.forEach(w => {
+            html += `<section class="ps-week"><h3>${weekHeading(w.i)}</h3>`;
+            if (!w.ok) {
+                html += '<p class="ps-note">This week could not be loaded.</p></section>';
+                return;
+            }
+            const rows = seasonRowsHtml(w.data.matches);
+            html += rows
+                ? `<table class="ps-table">
+                     <thead><tr><th>Home</th><th>Away</th><th>Blue</th><th>Orange</th></tr></thead>
+                     <tbody>${rows}</tbody>
+                   </table></section>`
+                : '<p class="ps-note">No matches listed.</p></section>';
+        });
+
+        host.innerHTML = html;
+    }
+
     loadWeekByIndex(getRelevantWeekIndex());
+    buildSeasonPrint();
+
+    document.getElementById('print-schedule')
+        .addEventListener('click', () => window.print());
     </script>
 
 <style>
