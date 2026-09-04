@@ -87,7 +87,8 @@
 
   /* Links that belong to the whole site rather than any one title. */
   var SITEWIDE = [
-    { text: '🏅 Champions', href: '/champions.html', cls: 'pill-champs' }
+    { text: '🏅 Champions', href: '/champions.html', cls: 'pill-champs' },
+    { text: '📰 In the News', href: '/media.html' }
   ];
 
   var CSS = [
