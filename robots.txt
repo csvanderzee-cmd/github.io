@@ -1,0 +1,15 @@
+# psdesports.com
+#
+# Everything here is meant to be public. The one file kept out of search is
+# the schedule planner, which is a working tool for admins rather than a page
+# anyone should land on from Google.
+#
+# Note that Disallow is a request, not a lock: it asks well-behaved crawlers
+# to skip a path, and this file is itself public. Anything that genuinely
+# must stay unlisted needs a noindex tag on the page, not a line here.
+
+User-agent: *
+Allow: /
+Disallow: /smash/planner.html
+
+Sitemap: https://psdesports.com/sitemap.xml
