@@ -472,22 +472,35 @@
                 return d;
             }
 
-            function loadAndFingerprint(file) {
-                var src = raw + encodeURIComponent(file.name);
+            /* Tries each source in turn and keeps the first that loads, so a
+               photo added to the folder without a thumbnail still appears —
+               it just costs its full size that once. */
+            function tryLoad(candidates, i) {
+                if (i >= candidates.length) return Promise.resolve(null);
+                var c = candidates[i];
                 return new Promise(function(resolve) {
                     var img = new Image();
-                    // Needed to read the pixels back. If the CDN ever stops
-                    // sending CORS headers this load fails, so the retry below
-                    // keeps the photo rather than losing it from the strip.
-                    img.crossOrigin = 'anonymous';
-                    img.onload  = function() { resolve({ file: file, hash: fingerprint(img), cors: true }); };
-                    img.onerror = function() {
-                        var plain = new Image();
-                        plain.onload  = function() { resolve({ file: file, hash: null, cors: false }); };
-                        plain.onerror = function() { resolve(null); };   // dead file, drop it
-                        plain.src = src;
-                    };
-                    img.src = src;
+                    // Needed to read the pixels back for the duplicate check.
+                    if (c.cors) img.crossOrigin = 'anonymous';
+                    img.onload  = function() { resolve({ url: c.url, cors: c.cors, hash: c.cors ? fingerprint(img) : null }); };
+                    img.onerror = function() { resolve(null); };
+                    img.src = c.url;
+                });
+            }
+
+            function loadAndFingerprint(file) {
+                var base = file.name.replace(/\.[^.]+$/, '');
+                return tryLoad([
+                    // photos/thumbs holds a 600px copy of each original, about
+                    // 45KB against 1.8MB. The strip shows them 160px tall, so
+                    // the originals were forty times the pixels it could use.
+                    { url: raw + 'thumbs/' + encodeURIComponent(base + '.jpg'), cors: true },
+                    { url: raw + encodeURIComponent(file.name), cors: true },
+                    // Last resort: no CORS, so no duplicate check for this one,
+                    // but the photo still shows.
+                    { url: raw + encodeURIComponent(file.name), cors: false }
+                ], 0).then(function(r) {
+                    return r ? { file: file, url: r.url, cors: r.cors, hash: r.hash } : null;
                 });
             }
 
@@ -541,7 +554,7 @@
                             // the point the loop resets to — the jump this used
                             // to have. Every file here is already decoded, so
                             // this comes straight from cache.
-                            img.src = raw + encodeURIComponent(item.file.name);
+                            img.src = item.url;
                             ticker.appendChild(img);
                         });
 
