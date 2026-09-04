@@ -381,7 +381,7 @@
                 <!-- Same container as the heading, so the strip lines up with
                      it instead of running full-bleed past it on wide screens. -->
                 <div class="ticker-window relative overflow-hidden rounded-xl">
-                    <div id="photo-ticker" class="flex gap-4 w-fit">
+                    <div id="photo-ticker" class="flex gap-4">
                     </div>
                 </div>
             </div>
@@ -398,6 +398,13 @@
                 from { transform: translateX(0); }
                 to   { transform: translateX(calc(-50% - 8px)); }
             }
+            /* max-content, not Tailwind's w-fit. fit-content is capped at the
+               space available, so the strip measured one viewport wide while
+               holding several thousand pixels of photos. The -50% above is a
+               percentage of that box, so the row slid a few hundred pixels and
+               snapped back to the first photo — most of the folder was never
+               reached, and the handful at the front kept coming round. */
+            #photo-ticker { width: max-content; }
             /* Held until the photos have loaded — see the script below. */
             #photo-ticker.is-running { animation: photo-scroll 60s linear infinite; will-change: transform; }
             #photo-ticker img { height: 160px; width: auto; object-fit: cover; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); flex-shrink: 0; }
@@ -418,6 +425,72 @@
             var empty = document.getElementById('photo-ticker-empty');
             var section = document.getElementById('photo-ticker-section');
             var exts = /\.(jpg|jpeg|png|gif|webp|avif)$/i;
+            /* Reduce a photo to a 64-bit average hash: an 8x8 greyscale
+               thumbnail, each cell marked above or below the mean brightness.
+               Two frames of the same moment score within a few bits of each
+               other even though the files differ byte for byte.
+
+               The two-step downscale matters. Going straight from a 4000px
+               photo to 8x8 samples too little of it, and two frames of one
+               moment then scored 17 bits apart — indistinguishable from two
+               unrelated photos. Via 32x32 with smoothing on, the same pair
+               scores 6, while genuinely different photos sit at 23 and up. */
+            function fingerprint(img) {
+                try {
+                    var mid = document.createElement('canvas');
+                    mid.width = 32; mid.height = 32;
+                    var mx = mid.getContext('2d');
+                    mx.imageSmoothingEnabled = true; mx.imageSmoothingQuality = 'high';
+                    mx.drawImage(img, 0, 0, 32, 32);
+
+                    var c = document.createElement('canvas');
+                    c.width = 8; c.height = 8;
+                    var x = c.getContext('2d');
+                    x.imageSmoothingEnabled = true; x.imageSmoothingQuality = 'high';
+                    x.drawImage(mid, 0, 0, 8, 8);
+
+                    var d = x.getImageData(0, 0, 8, 8).data;
+                    var lum = [], sum = 0, i, l;
+                    for (i = 0; i < 64; i++) {
+                        l = 0.299 * d[i*4] + 0.587 * d[i*4+1] + 0.114 * d[i*4+2];
+                        lum.push(l); sum += l;
+                    }
+                    var mean = sum / 64, bits = '';
+                    for (i = 0; i < 64; i++) bits += (lum[i] >= mean ? '1' : '0');
+                    return bits;
+                } catch (e) {
+                    // Reading pixels back can be refused (a tainted canvas, a
+                    // privacy setting). The photo still shows; it just is not
+                    // compared against the others.
+                    return null;
+                }
+            }
+
+            function distance(a, b) {
+                var d = 0;
+                for (var i = 0; i < 64; i++) if (a[i] !== b[i]) d++;
+                return d;
+            }
+
+            function loadAndFingerprint(file) {
+                var src = raw + encodeURIComponent(file.name);
+                return new Promise(function(resolve) {
+                    var img = new Image();
+                    // Needed to read the pixels back. If the CDN ever stops
+                    // sending CORS headers this load fails, so the retry below
+                    // keeps the photo rather than losing it from the strip.
+                    img.crossOrigin = 'anonymous';
+                    img.onload  = function() { resolve({ file: file, hash: fingerprint(img), cors: true }); };
+                    img.onerror = function() {
+                        var plain = new Image();
+                        plain.onload  = function() { resolve({ file: file, hash: null, cors: false }); };
+                        plain.onerror = function() { resolve(null); };   // dead file, drop it
+                        plain.src = src;
+                    };
+                    img.src = src;
+                });
+            }
+
             fetch(api)
                 .then(function(r) { return r.ok ? r.json() : []; })
                 .then(function(files) {
@@ -431,28 +504,51 @@
                     // halves the request count versus posting the whole folder.
                     imgs = imgs.slice(0, 24);
 
-                    // duplicate for seamless loop
-                    var all = imgs.concat(imgs);
-                    var pending = all.map(function(f) {
-                        var img = document.createElement('img');
-                        img.alt = f.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
-                        // Deliberately NOT lazy. These are laid out in a row that
-                        // is mostly off-screen, so lazy images would pop in one by
-                        // one, each widening the strip and shifting the point the
-                        // loop resets to — which is the jump this used to have.
-                        img.src = raw + encodeURIComponent(f.name);
-                        ticker.appendChild(img);
-                        return new Promise(function(resolve) {
-                            if (img.complete) return resolve();
-                            img.addEventListener('load', resolve, { once: true });
-                            // A dead file must not hold the whole strip hostage.
-                            img.addEventListener('error', function() { img.remove(); resolve(); }, { once: true });
+                    return Promise.all(imgs.map(loadAndFingerprint)).then(function(loaded) {
+                        /* The folder holds burst frames — the photographer
+                           holding the shutter down — which are separate files
+                           of one moment. Shown metres apart in a strip this
+                           size they read as the ticker repeating itself, so
+                           near-identical shots are dropped before the strip is
+                           built. Filenames cannot catch these: the closest pair
+                           in this folder is over 1,700 frame numbers apart. */
+                        var kept = [];
+                        loaded.forEach(function(item) {
+                            if (!item) return;
+                            // 10 sits in the gap measured against this folder:
+                            // frames of the same moment score 0-7, unrelated
+                            // photos 23 and up.
+                            var dupe = item.hash && kept.some(function(k) {
+                                return k.hash && distance(k.hash, item.hash) <= 10;
+                            });
+                            if (!dupe) kept.push(item);
                         });
-                    });
 
-                    // Start only once every photo has a real width, so the strip
-                    // measures the same at the end of the loop as at the start.
-                    Promise.all(pending).then(function() { ticker.classList.add('is-running'); });
+                        if (!kept.length) { ticker.style.display = 'none'; empty.classList.remove('hidden'); return; }
+
+                        // duplicate for seamless loop
+                        kept.concat(kept).forEach(function(item) {
+                            var img = document.createElement('img');
+                            img.alt = item.file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+                            // Must match how the file was fetched for the hash:
+                            // a CORS request and a plain one are cached
+                            // separately, so mismatching them would download
+                            // every photo a second time.
+                            if (item.cors) img.crossOrigin = 'anonymous';
+                            // Deliberately NOT lazy. These are laid out in a row
+                            // that is mostly off-screen, so lazy images would pop
+                            // in one by one, each widening the strip and shifting
+                            // the point the loop resets to — the jump this used
+                            // to have. Every file here is already decoded, so
+                            // this comes straight from cache.
+                            img.src = raw + encodeURIComponent(item.file.name);
+                            ticker.appendChild(img);
+                        });
+
+                        // Every photo already has a real width, so the strip
+                        // measures the same at the end of the loop as at the start.
+                        ticker.classList.add('is-running');
+                    });
                 })
                 .catch(function() { section.style.display = 'none'; });
         })();
