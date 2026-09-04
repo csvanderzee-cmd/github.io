@@ -55,6 +55,133 @@
         ::-webkit-scrollbar { width: 10px; }
         ::-webkit-scrollbar-track { background: #0B0E14; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 5px; border: 2px solid #0B0E14; }
+
+        /* ── Print ────────────────────────────────────────────────────────
+           On screen this page is white text on near-black, over photographs
+           and gradients. None of that survives a printer: browsers drop
+           background colours by default, so the text would come out white on
+           white. Print therefore gets its own treatment — black on white,
+           navigation and artwork dropped, cards reduced to ruled boxes.
+
+           The overrides are deliberately blunt (a blanket reset plus a
+           handful of specific rules) because the colours arrive as hundreds
+           of Tailwind utility classes and a few inline styles, and chasing
+           each one would rot the moment a card is restyled. */
+        .print-only { display: none; }
+
+        @media print {
+            @page { margin: 0.65in 0.6in; }
+
+            /* One reset instead of overriding every colour utility. */
+            *, *::before, *::after {
+                background: transparent !important;
+                background-image: none !important;
+                color: #111 !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+                backdrop-filter: none !important;
+                filter: none !important;
+                letter-spacing: normal !important;
+            }
+
+            html, body { background: #fff !important; font-size: 10.5pt; line-height: 1.45; }
+
+            /* The h1 paints its gradient through transparent text, which
+               prints as a blank line unless the fill colour is restored. */
+            .text-transparent, .bg-clip-text {
+                color: #111 !important;
+                -webkit-text-fill-color: #111 !important;
+            }
+
+            /* Site chrome, decoration, and the button that started the print.
+               The trailing spacer is matched as an empty div on purpose — the
+               page header carries py-20 as well and must survive. */
+            #psd-nav, #psd-nav-drawer, aside, .print-actions,
+            .absolute, svg.lucide, i[data-lucide],
+            body > div.py-20:empty { display: none !important; }
+
+            /* Cards fade in on scroll; unprinted, they would stay invisible. */
+            .io-reveal, .io-reveal-left { opacity: 1 !important; transform: none !important; }
+
+            /* Dropping an icon leaves the coloured tile it sat in behind,
+               which prints as an empty square indenting the heading. */
+            div:has(> svg.lucide:only-child) { display: none !important; }
+
+            /* Screen rhythm is too airy once everything is at print scale. */
+            .mb-8, .mb-6 { margin-bottom: 7pt !important; }
+
+            .print-only {
+                display: block !important;
+                font-size: 8.5pt !important;
+                color: #555 !important;
+                margin: 0 0 14pt !important;
+            }
+
+            /* Sidebar gone: let the content run the full page width. */
+            main { max-width: none !important; margin: 0 !important; padding: 0 !important; }
+            main > .flex, main .flex-1, .grid { display: block !important; }
+            /* A collapsed grid loses its gap, which would run the second
+               column's heading straight onto the end of the first. */
+            .grid > * + * { margin-top: 10pt !important; }
+            .space-y-20 > * + *, .space-y-8 > * + * { margin-top: 12pt !important; }
+
+            /* Hairlines drawn in translucent white are invisible on paper.
+               Element-qualified so they do not outrank the heading rules. */
+            ul[class*="border-l"] { border-left-color: #999 !important; }
+            div[class*="border-"] { border-color: #ccc !important; }
+
+            header {
+                padding: 0 0 10pt !important;
+                margin-bottom: 12pt !important;
+                border-bottom: 2pt solid #111 !important;
+                overflow: visible !important;
+            }
+            header h1 { font-size: 26pt !important; line-height: 1.05 !important; margin: 0 0 6pt !important; font-style: normal !important; }
+            header p  { font-size: 10pt !important; }
+            header .clip-slant {
+                clip-path: none !important;
+                border: 1pt solid #111 !important;
+                padding: 2pt 6pt !important;
+                margin-bottom: 8pt !important;
+                font-size: 8pt !important;
+            }
+
+            /* Keep a heading with the text it introduces, and keep a card
+               whole rather than letting a rule split across two sheets. */
+            section { margin-bottom: 14pt !important; }
+            section > h2 {
+                font-size: 15pt !important;
+                margin: 0 0 9pt !important;
+                padding-bottom: 4pt !important;
+                border-bottom: 1pt solid #111 !important;
+                break-after: avoid;
+            }
+            h3 { font-size: 11pt !important; margin: 0 0 5pt !important; break-after: avoid; }
+            p, li, td, th { font-size: 10pt !important; }
+
+            .rule-card, .bg-esports-card, .glass-panel, [class*="rounded-2xl"], [class*="rounded-xl"] {
+                border: 0.75pt solid #bbb !important;
+                border-radius: 3pt !important;
+                padding: 9pt !important;
+                margin: 0 0 9pt !important;
+                break-inside: avoid;
+            }
+
+            /* BLUE and ORANGE are set inline; #FBBF24 on white is unreadable,
+               so both are swapped for print-safe equivalents. Attribute
+               matching is what reaches an inline style. */
+            [style*="FBBF24"] { color: #9A3412 !important; }
+            [style*="60A5FA"] { color: #1D4ED8 !important; }
+
+            /* A printed link is a dead end without its address. */
+            a { text-decoration: underline !important; }
+            a[href^="http"]::after {
+                content: " (" attr(href) ")";
+                font-size: 8pt;
+                color: #555 !important;
+                word-break: break-all;
+            }
+        }
     </style>
 </head>
 
@@ -75,6 +202,10 @@
             <p class="text-xl text-gray-400 font-display font-bold tracking-[0.2em] uppercase">Palmdale Promise Esports League | 2026-2027</p>
         </div>
     </header>
+
+    <!-- Only ever seen on paper: a printed copy has no address bar, so it says
+         where it came from and when it was taken. -->
+    <p class="print-only">psdesports.com/rocket-league/rules.html &middot; printed <span id="print-date"></span> &middot; the current handbook is always the one online</p>
 
     <main class="max-w-7xl mx-auto px-4 py-16">
         <div class="flex flex-col lg:flex-row gap-16">
@@ -313,6 +444,16 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="bg-esports-card p-8 rounded-2xl border border-white/5">
+                            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <i data-lucide="flag" class="w-5 h-5 text-esports-blue-text"></i> 4.5. District-Wide Teams
+                            </h3>
+                            <div class="space-y-4 text-sm text-gray-300">
+                                <p>Regular season rankings will be used to determine any district-wide teams.</p>
+                                <p>Where Palmdale School District assembles a team to represent the district outside of league play, the final regular season standings are the basis for selection.</p>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -446,6 +587,18 @@
                     </div>
                 </section>
 
+                <!-- Screen only. The @media print block hides this, so the
+                     button never appears on the paper it produces. -->
+                <div class="print-actions bg-esports-card p-8 rounded-2xl border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                    <div>
+                        <h3 class="font-display font-bold text-white uppercase tracking-widest mb-2">Print This Handbook</h3>
+                        <p class="text-sm text-gray-400 max-w-xl">Prints as plain black on white — no navigation, artwork or background colour — with the sections kept from splitting across pages. Choose <span class="text-gray-200 font-semibold">Save as PDF</span> in the print dialog to keep a digital copy instead.</p>
+                    </div>
+                    <button type="button" id="print-rules" class="flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-esports-yellow text-black font-display font-black uppercase tracking-widest text-sm whitespace-nowrap hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-esports-yellow transition-colors">
+                        <i data-lucide="printer" class="w-5 h-5"></i> Print Rules
+                    </button>
+                </div>
+
             </div>
         </div>
     </main>
@@ -454,6 +607,12 @@
 
     <script>
         lucide.createIcons();
+
+        document.getElementById('print-rules').addEventListener('click', () => window.print());
+
+        // Stamped at load, so a printed copy carries the date it was taken.
+        document.getElementById('print-date').textContent =
+            new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
         // Handle smooth scrolling for side menu
         document.querySelectorAll('aside nav a').forEach(anchor => {
