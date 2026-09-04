@@ -528,11 +528,21 @@
                         var kept = [];
                         loaded.forEach(function(item) {
                             if (!item) return;
-                            // 10 sits in the gap measured against this folder:
-                            // frames of the same moment score 0-7, unrelated
-                            // photos 23 and up.
+                            /* Deliberately strict. Most of these photos were
+                               taken against one white backdrop, which fills
+                               enough of an 8x8 hash that two genuinely
+                               different team photos score 5 apart — a nine
+                               player group and a four player group were
+                               matched at that distance. Frames that really are
+                               one moment score 0 to 2. Anything looser starts
+                               hiding photos nobody would call duplicates: at 10
+                               it dropped fourteen of twenty-four.
+
+                               So this catches repeated frames and lets a merely
+                               similar pair through, which is the safer way to
+                               be wrong. */
                             var dupe = item.hash && kept.some(function(k) {
-                                return k.hash && distance(k.hash, item.hash) <= 10;
+                                return k.hash && distance(k.hash, item.hash) <= 3;
                             });
                             if (!dupe) kept.push(item);
                         });
