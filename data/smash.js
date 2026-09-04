@@ -127,6 +127,8 @@
           "Disconnect / controller unplug / crash: the assigned referee rules. Before the first stock is lost, the ref may order a replay. After the first stock is lost, play continues at the ref's discretion.",
           'No-show / late: 5-minute grace period, then forfeit the first game; 10 minutes, then forfeit the match.',
           'Warm-up: none on tournament stations once play begins. Teams may bring their own Switches for warm-up only (not for match play).',
+          "Referee commitment: stations run simultaneously, so the tournament cannot operate without an adult at every station. Each participating school must provide at least one adult to referee for their division's portion of the tournament day. Referees are asked to stay for that division's full schedule, not only while their own teams remain in the tournament.",
+          "Referees are assigned to stations by the organizers and receive a briefing on the day. Wherever possible, a referee will not be assigned to their own school's matches.",
           'A referee is present at each station. Referee decisions are final.'
         ]},
         { title: 'Conduct & Venue', items: [
