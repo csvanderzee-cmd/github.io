@@ -90,7 +90,7 @@
       sections: [
         { title: 'Divisions & Teams', items: [
           'Two divisions: Grade 5 & under, and Grades 6–8. Teams play only within their division.',
-          'Schools may enter multiple teams, distinguished by a color (e.g., Shadow Hills Red, Shadow Hills Gold).',
+          'Schools may enter up to two teams, distinguished by a color (e.g., Shadow Hills Red, Shadow Hills Gold).',
           'Team format: 2v2 doubles — each team is two players, plus an optional alternate. An alternate is locked to that team and may not play for any other team.'
         ]},
         { title: 'Match Format', items: [
