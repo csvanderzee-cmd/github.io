@@ -28,7 +28,7 @@
     loading: false
   };
 
-  var EMPTY = { groups: [], groupMatches: [], koMatches: [] };
+  var EMPTY = { drawn: false, groups: [], groupMatches: [], koMatches: [] };
 
   function div() {
     if (!state.data) return EMPTY;
@@ -204,6 +204,18 @@
            '<p class="text-sm text-gray-600">' + esc(body) + '</p></div>';
   }
 
+  /** "on Saturday 7 November", "in November", or '' — whatever we honestly have. */
+  function whenPhrase() {
+    if (CFG.eventDate) {
+      var d = new Date(CFG.eventDate + 'T00:00:00');
+      if (!isNaN(d)) {
+        return ' on ' + d.toLocaleDateString(undefined,
+          { weekday: 'long', day: 'numeric', month: 'long' });
+      }
+    }
+    return '';
+  }
+
   function fixtureRow(m) {
     var s = root.SMASH.matchScore(m);
     var aWon = s.done && s.a > s.b, bWon = s.done && s.b > s.a;
@@ -227,6 +239,14 @@
     if (!state.data) {
       wrap.innerHTML = emptyState(state.error ? 'Could not reach the sheet' : 'Loading…',
         state.error ? state.error : 'Reading teams and scores.');
+      return;
+    }
+    /* Not drawn yet is the ordinary state of this page between tournaments, so
+       it gets a sentence that reads like an announcement rather than a fault. */
+    if (!d.drawn) {
+      wrap.innerHTML = emptyState('Groups not drawn yet',
+        'Teams are drawn into groups once registration closes. Tables and ' +
+        'fixtures appear here on their own, and update live' + whenPhrase() + '.');
       return;
     }
     if (!d.groups.length) {
@@ -295,14 +315,19 @@
     if (!b) {
       note.textContent = '';
       wrap.innerHTML = (state.data && DIV.gid)
-        ? emptyState('Bracket not started',
-            'Rounds appear here as they are filled in on the Elimination Matches rows.')
+        ? emptyState('Bracket not published yet',
+            'The knockout rounds appear here once the group stage is under way.')
         : '';
       return;
     }
 
-    note.textContent = 'Bracket teams are entered on the sheet as each round is decided. ' +
-      'Empty slots show who the group tables say belongs there.';
+    /* Pre-draw the bracket is still worth drawing: an empty ladder of TBDs is
+       how a parent finds out the day ends in a final and a third-place match.
+       It just should not be described as though results were expected in it. */
+    note.textContent = div().drawn
+      ? 'Teams fill in as each round is decided. Empty slots show who the group ' +
+        'tables say belongs there.'
+      : 'How the knockout stage runs. Teams fill in on the day, round by round.';
 
     var html = '<div class="bracket">' + b.rounds.map(function (rd, ri) {
       var isLast = ri === b.rounds.length - 1;
@@ -365,6 +390,13 @@
     if (state.error) {
       dot.className = 'feed-dot stale';
       txt.textContent = 'Reconnecting · last update ' + timeOf(state.loadedAt);
+      return;
+    }
+    /* "Live · updated 4:02 PM" over a page with nothing on it reads like the
+       feed is broken. Until the draw is out, say what is actually true. */
+    if (state.data && !div().drawn) {
+      dot.className = 'feed-dot';
+      txt.textContent = 'Connected · nothing posted yet';
       return;
     }
     dot.className = 'feed-dot' + (state.loading ? ' loading' : ' live');
@@ -502,6 +534,35 @@
     });
   }
 
+  /* ---- when it is --------------------------------------------------------
+
+     Written into whichever pages carry an #event-when, from the one place the
+     date lives. A confirmed date becomes a real <time datetime> so it is
+     machine-readable; an unconfirmed one is plain text, because "November 7 or
+     14" is not a date and should not pretend to be one. Nothing set, nothing
+     shown — an empty slot is better than a stale promise.
+     ------------------------------------------------------------------------ */
+
+  function paintWhen(host) {
+    host = host || byId('event-when');
+    if (!host) return;
+
+    if (CFG.eventDate) {
+      var d = new Date(CFG.eventDate + 'T00:00:00');
+      var label = isNaN(d) ? CFG.eventDate : d.toLocaleDateString(undefined,
+        { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+      host.innerHTML = '<time datetime="' + esc(CFG.eventDate) + '">' + esc(label) + '</time>' +
+                       (CFG.venue ? ' &nbsp;·&nbsp; ' + esc(CFG.venue) : '');
+    } else if (CFG.eventNote) {
+      host.innerHTML = esc(CFG.eventNote) +
+                       (CFG.venue ? ' &nbsp;·&nbsp; ' + esc(CFG.venue) : '');
+    } else {
+      host.innerHTML = '';
+      return;
+    }
+    host.hidden = false;
+  }
+
   /**
    * Start a bracket page for one division.
    * Paints the division's name and accent into the page, then goes live.
@@ -532,6 +593,7 @@
       link.style.color = other.accent;
     }
 
+    paintWhen();
     buildRules();
 
     refresh();
@@ -544,6 +606,6 @@
     });
   }
 
-  root.SMASH_PAGE = { init: init, standings: standings, bracket: bracket };
+  root.SMASH_PAGE = { init: init, standings: standings, bracket: bracket, paintWhen: paintWhen };
 
 })(window);

@@ -51,7 +51,20 @@
     /* ---- event ---------------------------------------------------------- */
 
     eventName: 'Super Smash Bros. Tournament',
-    eventDate: null,       /* 'YYYY-MM-DD' once set; null hides the date chip */
+
+    /* When it is. Two fields rather than one, so a date that is not settled
+       yet can still be announced honestly:
+
+         eventDate  'YYYY-MM-DD', once it is fixed. This is the machine-readable
+                    one — it drives the <time> element, so it is what a screen
+                    reader and a "add to calendar" reads.
+         eventNote  plain text shown while the date is still moving. Ignored
+                    once eventDate is set.
+
+       The moment the date is confirmed: fill in eventDate and delete eventNote.
+       Both null hides the line entirely. */
+    eventDate: null,
+    eventNote: 'Saturday, November 7 or 14 — date being confirmed',
     venue: null,
 
     /* ---- workbook ------------------------------------------------------- */
@@ -437,14 +450,29 @@
     }
 
     var groups = readRoster(grid, rrTitle);
-    if (!groups.length) warn('No group/team list found above the Round Robin heading.');
+
+    /* Has the draw been published?
+
+       Before it has, the tab is a bare template: the two headings, the
+       R1/R2/R3 markers, and no names anywhere. That is the normal state of
+       this sheet for most of the year, and it is not a fault — so it must not
+       look like one on a page a parent might be reading.
+
+       Content warnings are therefore only passed on once there is a roster to
+       be wrong about. Nothing can be inconsistent in a tournament that has not
+       been drawn, and a cell left behind from setting the sheet up should not
+       raise an alarm in public. The structural checks above stay unconditional:
+       a tab that has lost its headings really is broken, drawn or not. */
+    var drawn = groups.length > 0;
+    var softWarn = drawn ? warn : function () {};
 
     var rrEnd = elimTitle === -1 ? grid.length : elimTitle;
 
     return {
+      drawn: drawn,
       groups: groups,
-      groupMatches: readGroupMatches(grid, rrHeader, rrEnd, groups, warn),
-      koMatches: elimTitle === -1 ? [] : readKnockout(grid, elimTitle + 1, warn)
+      groupMatches: readGroupMatches(grid, rrHeader, rrEnd, groups, softWarn),
+      koMatches: elimTitle === -1 ? [] : readKnockout(grid, elimTitle + 1, softWarn)
     };
   }
 
@@ -528,7 +556,7 @@
       var out = {}, any = false;
       results.forEach(function (r) {
         if (r.data) any = true;
-        out[r.id] = r.data || { groups: [], groupMatches: [], koMatches: [] };
+        out[r.id] = r.data || { drawn: false, groups: [], groupMatches: [], koMatches: [] };
       });
       if (!any) throw new Error('No division could be read from the sheet.');
       return { divisions: out, warnings: warnings, loadedAt: new Date() };

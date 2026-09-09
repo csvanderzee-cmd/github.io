@@ -160,6 +160,8 @@
                 Palmdale School District &nbsp;·&nbsp; Group Stage + Knockout
             </p>
 
+            <p id="event-when" hidden class="mt-3 text-sm font-display font-bold uppercase tracking-[0.18em] text-esports-yellow-text"></p>
+
             <div class="mt-8 flex flex-wrap gap-2 text-[11px] font-display font-bold uppercase tracking-widest">
                 <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">2v2 Doubles</span>
                 <span class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-300">Best of 3</span>
@@ -190,7 +192,30 @@
        a division can never appear here without a page behind it. */
     var CFG = window.SMASH && window.SMASH.config;
     var host = document.getElementById('division-links');
-    if (!CFG || !host) return;
+    if (!CFG) return;
+
+    /* Date line — same two config fields the bracket pages read, so the three
+       pages can never disagree about when the tournament is. Kept inline
+       rather than pulling in smash-bracket.js, which this page has no other
+       use for. */
+    var when = document.getElementById('event-when');
+    if (when) {
+        var label = '';
+        if (CFG.eventDate) {
+            var d = new Date(CFG.eventDate + 'T00:00:00');
+            label = isNaN(d) ? CFG.eventDate
+                  : d.toLocaleDateString(undefined,
+                      { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        } else if (CFG.eventNote) {
+            label = CFG.eventNote;
+        }
+        if (label) {
+            when.textContent = label + (CFG.venue ? ' · ' + CFG.venue : '');
+            when.hidden = false;
+        }
+    }
+
+    if (!host) return;
 
     host.innerHTML = CFG.divisions.map(function (d) {
         var ready = !!d.gid;
