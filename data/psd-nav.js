@@ -64,18 +64,12 @@
       icon: '⚔️',
       accent: '#FDB913',
 
-      /* Not announced yet. A hidden section is left out of the nav on every
-         other page, so a visitor to the site never sees it — but it still
-         appears while you are inside it, so anyone with the direct link can
-         move between its pages and get back out to the rest of the site.
-         Delete this line to announce it. */
-      hidden: true,
-
       groups: [
         {
-          label: 'One-Day Tournament',
+          label: 'One-Day Tournament · Sat 14 Nov',
           accent: '#FDB913',
           links: [
+            { text: 'Overview',        href: '/smash/tournament.html' },
             { text: 'Grade 5 & Under', href: '/smash/grade-5-under.html' },
             { text: 'Grades 6–8',      href: '/smash/grades-6-8.html' },
             { text: 'Rules',           href: '/smash/rules.html' }

@@ -342,6 +342,70 @@
             </div>
         </div>
 
+        <!-- ─── SMASH TOURNAMENT ───
+             The one-day tournament is a separate title from the Rocket League season, so it
+             gets an announcement strip rather than a place in the season narrative below.
+
+             It retires itself. Everything shown is read from data/smash.js, the same config
+             the /smash/ pages use, and the strip hides once the day has passed — so nobody
+             has to remember to come back and take down a banner advertising a date in the
+             past. Change the date in one place and this follows. -->
+        <aside id="smash-strip" hidden aria-label="Smash Bros tournament"
+               class="relative z-30 border-b border-white/10 bg-gradient-to-r from-esports-yellow/15 via-esports-card to-esports-red/15">
+            <a href="/smash/tournament.html"
+               class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-center sm:text-left group">
+                <span class="text-2xl leading-none" aria-hidden="true">⚔️</span>
+                <span class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+                    <span class="font-display font-black uppercase italic text-xl text-white tracking-wide">
+                        Super Smash Bros. Tournament
+                    </span>
+                    <span id="smash-strip-when"
+                          class="font-display font-bold uppercase tracking-[0.18em] text-sm text-esports-yellow-text"></span>
+                </span>
+                <span class="sm:ml-auto flex-shrink-0 font-display font-bold uppercase tracking-widest text-xs
+                             px-4 py-2 rounded-full border border-esports-yellow/40 text-esports-yellow-text
+                             group-hover:bg-esports-yellow group-hover:text-black transition-colors">
+                    Brackets &amp; Rules &rarr;
+                </span>
+            </a>
+        </aside>
+        <script src="/data/smash.js"></script>
+        <script>
+        (function () {
+            'use strict';
+            var CFG = window.SMASH && window.SMASH.config;
+            var strip = document.getElementById('smash-strip');
+            var when = document.getElementById('smash-strip-when');
+            if (!CFG || !strip || !when) return;
+
+            var label = '';
+            if (CFG.eventDate) {
+                var day = new Date(CFG.eventDate + 'T00:00:00');
+                if (isNaN(day)) return;
+
+                /* Compare whole days in local time. A tournament is over at the end of its
+                   day, not at midnight UTC, and the people reading this are all in one
+                   time zone. */
+                var today = new Date();
+                today.setHours(0, 0, 0, 0);
+                var daysAway = Math.round((day - today) / 86400000);
+
+                if (daysAway < 0) return;                       /* done — retire the strip */
+                if (daysAway === 0)      label = 'Today';
+                else if (daysAway === 1) label = 'Tomorrow';
+                else label = day.toLocaleDateString(undefined,
+                        { weekday: 'long', month: 'long', day: 'numeric' });
+            } else if (CFG.eventNote) {
+                label = CFG.eventNote;
+            } else {
+                return;
+            }
+
+            when.textContent = label + (CFG.venue ? ' · ' + CFG.venue : '');
+            strip.hidden = false;
+        })();
+        </script>
+
         <!-- ─── CHAMPIONS TICKER ─── -->
         <aside aria-label="Season Champions Ticker" class="bg-black border-y border-white/20 text-white py-3 overflow-hidden relative z-30">
             <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-esports-red via-esports-yellow to-esports-blue" aria-hidden="true"></div>

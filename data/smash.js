@@ -61,10 +61,9 @@
          eventNote  plain text shown while the date is still moving. Ignored
                     once eventDate is set.
 
-       The moment the date is confirmed: fill in eventDate and delete eventNote.
        Both null hides the line entirely. */
-    eventDate: null,
-    eventNote: 'Saturday, November 7 or 14 — date being confirmed',
+    eventDate: '2026-11-14',     /* Saturday */
+    eventNote: null,
     venue: null,
 
     /* ---- workbook ------------------------------------------------------- */

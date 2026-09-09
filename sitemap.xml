@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Every page a visitor should be able to find, for search engines that would
-  rather be told than go looking. The Smash pages are listed because that
-  section goes live shortly; the schedule planner is left out, as it is an
+  rather be told than go looking. The schedule planner is left out, as it is an
   admin tool rather than a destination.
 
   lastmod is the date the page's content last changed in any meaningful way,
@@ -77,25 +76,25 @@
   <!-- ── Smash Bros ── -->
   <url>
     <loc>https://psdesports.com/smash/tournament.html</loc>
-    <lastmod>2026-09-04</lastmod>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://psdesports.com/smash/grade-5-under.html</loc>
-    <lastmod>2026-09-04</lastmod>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://psdesports.com/smash/grades-6-8.html</loc>
-    <lastmod>2026-09-04</lastmod>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://psdesports.com/smash/rules.html</loc>
-    <lastmod>2026-09-04</lastmod>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
