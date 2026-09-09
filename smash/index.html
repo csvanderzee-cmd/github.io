@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <meta name="theme-color" content="#0B0E14">
+
+    <!-- ======================================================================
+         psdesports.com/smash
+
+         The flyer going out to schools prints this address, and so does every
+         email that copies it. Without this file the folder has no index and
+         that address is a 404 — the one link in the tournament's publicity
+         that nobody would think to test, because it looks like a folder rather
+         than a page.
+
+         A redirect rather than a copy of the tournament page: two files with
+         the same content is two files free to drift apart, and this way there
+         is still exactly one overview page to keep correct.
+
+         Belt and braces, in this order, because each covers a case the next
+         one does not:
+           * canonical    tells a crawler which page this really is
+           * meta refresh works with JavaScript switched off
+           * location.replace is instant, and replaces rather than pushes so
+             Back returns where the visitor came from instead of bouncing
+         ====================================================================== -->
+    <link rel="canonical" href="https://psdesports.com/smash/tournament.html">
+    <meta http-equiv="refresh" content="0; url=/smash/tournament.html">
+    <title>Smash Tournament | PSD Esports</title>
+
+    <style>
+        body {
+            margin: 0; min-height: 100vh; display: flex; align-items: center;
+            justify-content: center; background: #0B0E14; color: #9CA3AF;
+            font-family: system-ui, sans-serif; text-align: center; padding: 2rem;
+        }
+        a { color: #FDB913; }
+    </style>
+</head>
+<body>
+    <!-- Only ever seen if both the refresh and the script fail. -->
+    <p>Taking you to the Super Smash Bros. tournament page&hellip;<br>
+       <a href="/smash/tournament.html">Continue</a></p>
+
+    <script>location.replace('/smash/tournament.html');</script>
+</body>
+</html>

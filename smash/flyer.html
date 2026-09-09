@@ -71,7 +71,29 @@
             box-shadow: 0 18px 60px rgba(0,0,0,.6);
             background: #101725;
         }
-        .flyer-link { display: block; }
+        .flyer-wrap { position: relative; line-height: 0; }
+
+        /* Invisible until wanted. A link drawn over artwork should not put a box
+           on the artwork, but it must still be findable — so it lights up on hover
+           and shows a full focus ring when tabbed to, and its label appears above
+           the flyer rather than on top of the text it belongs to. */
+        .hot {
+            position: absolute; display: block; border-radius: 4px;
+            text-decoration: none; outline-offset: 2px;
+            transition: background .15s, box-shadow .15s;
+        }
+        .hot:hover { background: rgba(253,185,19,.22); box-shadow: 0 0 0 2px #FDB913; }
+        .hot:focus-visible { background: rgba(253,185,19,.22); outline: 3px solid #FDB913; }
+        .hot span {
+            position: absolute; left: 50%; bottom: calc(100% + 8px);
+            transform: translateX(-50%); white-space: nowrap; opacity: 0;
+            pointer-events: none; transition: opacity .15s;
+            background: #FDB913; color: #0B0E14; border-radius: 5px;
+            padding: .3rem .6rem; line-height: 1.2;
+            font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: .7rem;
+            letter-spacing: .1em; text-transform: uppercase;
+        }
+        .hot:hover span, .hot:focus-visible span { opacity: 1; }
 
         .caption {
             font-size: .78rem; color: #6B7280; margin: .8rem 0 0; text-align: center;
@@ -117,15 +139,20 @@
     <div class="actions">
         <!-- Full resolution for the download, the 1200px copy for the page: a 3MB image
              is a fine attachment and a poor thing to make a phone on school wifi wait for. -->
-        <a class="btn primary" href="/smash/flyer-full.jpg" download="PSD-Smash-Tournament-Flyer.jpg">
-            &darr;&nbsp; Download full size
+        <!-- The PDF leads, because it is the only version whose links survive being
+             posted somewhere else: Drive, Classroom and every desktop PDF reader honour
+             the link annotations inside it. A JPEG posted anywhere is just a picture. -->
+        <a class="btn primary" href="/smash/PSD-Smash-Tournament-Flyer.pdf" download>
+            &darr;&nbsp; PDF &mdash; links clickable
         </a>
-        <a class="btn" href="/smash/flyer-full.jpg" target="_blank" rel="noopener">Open image</a>
+        <a class="btn" href="/smash/flyer-full.jpg" download="PSD-Smash-Tournament-Flyer.jpg">
+            &darr;&nbsp; Image
+        </a>
         <a class="btn" href="/smash/tournament.html">Tournament page</a>
         <a class="btn" href="/smash/rules.html">Full rules</a>
     </div>
 
-    <a class="flyer-link" href="/smash/flyer-full.jpg" target="_blank" rel="noopener">
+    <div class="flyer-wrap">
         <img class="flyer" src="/smash/flyer.jpg" width="1200" height="1537"
              alt="PSD Esports Super Smash Bros. Tournament, Palmdale School District 2026-27.
                   2v2 doubles, one day, two divisions. Saturday, November 14, 8:00 AM start,
@@ -133,8 +160,27 @@
                   Grade 5 and Under, and Grades 6 to 8. Register by Friday, October 30 at
                   forms.gle/PHLTBQBWvUJktBgw8. Live bracket at psdesports.com/smash. The full
                   text of the flyer follows below the image.">
-    </a>
-    <p class="caption">Click the flyer to open it full size.</p>
+
+        <!-- The URLs printed on the flyer, made clickable where they are drawn.
+             Positioned as percentages of the image rather than pixels, so they stay
+             on their text at every screen width. Each carries its own label, so the
+             flyer is navigable by keyboard and by screen reader too. -->
+        <a class="hot" style="left:27.3%; top:85.3%; width:48.2%; height:3.3%"
+           href="https://forms.gle/PHLTBQBWvUJktBgw8" target="_blank" rel="noopener">
+            <span>Register by Friday, October 30</span></a>
+
+        <a class="hot" style="left:7.5%; top:88.6%; width:46%; height:4%"
+           href="https://forms.gle/PHLTBQBWvUJktBgw8" target="_blank" rel="noopener">
+            <span>Open the entry form</span></a>
+
+        <a class="hot" style="left:55%; top:88.6%; width:38%; height:4%"
+           href="/smash/tournament.html">
+            <span>Go to the live bracket</span></a>
+    </div>
+    <p class="caption">
+        The entry form and bracket links on the flyer are clickable &mdash;
+        so are they in the PDF, which is the one to post in Google Classroom.
+    </p>
 
     <details>
         <summary>Flyer text</summary>
