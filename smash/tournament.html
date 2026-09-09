@@ -176,10 +176,28 @@
         <p class="text-[10px] font-display font-bold uppercase tracking-[0.3em] text-gray-600 mb-6">Choose a division</p>
         <div id="division-links" class="grid gap-6 md:grid-cols-2"></div>
 
+        <!-- The flyer, on the page rather than behind a link. It is the thing being sent to
+             schools, so a coach who lands here should see the same sheet that arrived in
+             their inbox. Lazy-loaded and sized in the markup so it reserves its space and
+             does not shove the division cards down as it arrives. -->
+        <section class="mt-16" aria-labelledby="flyer-heading">
+            <p id="flyer-heading" class="text-[10px] font-display font-bold uppercase tracking-[0.3em] text-gray-600 mb-6">The flyer</p>
+            <a href="/smash/flyer.html" class="block max-w-2xl mx-auto group">
+                <img src="/smash/flyer.jpg" width="1200" height="1537" loading="lazy" decoding="async"
+                     alt="Tournament flyer: Super Smash Bros., Saturday November 14, 8:00 AM, Quail Valley
+                          Esports Arena. Two divisions, 2v2 doubles. Register by Friday, October 30.
+                          Opens a page with the flyer in full size and as text."
+                     class="w-full h-auto rounded-xl border border-white/10 shadow-2xl transition-colors group-hover:border-esports-yellow/50">
+            </a>
+            <p class="text-center mt-4">
+                <a href="/smash/flyer.html" class="text-[11px] font-display font-bold uppercase tracking-[0.16em] text-gray-500 hover:text-esports-yellow-text underline underline-offset-4">
+                    Download or view as text &rarr;
+                </a>
+            </p>
+        </section>
+
         <p class="text-center text-[11px] text-gray-700 pt-16">
             Both divisions run on the same day. Brackets go live as matches are played.
-            &nbsp;&middot;&nbsp;
-            <a href="/smash/flyer.html" class="text-gray-500 hover:text-esports-yellow-text underline underline-offset-2">Printable flyer</a>
         </p>
     </div>
 
