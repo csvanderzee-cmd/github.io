@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <!-- A handout, not a destination: this exists to be printed or emailed as a PDF, and
+         would only compete with /smash/tournament.html in search results. -->
+    <meta name="robots" content="noindex">
+    <title>Tournament Flyer &mdash; Smash Bros | PSD Esports</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Rajdhani:wght@600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Vector QR, drawn in the page. A hosted QR image would be a network round trip at
+         the exact moment someone hits Print, and a broken image on a flyer is worse than
+         no flyer. This draws an SVG, so it stays crisp at any print size. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+
+    <style>
+        /* ==================================================================
+           A one-page flyer, US Letter portrait.
+
+           Deliberately LIGHT, unlike the rest of the site. This page's whole
+           purpose is to come out of a school printer and go on a staff-room
+           wall — a dark theme would empty a toner cartridge and photocopy
+           into a grey smear. The PSD colours stay, as ink on white.
+
+           Everything factual is read from data/smash.js at load, so a flyer
+           printed in October cannot contradict the website in November.
+           ================================================================== */
+
+        :root {
+            --psd-red:    #C8102E;
+            --psd-yellow: #FDB913;
+            --psd-blue:   #005696;
+            --ink:        #14181F;
+            --ink-soft:   #4A5361;
+            --rule:       #D8DDE4;
+        }
+
+        * { box-sizing: border-box; }
+
+        html { background: #6B7280; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', system-ui, sans-serif;
+            color: var(--ink);
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* screen: show it as a sheet of paper on a desk */
+        .sheet {
+            width: 8.5in;
+            min-height: 11in;
+            margin: 24px auto;
+            padding: 0.45in 0.5in 0.4in;
+            background: #fff;
+            box-shadow: 0 10px 40px rgba(0,0,0,.35);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ---- masthead ---- */
+        .brand {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 1rem; padding-bottom: .34rem; border-bottom: 3px solid var(--ink);
+        }
+        .brand .who {
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 15pt;
+            letter-spacing: .13em; text-transform: uppercase;
+        }
+        .brand .who em { font-style: normal; color: var(--psd-red); }
+        .brand .season {
+            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 8.5pt;
+            letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft);
+        }
+
+        h1 {
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-style: italic;
+            text-transform: uppercase; line-height: .86; letter-spacing: -.005em;
+            margin: .3rem 0 0; font-size: 55pt;
+        }
+        h1 .sub {
+            display: block; font-size: 25pt; color: var(--psd-red); letter-spacing: .01em;
+        }
+
+        .tagline {
+            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 11pt;
+            letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft);
+            margin: .5rem 0 0;
+        }
+
+        /* ---- the three facts that decide whether someone comes ---- */
+        .when {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            margin: .5rem 0 0; border: 3px solid var(--ink);
+        }
+        .when div { padding: .42rem .6rem; }
+        .when div + div { border-left: 1px solid var(--rule); }
+        .when dt {
+            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 7.5pt;
+            letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft);
+            margin: 0 0 .1rem;
+        }
+        .when dd {
+            margin: 0; font-family: 'Rajdhani', sans-serif; font-weight: 900;
+            font-size: 15pt; text-transform: uppercase; line-height: 1.05;
+        }
+        .when dd.small { font-size: 12.5pt; }
+
+        /* ---- divisions ---- */
+        .divisions { display: grid; grid-template-columns: 1fr 1fr; gap: .45rem; margin-top: .5rem; }
+        .division {
+            border: 2px solid var(--rule); border-left-width: 9px; padding: .42rem .7rem;
+        }
+        .division.jr { border-left-color: var(--psd-red); }
+        .division.sr { border-left-color: var(--psd-blue); }
+        .division .name {
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 16pt;
+            text-transform: uppercase; font-style: italic; line-height: 1;
+        }
+        .division .note { font-size: 8.5pt; color: var(--ink-soft); margin-top: .1rem; }
+
+        /* ---- body copy ---- */
+        .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.5rem; margin-top: .6rem; }
+
+        h2 {
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 10.5pt;
+            letter-spacing: .17em; text-transform: uppercase; margin: 0 0 .28rem;
+            padding-bottom: .16rem; border-bottom: 2px solid var(--psd-yellow);
+        }
+        .block + .block { margin-top: .62rem; }
+
+        ul { margin: 0; padding-left: .95rem; }
+        li { font-size: 9.3pt; line-height: 1.42; margin-bottom: .13rem; }
+        li::marker { color: var(--psd-yellow); }
+        p.lead { font-size: 9.3pt; line-height: 1.42; margin: 0; }
+
+        .settings {
+            display: flex; flex-wrap: wrap; gap: .22rem;
+        }
+        .settings span {
+            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 7.8pt;
+            letter-spacing: .09em; text-transform: uppercase;
+            border: 1px solid var(--rule); border-radius: 999px; padding: .11rem .45rem;
+            color: var(--ink-soft); white-space: nowrap;
+        }
+
+        /* ---- referees: the ask most likely to be skimmed past ---- */
+        .referee {
+            margin-top: .6rem; border: 2px solid var(--psd-red); padding: .45rem .7rem;
+            background: #FCF3F4;
+        }
+        .referee h2 { border-bottom-color: var(--psd-red); color: var(--psd-red); }
+        .referee p { font-size: 9.3pt; line-height: 1.44; margin: 0; }
+
+        /* ---- live scores ---- */
+        .live {
+            margin-top: .6rem; padding: .4rem .7rem;
+            background: #FFF8E6; border-left: 9px solid var(--psd-yellow);
+            font-size: 9.3pt; line-height: 1.42;
+        }
+        .live .site {
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 11pt;
+            color: var(--psd-blue); letter-spacing: .01em; white-space: nowrap;
+        }
+
+        /* ---- how to enter ---- */
+        .enter {
+            margin-top: auto; padding-top: .55rem;
+            display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center;
+            border-top: 3px solid var(--ink);
+        }
+        .enter h2 { border: 0; padding: 0; margin: 0 0 .18rem; font-size: 13pt; letter-spacing: .13em; }
+        .enter .url {
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 14.5pt;
+            color: var(--psd-blue); word-break: break-all; line-height: 1.1;
+        }
+        .enter .by { font-size: 9.3pt; margin-top: .2rem; }
+        .enter .by strong { color: var(--psd-red); }
+        .qr { text-align: center; }
+        .qr svg { width: 1.28in; height: 1.28in; display: block; }
+        .qr .cap {
+            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 7pt;
+            letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft);
+            margin-top: .16rem;
+        }
+
+        footer {
+            margin-top: .5rem; padding-top: .35rem; border-top: 1px solid var(--rule);
+            display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+            font-size: 8.4pt; color: var(--ink-soft);
+        }
+        footer a { color: var(--psd-blue); text-decoration: none; font-weight: 600; }
+
+        /* ---- screen-only toolbar ---- */
+        .bar {
+            max-width: 8.5in; margin: 22px auto 0; display: flex; gap: .6rem;
+            align-items: center; flex-wrap: wrap;
+        }
+        .bar button, .bar a {
+            font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 11px;
+            letter-spacing: .13em; text-transform: uppercase; cursor: pointer;
+            padding: .5rem 1.1rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.5);
+            background: rgba(255,255,255,.14); color: #fff; text-decoration: none;
+        }
+        .bar button:hover, .bar a:hover { background: #fff; color: var(--ink); }
+        .bar .hint { font-size: 11px; color: rgba(255,255,255,.85); }
+
+        /* ==================================================================
+           Print. @page owns the margins; the sheet drops its screen framing
+           so nothing pushes the content onto a second page.
+           ================================================================== */
+        @page { size: letter portrait; margin: 0.4in; }
+
+        @media print {
+            html { background: #fff; }
+            .bar { display: none !important; }
+            .sheet {
+                width: auto; margin: 0; padding: 0; box-shadow: none;
+                /* Short of the 10.2in the @page margins actually leave, because a
+                   printer's own unprintable edge sits inside them and half an inch
+                   of optimism here is a second page with a footer on it. The slack
+                   this does leave is collected by `.enter { margin-top: auto }`,
+                   which puts it as breathing room directly above the call to
+                   action rather than as a gap at the bottom of the sheet. */
+                min-height: 9.9in;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="bar no-print">
+    <button type="button" onclick="window.print()">Print / Save as PDF</button>
+    <a href="/smash/tournament.html">Tournament page</a>
+    <a href="/smash/rules.html">Full rules</a>
+    <span class="hint">Prints to one page, US Letter. Turn on “Background graphics” to keep the colours.</span>
+</div>
+
+<div class="sheet">
+
+    <div class="brand">
+        <div class="who">PSD <em>Esports</em></div>
+        <div class="season">Palmdale School District &middot; 2026&ndash;27</div>
+    </div>
+
+    <h1>Super Smash Bros.<span class="sub">Tournament</span></h1>
+    <p class="tagline">One Day &middot; Two Divisions &middot; 2v2 Doubles</p>
+
+    <dl class="when">
+        <div><dt>Date</dt><dd id="f-date">&mdash;</dd></div>
+        <!-- "Start", not "Doors" or "First match" — 8:00 AM is what is confirmed, and a
+             flyer that invents a check-in time creates a queue at the wrong hour. -->
+        <div><dt>Start</dt><dd id="f-time">&mdash;</dd></div>
+        <div><dt>Where</dt><dd class="small" id="f-venue">&mdash;</dd></div>
+    </dl>
+
+    <div class="divisions">
+        <div class="division jr">
+            <div class="name">Grade 5 &amp; Under</div>
+            <div class="note">Own bracket, own schedule</div>
+        </div>
+        <div class="division sr">
+            <div class="name">Grades 6&ndash;8</div>
+            <div class="note">Own bracket, own schedule</div>
+        </div>
+    </div>
+
+    <div class="cols">
+        <div>
+            <div class="block">
+                <h2>Who Can Enter</h2>
+                <ul>
+                    <li>A team is <strong>two players</strong>, plus an optional alternate. An alternate is locked to that team.</li>
+                    <li><strong>Schools may enter up to two teams</strong>, told apart by a colour &mdash; e.g. Shadow Hills Red and Shadow Hills Gold.</li>
+                    <li>Teams play only within their own division.</li>
+                </ul>
+            </div>
+
+            <div class="block">
+                <h2>How the Day Runs</h2>
+                <ul>
+                    <li><strong>Group stage:</strong> groups of three or four, round robin. A win is 3 points.</li>
+                    <li><strong>Top two</strong> from every group go through to a single-elimination bracket.</li>
+                    <li>Every match is <strong>best of three</strong>. No match ends in a draw.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div>
+            <div class="block">
+                <h2>Match Settings</h2>
+                <div class="settings">
+                    <span>2v2 Doubles</span><span>Best of 3</span><span>3 Stock</span>
+                    <span>6 Minutes</span><span>Battlefield Only</span><span>Hazards Off</span>
+                    <span>Items Off</span><span>Team Damage On</span><span>Stock Sharing On</span>
+                    <span>Base Roster</span><span>No Miis</span>
+                </div>
+            </div>
+
+            <div class="block">
+                <h2>What to Bring</h2>
+                <ul>
+                    <li><strong>Nothing but your players.</strong> Consoles, controllers and screens are provided.</li>
+                    <li>Any provided Joy-Con or Pro Controller, in any configuration. <strong>No personal controllers</strong> for match play.</li>
+                    <li>Teams may bring their own Switch for warm-up only.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="referee">
+        <h2>Every School Brings an Adult</h2>
+        <p>Stations run simultaneously, so the tournament cannot operate without an adult at every station.
+           <strong>Each participating school must provide at least one adult to referee for their division&rsquo;s
+           portion of the day</strong> &mdash; and to stay for that division&rsquo;s full schedule, not only while
+           their own teams are still in. Referees are assigned by the organisers and briefed on the day;
+           wherever possible, nobody referees their own school&rsquo;s matches.</p>
+    </div>
+
+    <div class="live">
+        <strong>Follow it live.</strong> Group tables and the elimination bracket update by themselves
+        as results come in &mdash; on any phone, from anywhere, no refreshing.
+        <span class="site">psdesports.com/smash</span>
+    </div>
+
+    <div class="enter">
+        <div>
+            <h2>Enter Your Teams</h2>
+            <div class="url" id="f-url">&mdash;</div>
+            <p class="by">One submission per team. Registration closes <strong id="f-by">&mdash;</strong>.</p>
+        </div>
+        <div class="qr">
+            <div id="f-qr"></div>
+            <div class="cap">Scan to enter</div>
+        </div>
+    </div>
+
+    <footer>
+        <span>Full rules &amp; live brackets: <a href="https://psdesports.com/smash/">psdesports.com/smash</a></span>
+        <span>Questions: Mr. Vanderzee &middot; csvanderzee@palmdalesd.org</span>
+    </footer>
+
+</div>
+
+<script src="/data/smash.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    var CFG = window.SMASH && window.SMASH.config;
+    if (!CFG) return;
+
+    function set(id, text) {
+        var el = document.getElementById(id);
+        if (el && text) el.textContent = text;
+    }
+
+    /* Parsed as local midnight, not UTC, so the printed weekday is the one the
+       reader's calendar agrees with. */
+    function day(iso) {
+        if (!iso) return null;
+        var d = new Date(iso + 'T00:00:00');
+        return isNaN(d) ? null : d;
+    }
+
+    var ev = day(CFG.eventDate);
+    if (ev) {
+        set('f-date', ev.toLocaleDateString('en-US',
+            { weekday: 'long', month: 'long', day: 'numeric' }));
+    } else if (CFG.eventNote) {
+        set('f-date', CFG.eventNote);
+    }
+
+    set('f-time', CFG.startTime);
+    set('f-venue', CFG.venue);
+
+    var by = day(CFG.registerBy);
+    if (by) {
+        set('f-by', by.toLocaleDateString('en-US',
+            { weekday: 'long', month: 'long', day: 'numeric' }));
+    }
+
+    /* The printed URL drops the scheme — nobody types "https://" off a poster,
+       and the QR beside it carries the real thing. */
+    if (CFG.registerUrl) {
+        set('f-url', CFG.registerUrl.replace(/^https?:\/\//, ''));
+
+        var host = document.getElementById('f-qr');
+        if (host && typeof qrcode === 'function') {
+            try {
+                /* type 0 = smallest version that fits; L is plenty of error
+                   correction for a short link and keeps the modules large,
+                   which matters on a photocopy of a photocopy. */
+                var qr = qrcode(0, 'L');
+                qr.addData(CFG.registerUrl);
+                qr.make();
+                host.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 1, scalable: true });
+            } catch (e) {
+                /* No QR is fine — the URL is printed right next to it. */
+                host.parentNode.style.display = 'none';
+            }
+        } else if (host) {
+            host.parentNode.style.display = 'none';
+        }
+    }
+})();
+</script>
+
+</body>
+</html>

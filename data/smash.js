@@ -64,7 +64,20 @@
        Both null hides the line entirely. */
     eventDate: '2026-11-14',     /* Saturday */
     eventNote: null,
-    venue: null,
+    venue: 'Quail Valley Esports Arena',
+    startTime: '8:00 AM',
+
+    /* ---- registration ----------------------------------------------------
+
+       Read by smash/flyer.html, which is the printed handout that goes out to
+       schools. Kept here with everything else so a flyer run off in October
+       cannot quietly disagree with the website in November.
+
+       registerBy is 'YYYY-MM-DD' so the flyer can spell out the weekday
+       itself — a deadline a coach has to look up on a calendar is a deadline
+       that gets missed. */
+    registerUrl: 'https://forms.gle/PHLTBQBWvUJktBgw8',
+    registerBy: '2026-10-30',    /* Friday */
 
     /* ---- workbook ------------------------------------------------------- */
 
