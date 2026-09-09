@@ -22,196 +22,292 @@
 
     <style>
         /* ==================================================================
-           A one-page flyer, US Letter portrait.
+           One-page flyer, US Letter portrait.
 
-           Deliberately LIGHT, unlike the rest of the site. This page's whole
-           purpose is to come out of a school printer and go on a staff-room
-           wall — a dark theme would empty a toner cartridge and photocopy
-           into a grey smear. The PSD colours stay, as ink on white.
+           TWO PALETTES, ONE LAYOUT.
 
-           Everything factual is read from data/smash.js at load, so a flyer
-           printed in October cannot contradict the website in November.
+           The flyer ships dark — panelled, backlit, closer to a game screen
+           than a school notice, because that is what makes someone stop and
+           read it. But a dark page is a bad thing to run 200 copies of: it
+           drinks toner, and if the printer's "Background graphics" box is
+           unticked it comes out as white text on white paper.
+
+           So `body.ink` swaps the whole thing to black-on-white for paper.
+           It is a palette swap and nothing else — same layout, same words,
+           same page count — so what is on screen is always what comes out of
+           the printer. The toolbar button sets it for screen AND print
+           together, deliberately: a flyer that prints differently from its
+           preview is how you find out about a mistake 200 copies late.
            ================================================================== */
 
         :root {
-            --psd-red:    #C8102E;
-            --psd-yellow: #FDB913;
-            --psd-blue:   #005696;
-            --ink:        #14181F;
-            --ink-soft:   #4A5361;
-            --rule:       #D8DDE4;
+            --red:      #FF4757;
+            --red-deep: #C8102E;
+            --blue:     #4DABF7;
+            --yellow:   #FDB913;
+
+            --page:     #080B11;
+            --panel:    linear-gradient(160deg, #1C2432 0%, #131A25 45%, #0E141D 100%);
+            --panel-2:  rgba(255,255,255,.035);
+            --ink:      #EEF3FA;
+            --ink-soft: #97A3B6;
+            --line:     rgba(255,255,255,.14);
+            --line-hot: rgba(255,255,255,.28);
+            --tile:     rgba(255,255,255,.05);
+            --glow:     0 0 22px rgba(77,171,247,.16);
+            --sheet-bg: #0B1119;
+        }
+
+        /* ---- paper palette ---- */
+        body.ink {
+            --red:      #C8102E;
+            --red-deep: #C8102E;
+            --blue:     #005696;
+            --yellow:   #B37F00;
+
+            --page:     #6B7280;
+            --panel:    #FFFFFF;
+            --panel-2:  #F4F6F9;
+            --ink:      #14181F;
+            --ink-soft: #4A5361;
+            --line:     #D8DDE4;
+            --line-hot: #14181F;
+            --tile:     #F4F6F9;
+            --glow:     none;
+            --sheet-bg: #FFFFFF;
         }
 
         * { box-sizing: border-box; }
 
-        html { background: #6B7280; }
-
+        /* No background on <html> deliberately: with html transparent the browser
+           propagates body's background to the whole canvas, so the desk behind the
+           sheet follows the palette toggle instead of staying stuck on dark. */
         body {
             margin: 0;
+            min-height: 100vh;
+            background: var(--page);
             font-family: 'Inter', system-ui, sans-serif;
             color: var(--ink);
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
 
-        /* screen: show it as a sheet of paper on a desk */
+        /* ---- the sheet ---- */
         .sheet {
+            position: relative;
             width: 8.5in;
             min-height: 11in;
             margin: 24px auto;
-            padding: 0.45in 0.5in 0.4in;
-            background: #fff;
-            box-shadow: 0 10px 40px rgba(0,0,0,.35);
+            padding: 0.4in 0.42in 0.34in;
+            background: var(--sheet-bg);
+            box-shadow: 0 10px 44px rgba(0,0,0,.5);
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
+
+        /* Circuit traces, drawn as one repeating SVG rather than an image file so
+           there is nothing to fetch, nothing to go missing, and nothing to blur when
+           the flyer is scaled up. Suppressed entirely on paper. */
+        .sheet::before {
+            content: '';
+            position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%234DABF7' stroke-width='1' opacity='.5'%3E%3Cpath d='M0 30h34l10 10h32M76 40h44M0 90h26l12-12h30M68 78h52M30 0v22l10 10v34M40 66v54M90 0v18l-12 12v26M78 56v64'/%3E%3C/g%3E%3Cg fill='%234DABF7' opacity='.75'%3E%3Ccircle cx='34' cy='30' r='2.5'/%3E%3Ccircle cx='76' cy='40' r='2.5'/%3E%3Ccircle cx='26' cy='90' r='2.5'/%3E%3Ccircle cx='68' cy='78' r='2.5'/%3E%3Ccircle cx='40' cy='66' r='2.5'/%3E%3Ccircle cx='78' cy='56' r='2.5'/%3E%3C/g%3E%3C/svg%3E");
+            opacity: .22;
+            pointer-events: none;
+        }
+        /* two coloured washes, one per division accent */
+        .sheet::after {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(58% 40% at 88% 4%,  rgba(255,71,87,.20), transparent 70%),
+                radial-gradient(52% 38% at 6% 34%, rgba(77,171,247,.16), transparent 72%);
+            pointer-events: none;
+        }
+        body.ink .sheet::before,
+        body.ink .sheet::after { display: none; }
+
+        .sheet > * { position: relative; z-index: 1; }
+
+        /* ---- shared panel treatment ---- */
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            box-shadow: var(--glow);
+        }
+        body.ink .panel { box-shadow: none; }
 
         /* ---- masthead ---- */
         .brand {
-            display: flex; align-items: center; justify-content: space-between;
-            gap: 1rem; padding-bottom: .34rem; border-bottom: 3px solid var(--ink);
+            display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+            padding: .3rem .6rem; margin-bottom: .34rem;
         }
         .brand .who {
-            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 15pt;
-            letter-spacing: .13em; text-transform: uppercase;
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 14pt;
+            letter-spacing: .15em; text-transform: uppercase;
         }
-        .brand .who em { font-style: normal; color: var(--psd-red); }
+        .brand .who em { font-style: normal; color: var(--red); }
         .brand .season {
-            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 8.5pt;
+            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 8pt;
             letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft);
         }
 
         h1 {
             font-family: 'Rajdhani', sans-serif; font-weight: 900; font-style: italic;
-            text-transform: uppercase; line-height: .86; letter-spacing: -.005em;
-            margin: .3rem 0 0; font-size: 55pt;
+            text-transform: uppercase; line-height: .84; letter-spacing: -.008em;
+            margin: .1rem 0 0; font-size: 54pt;
+            color: #fff;
+            text-shadow:
+                0 0 10px rgba(255,255,255,.35),
+                0 0 26px rgba(255,71,87,.75),
+                0 0 58px rgba(253,185,19,.45),
+                0 2px 0 rgba(0,0,0,.55);
         }
         h1 .sub {
-            display: block; font-size: 25pt; color: var(--psd-red); letter-spacing: .01em;
+            display: block; font-size: 24pt; letter-spacing: .02em;
+            color: var(--red); text-shadow: 0 0 16px rgba(255,71,87,.5);
         }
+        body.ink h1 { color: var(--ink); text-shadow: none; }
+        body.ink h1 .sub { color: var(--red); text-shadow: none; }
 
         .tagline {
-            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 11pt;
+            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 10.5pt;
             letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft);
-            margin: .5rem 0 0;
+            margin: .42rem 0 0;
         }
 
-        /* ---- the three facts that decide whether someone comes ---- */
-        .when {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            margin: .5rem 0 0; border: 3px solid var(--ink);
-        }
-        .when div { padding: .42rem .6rem; }
-        .when div + div { border-left: 1px solid var(--rule); }
+        /* ---- date / start / where ---- */
+        .when { display: grid; grid-template-columns: 1.15fr .8fr 1.3fr; margin-top: .46rem; }
+        .when > div { padding: .4rem .62rem; display: flex; align-items: center; gap: .55rem; }
+        .when > div + div { border-left: 1px solid var(--line); }
+        .when .ico { color: var(--blue); flex-shrink: 0; }
         .when dt {
-            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 7.5pt;
+            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 7pt;
             letter-spacing: .2em; text-transform: uppercase; color: var(--ink-soft);
-            margin: 0 0 .1rem;
+            margin: 0 0 .06rem;
         }
         .when dd {
             margin: 0; font-family: 'Rajdhani', sans-serif; font-weight: 900;
-            font-size: 15pt; text-transform: uppercase; line-height: 1.05;
+            font-size: 14pt; text-transform: uppercase; line-height: 1.04; color: #fff;
         }
-        .when dd.small { font-size: 12.5pt; }
+        body.ink .when dd { color: var(--ink); }
+        .when dd.small { font-size: 11.5pt; }
 
         /* ---- divisions ---- */
-        .divisions { display: grid; grid-template-columns: 1fr 1fr; gap: .45rem; margin-top: .5rem; }
-        .division {
-            border: 2px solid var(--rule); border-left-width: 9px; padding: .42rem .7rem;
-        }
-        .division.jr { border-left-color: var(--psd-red); }
-        .division.sr { border-left-color: var(--psd-blue); }
+        .divisions { display: grid; grid-template-columns: 1fr 1fr; gap: .42rem; margin-top: .42rem; }
+        .division { padding: .4rem .7rem; border-left-width: 8px; border-left-style: solid; }
+        .division.jr { border-left-color: var(--red); }
+        .division.sr { border-left-color: var(--blue); }
         .division .name {
-            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 16pt;
-            text-transform: uppercase; font-style: italic; line-height: 1;
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 15.5pt;
+            text-transform: uppercase; font-style: italic; line-height: 1; color: #fff;
         }
-        .division .note { font-size: 8.5pt; color: var(--ink-soft); margin-top: .1rem; }
+        body.ink .division .name { color: var(--ink); }
+        .division .note { font-size: 8.2pt; color: var(--ink-soft); margin-top: .1rem; }
 
         /* ---- body copy ---- */
-        .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.5rem; margin-top: .6rem; }
+        .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.2rem; margin-top: .55rem; }
 
         h2 {
-            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 10.5pt;
-            letter-spacing: .17em; text-transform: uppercase; margin: 0 0 .28rem;
-            padding-bottom: .16rem; border-bottom: 2px solid var(--psd-yellow);
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 10pt;
+            letter-spacing: .17em; text-transform: uppercase; margin: 0 0 .26rem;
+            padding-bottom: .14rem; border-bottom: 2px solid var(--yellow);
+            color: var(--ink);
         }
-        .block + .block { margin-top: .62rem; }
+        .block + .block { margin-top: .55rem; }
 
-        ul { margin: 0; padding-left: .95rem; }
-        li { font-size: 9.3pt; line-height: 1.42; margin-bottom: .13rem; }
-        li::marker { color: var(--psd-yellow); }
-        p.lead { font-size: 9.3pt; line-height: 1.42; margin: 0; }
+        ul { margin: 0; padding-left: .9rem; }
+        li { font-size: 9pt; line-height: 1.4; margin-bottom: .12rem; color: var(--ink); }
+        li::marker { color: var(--yellow); }
+        strong { color: #fff; }
+        body.ink strong { color: var(--ink); }
 
-        .settings {
-            display: flex; flex-wrap: wrap; gap: .22rem;
+        /* ---- match setting tiles ---- */
+        .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: .26rem; }
+        .tile {
+            background: var(--tile); border: 1px solid var(--line); border-radius: 5px;
+            padding: .3rem .18rem .26rem; text-align: center;
         }
-        .settings span {
-            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 7.8pt;
-            letter-spacing: .09em; text-transform: uppercase;
-            border: 1px solid var(--rule); border-radius: 999px; padding: .11rem .45rem;
-            color: var(--ink-soft); white-space: nowrap;
+        .tile svg { color: var(--blue); display: block; margin: 0 auto .14rem; }
+        .tile span {
+            display: block; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+            font-size: 6.6pt; letter-spacing: .09em; text-transform: uppercase;
+            color: var(--ink-soft); line-height: 1.18;
+        }
+        .also {
+            margin: .26rem 0 0; font-size: 7.6pt; color: var(--ink-soft);
+            font-family: 'Rajdhani', sans-serif; font-weight: 700;
+            letter-spacing: .1em; text-transform: uppercase;
         }
 
         /* ---- referees: the ask most likely to be skimmed past ---- */
         .referee {
-            margin-top: .6rem; border: 2px solid var(--psd-red); padding: .45rem .7rem;
-            background: #FCF3F4;
+            margin-top: .55rem; padding: .42rem .7rem;
+            border: 1px solid var(--red); border-left-width: 8px;
+            background: rgba(255,71,87,.07);
         }
-        .referee h2 { border-bottom-color: var(--psd-red); color: var(--psd-red); }
-        .referee p { font-size: 9.3pt; line-height: 1.44; margin: 0; }
+        body.ink .referee { background: #FCF3F4; }
+        .referee h2 { border-bottom-color: var(--red); color: var(--red); }
+        .referee p { font-size: 9pt; line-height: 1.42; margin: 0; color: var(--ink); }
 
         /* ---- live scores ---- */
         .live {
-            margin-top: .6rem; padding: .4rem .7rem;
-            background: #FFF8E6; border-left: 9px solid var(--psd-yellow);
-            font-size: 9.3pt; line-height: 1.42;
+            margin-top: .45rem; padding: .36rem .7rem;
+            border-left: 8px solid var(--yellow); background: rgba(253,185,19,.09);
+            font-size: 8.8pt; line-height: 1.4; color: var(--ink);
         }
+        body.ink .live { background: #FFF8E6; }
         .live .site {
-            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 11pt;
-            color: var(--psd-blue); letter-spacing: .01em; white-space: nowrap;
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 10.5pt;
+            color: var(--blue); white-space: nowrap;
         }
 
         /* ---- how to enter ---- */
         .enter {
-            margin-top: auto; padding-top: .55rem;
+            margin-top: auto; padding: .5rem .75rem;
             display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: center;
-            border-top: 3px solid var(--ink);
+            border-left: 8px solid var(--blue);
         }
-        .enter h2 { border: 0; padding: 0; margin: 0 0 .18rem; font-size: 13pt; letter-spacing: .13em; }
+        .enter h2 { border: 0; padding: 0; margin: 0 0 .16rem; font-size: 12.5pt; letter-spacing: .13em; }
         .enter .url {
-            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 14.5pt;
-            color: var(--psd-blue); word-break: break-all; line-height: 1.1;
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 14pt;
+            color: var(--blue); word-break: break-all; line-height: 1.1;
         }
-        .enter .by { font-size: 9.3pt; margin-top: .2rem; }
-        .enter .by strong { color: var(--psd-red); }
+        .enter .by { font-size: 9pt; margin: .2rem 0 0; color: var(--ink); }
+        .enter .by strong { color: var(--red); }
         .qr { text-align: center; }
-        .qr svg { width: 1.28in; height: 1.28in; display: block; }
+        /* QR stays black-on-white in BOTH palettes — a scanner wants contrast, not styling */
+        .qr .frame { background: #fff; padding: 5px; border-radius: 4px; line-height: 0; }
+        .qr svg { width: 1.2in; height: 1.2in; display: block; }
         .qr .cap {
-            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 7pt;
+            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 6.6pt;
             letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft);
             margin-top: .16rem;
         }
 
         footer {
-            margin-top: .5rem; padding-top: .35rem; border-top: 1px solid var(--rule);
+            margin-top: .42rem; padding-top: .32rem; border-top: 1px solid var(--line);
             display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
-            font-size: 8.4pt; color: var(--ink-soft);
+            font-size: 8pt; color: var(--ink-soft);
         }
-        footer a { color: var(--psd-blue); text-decoration: none; font-weight: 600; }
+        footer b { color: var(--blue); font-weight: 700; }
 
         /* ---- screen-only toolbar ---- */
         .bar {
-            max-width: 8.5in; margin: 22px auto 0; display: flex; gap: .6rem;
+            max-width: 8.5in; margin: 22px auto 0; display: flex; gap: .55rem;
             align-items: center; flex-wrap: wrap;
         }
         .bar button, .bar a {
             font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 11px;
             letter-spacing: .13em; text-transform: uppercase; cursor: pointer;
-            padding: .5rem 1.1rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.5);
-            background: rgba(255,255,255,.14); color: #fff; text-decoration: none;
+            padding: .5rem 1.05rem; border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.45); background: rgba(255,255,255,.12);
+            color: #fff; text-decoration: none;
         }
-        .bar button:hover, .bar a:hover { background: #fff; color: var(--ink); }
-        .bar .hint { font-size: 11px; color: rgba(255,255,255,.85); }
+        .bar button:hover, .bar a:hover { background: #fff; color: #14181F; }
+        .bar .hint { font-size: 11px; color: rgba(255,255,255,.85); flex-basis: 100%; }
+        body.ink .bar button, body.ink .bar a { border-color: rgba(255,255,255,.55); }
 
         /* ==================================================================
            Print. @page owns the margins; the sheet drops its screen framing
@@ -220,7 +316,7 @@
         @page { size: letter portrait; margin: 0.4in; }
 
         @media print {
-            html { background: #fff; }
+            body { background: #fff; min-height: 0; }
             .bar { display: none !important; }
             .sheet {
                 width: auto; margin: 0; padding: 0; box-shadow: none;
@@ -238,16 +334,17 @@
 
 <body>
 
-<div class="bar no-print">
+<div class="bar">
     <button type="button" onclick="window.print()">Print / Save as PDF</button>
+    <button type="button" id="palette">Switch to print-friendly</button>
     <a href="/smash/tournament.html">Tournament page</a>
     <a href="/smash/rules.html">Full rules</a>
-    <span class="hint">Prints to one page, US Letter. Turn on “Background graphics” to keep the colours.</span>
+    <span class="hint">One page, US Letter. Running off paper copies? Switch to print-friendly first &mdash; the dark version needs &ldquo;Background graphics&rdquo; ticked and drinks toner.</span>
 </div>
 
 <div class="sheet">
 
-    <div class="brand">
+    <div class="brand panel">
         <div class="who">PSD <em>Esports</em></div>
         <div class="season">Palmdale School District &middot; 2026&ndash;27</div>
     </div>
@@ -255,20 +352,27 @@
     <h1>Super Smash Bros.<span class="sub">Tournament</span></h1>
     <p class="tagline">One Day &middot; Two Divisions &middot; 2v2 Doubles</p>
 
-    <dl class="when">
-        <div><dt>Date</dt><dd id="f-date">&mdash;</dd></div>
-        <!-- "Start", not "Doors" or "First match" — 8:00 AM is what is confirmed, and a
-             flyer that invents a check-in time creates a queue at the wrong hour. -->
-        <div><dt>Start</dt><dd id="f-time">&mdash;</dd></div>
-        <div><dt>Where</dt><dd class="small" id="f-venue">&mdash;</dd></div>
+    <dl class="when panel">
+        <div>
+            <svg class="ico" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+            <div><dt>Date</dt><dd id="f-date">&mdash;</dd></div>
+        </div>
+        <div>
+            <svg class="ico" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+            <div><dt>Start</dt><dd id="f-time">&mdash;</dd></div>
+        </div>
+        <div>
+            <svg class="ico" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <div><dt>Where</dt><dd class="small" id="f-venue">&mdash;</dd></div>
+        </div>
     </dl>
 
     <div class="divisions">
-        <div class="division jr">
+        <div class="division jr panel">
             <div class="name">Grade 5 &amp; Under</div>
             <div class="note">Own bracket, own schedule</div>
         </div>
-        <div class="division sr">
+        <div class="division sr panel">
             <div class="name">Grades 6&ndash;8</div>
             <div class="note">Own bracket, own schedule</div>
         </div>
@@ -298,12 +402,41 @@
         <div>
             <div class="block">
                 <h2>Match Settings</h2>
-                <div class="settings">
-                    <span>2v2 Doubles</span><span>Best of 3</span><span>3 Stock</span>
-                    <span>6 Minutes</span><span>Battlefield Only</span><span>Hazards Off</span>
-                    <span>Items Off</span><span>Team Damage On</span><span>Stock Sharing On</span>
-                    <span>Base Roster</span><span>No Miis</span>
+                <div class="tiles">
+                    <div class="tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="11" rx="4"/><path d="M7 11v3M5.5 12.5h3M15.5 12h.01M18 14h.01"/></svg>
+                        <span>2v2<br>Doubles</span>
+                    </div>
+                    <div class="tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v6a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M10 20h4M12 15v5"/></svg>
+                        <span>Best<br>of 3</span>
+                    </div>
+                    <div class="tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4 3 8.5 12 13l9-4.5L12 4Z"/><path d="M3 13.5 12 18l9-4.5"/></svg>
+                        <span>3<br>Stock</span>
+                    </div>
+                    <div class="tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 1.5M9 2h6"/></svg>
+                        <span>6<br>Minutes</span>
+                    </div>
+                    <div class="tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15h16M7 15V9M17 15V9M9.5 11h5"/><path d="M3 19h18"/></svg>
+                        <span>Battlefield<br>Only</span>
+                    </div>
+                    <div class="tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.4-3.3 8.2-8 9-4.7-.8-8-4.6-8-9V6l8-3Z"/><path d="M4 4l16 16"/></svg>
+                        <span>Hazards<br>Off</span>
+                    </div>
+                    <div class="tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>
+                        <span>Items<br>Off</span>
+                    </div>
+                    <div class="tile">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l10 10M20 4L10 14"/><path d="M14 14l4 6M10 14l-4 6"/></svg>
+                        <span>Team<br>Damage On</span>
+                    </div>
                 </div>
+                <p class="also">Stock sharing on &middot; Base roster &middot; No Miis</p>
             </div>
 
             <div class="block">
@@ -332,21 +465,21 @@
         <span class="site">psdesports.com/smash</span>
     </div>
 
-    <div class="enter">
+    <div class="enter panel">
         <div>
             <h2>Enter Your Teams</h2>
             <div class="url" id="f-url">&mdash;</div>
             <p class="by">One submission per team. Registration closes <strong id="f-by">&mdash;</strong>.</p>
         </div>
         <div class="qr">
-            <div id="f-qr"></div>
+            <div class="frame"><div id="f-qr"></div></div>
             <div class="cap">Scan to enter</div>
         </div>
     </div>
 
     <footer>
-        <span>Full rules &amp; live brackets: <a href="https://psdesports.com/smash/">psdesports.com/smash</a></span>
-        <span>Questions: Mr. Vanderzee &middot; csvanderzee@palmdalesd.org</span>
+        <span>Full rules &amp; live brackets: <b>psdesports.com/smash</b></span>
+        <span>Questions: Mr. Vanderzee &middot; <b>csvanderzee@palmdalesd.org</b></span>
     </footer>
 
 </div>
@@ -355,6 +488,15 @@
 <script>
 (function () {
     'use strict';
+
+    /* ---- palette toggle: screen and print together ---- */
+    var btn = document.getElementById('palette');
+    if (btn) {
+        btn.addEventListener('click', function () {
+            var ink = document.body.classList.toggle('ink');
+            btn.textContent = ink ? 'Switch to full colour' : 'Switch to print-friendly';
+        });
+    }
 
     var CFG = window.SMASH && window.SMASH.config;
     if (!CFG) return;
@@ -406,10 +548,10 @@
                 host.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 1, scalable: true });
             } catch (e) {
                 /* No QR is fine — the URL is printed right next to it. */
-                host.parentNode.style.display = 'none';
+                host.closest('.qr').style.display = 'none';
             }
         } else if (host) {
-            host.parentNode.style.display = 'none';
+            host.closest('.qr').style.display = 'none';
         }
     }
 })();
