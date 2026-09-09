@@ -21,6 +21,49 @@
 (function (root) {
   'use strict';
 
+  /* ---- open registration ---------------------------------------------------
+
+     A time-limited call to action, so it lives here rather than in SECTIONS:
+     it appears as a highlighted pill on EVERY page, and it takes itself down
+     the day after entries close. Nobody has to remember to remove it, and no
+     visitor is ever invited to register for something that has already shut.
+
+     `closes` is the last day entries are accepted, inclusive.
+
+     THESE TWO MUST MATCH data/smash.js (registerUrl / registerBy). They are
+     repeated here because the nav loads on all fifteen pages and smash.js
+     loads on four, and making every Rocket League page pull in a tournament
+     config to draw one link is the worse trade. The check below catches the
+     two drifting apart on any page where both are present.
+     -------------------------------------------------------------------------- */
+
+  var REGISTRATION = {
+    url:    'https://forms.gle/PHLTBQBWvUJktBgw8',
+    closes: '2026-10-30',
+    label:  '⚔️ Register'
+  };
+
+  /**
+   * Attributes for a link that leaves the site.
+   *
+   * The registration form is a Google Form, so it opens in its own tab: a coach
+   * halfway through filling one in should not lose it by pressing Back, and the
+   * site they came from is still sitting behind it when they finish. `noopener`
+   * because a new tab otherwise gets a handle on this one.
+   */
+  function out(l) {
+    return l && l.external ? ' target="_blank" rel="noopener"' : '';
+  }
+
+  /** True until the end of the closing day, in the reader's own time zone. */
+  function registrationOpen() {
+    var end = new Date(REGISTRATION.closes + 'T00:00:00');
+    if (isNaN(end)) return false;
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return end >= today;
+  }
+
   var SECTIONS = [
     {
       id: 'rocket-league',
@@ -70,9 +113,11 @@
           accent: '#FDB913',
           links: [
             { text: 'Overview',        href: '/smash/tournament.html' },
+            { text: 'Flyer',           href: '/smash/flyer.html' },
             { text: 'Grade 5 & Under', href: '/smash/grade-5-under.html' },
             { text: 'Grades 6–8',      href: '/smash/grades-6-8.html' },
-            { text: 'Rules',           href: '/smash/rules.html' }
+            { text: 'Rules',           href: '/smash/rules.html' },
+            { text: 'Register a Team', href: REGISTRATION.url, external: true }
           ]
         }
       ]
@@ -84,6 +129,17 @@
     { text: '🏅 Champions', href: '/champions.html', cls: 'pill-champs' },
     { text: '📰 In the News', href: '/media.html' }
   ];
+
+  /* Registration leads the pills while it is open, so it is the first thing
+     the eye lands on in the top right, and disappears entirely once it is not. */
+  if (registrationOpen()) {
+    SITEWIDE.unshift({
+      text: REGISTRATION.label,
+      href: REGISTRATION.url,
+      cls: 'pill-register',
+      external: true
+    });
+  }
 
   var CSS = [
     '#psd-nav{position:sticky;top:0;z-index:1000;background:rgba(13,17,25,.82);backdrop-filter:blur(14px);',
@@ -124,6 +180,12 @@
       'border-radius:9999px;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s;}',
     '#psd-nav .pill-champs{background:rgba(255,215,0,.1);color:#FFD166;border:1px solid rgba(255,215,0,.22);}',
     '#psd-nav .pill-champs:hover,#psd-nav .pill-champs.active{background:rgba(255,215,0,.22);border-color:rgba(255,215,0,.5);}',
+    /* Registration is the one thing on this site with a deadline, so it is the
+       only pill that is filled rather than outlined. It reads as a button next
+       to the others, which is what it is. */
+    '#psd-nav .pill-register{background:#FDB913;color:#0B0E14;border:1px solid #FDB913;font-weight:800;}',
+    '#psd-nav .pill-register:hover{background:#FFD166;border-color:#FFD166;}',
+    '#psd-nav-drawer a.drawer-register{color:#0B0E14;background:#FDB913;font-weight:800;border-radius:6px;margin:.35rem 0;}',
     '#psd-nav .nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:.5rem;background:none;border:none;margin-left:auto;}',
     '#psd-nav .nav-hamburger span{display:block;width:22px;height:2px;background:#9ca3af;border-radius:2px;transition:all .25s;}',
     '#psd-nav .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}',
@@ -190,7 +252,8 @@
       var dd = s.groups.map(function (g) {
         return '<div class="dd-header">' + esc(g.label) + '</div>' +
           g.links.map(function (l) {
-            return '<a href="' + esc(l.href) + '"' + (isActive(l.href) ? ' class="active"' : '') +
+            return '<a href="' + esc(l.href) + '"' + out(l) +
+                   (isActive(l.href) ? ' class="active"' : '') +
                    ' style="--grp:' + esc(g.accent) + '">' +
                    '<span class="dd-dot" style="background:' + esc(g.accent) + '"></span>' +
                    esc(l.text) + '</a>';
@@ -207,7 +270,7 @@
     }).join('');
 
     var pills = SITEWIDE.map(function (l) {
-      return '<a href="' + esc(l.href) + '" class="nav-pill ' + esc(l.cls || '') +
+      return '<a href="' + esc(l.href) + '"' + out(l) + ' class="nav-pill ' + esc(l.cls || '') +
              (isActive(l.href) ? ' active' : '') + '">' + esc(l.text) + '</a>';
     }).join('');
 
@@ -232,14 +295,17 @@
           s.groups.map(function (g) {
             return '<div class="drawer-section">' + esc(g.label) + '</div>' +
               g.links.map(function (l) {
-                return '<a href="' + esc(l.href) + '" class="drawer-indent' +
+                return '<a href="' + esc(l.href) + '"' + out(l) + ' class="drawer-indent' +
                        (isActive(l.href) ? ' active' : '') + '">' + esc(l.text) + '</a>';
               }).join('');
           }).join('');
       }).join('') +
       '<div class="drawer-section drawer-title">More</div>' +
       SITEWIDE.map(function (l) {
-        return '<a href="' + esc(l.href) + '"' + (isActive(l.href) ? ' class="active"' : '') + '>' +
+        var cls = (l.cls === 'pill-register' ? 'drawer-register ' : '') +
+                  (isActive(l.href) ? 'active' : '');
+        return '<a href="' + esc(l.href) + '"' + out(l) +
+               (cls.trim() ? ' class="' + cls.trim() + '"' : '') + '>' +
                esc(l.text) + '</a>';
       }).join('');
 
@@ -264,15 +330,34 @@
     onScroll();
   }
 
+  /* Tripwire for the duplicated registration details.
+     On the four pages that load data/smash.js, check the nav agrees with it.
+     Costs nothing, and it means the two copies can only drift apart for as long
+     as it takes someone to open a Smash page with the console up. */
+  function checkAgainstSmash() {
+    var c = root.SMASH && root.SMASH.config;
+    if (!c || !root.console || !console.warn) return;
+    if (c.registerUrl && c.registerUrl !== REGISTRATION.url) {
+      console.warn('[nav] registration URL disagrees with data/smash.js:',
+                   REGISTRATION.url, 'vs', c.registerUrl);
+    }
+    if (c.registerBy && c.registerBy !== REGISTRATION.closes) {
+      console.warn('[nav] registration deadline disagrees with data/smash.js:',
+                   REGISTRATION.closes, 'vs', c.registerBy);
+    }
+  }
+
   root.PSD_NAV = {
     sections: SECTIONS,
     render: render,
+    registration: REGISTRATION,
     /** Call with a section id, or leave empty to work it out from the URL. */
     init: function (id) {
+      function go() { render(id); setTimeout(checkAgainstSmash, 0); }
       if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function () { render(id); });
+        document.addEventListener('DOMContentLoaded', go);
       } else {
-        render(id);
+        go();
       }
     }
   };
