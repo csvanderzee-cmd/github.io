@@ -83,6 +83,14 @@
     neverQuit:    rSmall(8, 4),   // 10
     flawlessWins: rSmall(4, 3),   // 5
 
+    /* MVPs are handed out one per game among six players, so an average
+       player finishes a season with about GAMES/6 of them — three, at 18.
+       The ladder is therefore built from that share rather than from BASE:
+       one to get started, the average, and twice the average. A fourth tier
+       would sit where only a handful of players in the league could reach it,
+       which is what the unique Most Valuable badge is already for. */
+    mvp: [Math.max(4, Math.round(GAMES / 3)), Math.max(2, Math.round(GAMES / 6)), 1],   // 6 3 1
+
     /* Fixed — single-game feats and rates, unaffected by season length. */
     fixed: {
       gameGoalsHigh: 5,  gameGoalsMid: 3,
@@ -104,7 +112,8 @@
     assists:      function (i) { return T.assists[i] + ' Assists'; },
     wins:         function (i) { return T.wins[i] + ' Wins'; },
     winStreak:    function (i) { return 'W' + T.winStreak[i] + ' Streak'; },
-    scorerStreak: function (i) { return T.scorerStreak[i] + '-Game Scorer'; }
+    scorerStreak: function (i) { return T.scorerStreak[i] + '-Game Scorer'; },
+    mvp:          function (i) { return T.mvp[i] + ' MVP' + (T.mvp[i] === 1 ? '' : 's'); }
   };
 
   /* ---- guide metadata ---------------------------------------------------- */
@@ -130,6 +139,7 @@
     { tier:'unique', emoji:'🎭', name:'Playmaker of the Year', desc:'Most assists in the entire league. Every week someone is trying to steal your crown.', pill:'most assists · entire league' },
     { tier:'unique', emoji:'💥', name:'Trigger Happy',         desc:'Most shots taken in the entire league. Keep pulling the trigger — someone\'s closing in.', pill:'most shots · entire league' },
     { tier:'unique', emoji:'🏹', name:'Sniper',                desc:'Best shooting percentage in the league (min ' + T.fixed.sniperMinShots + ' shots). Efficiency is the hardest crown to keep.', pill:'best SH% · ' + T.fixed.sniperMinShots + '+ shots · entire league' },
+    { tier:'unique', emoji:'💎', name:'Most Valuable',         desc:'Named MVP more times than anyone else in the league. The game itself decides this one, and it counts every part of your play — not just goals.', pill:'most MVPs · entire league' },
 
     /* ══ LEGENDARY ══ */
     { tier:'legendary', emoji:'🌊', name:'Tsunami',          desc:'Won ' + T.winStreak[0] + ' games in a row. The rarest streak badge — nearly unbeatable.', pill:T.winStreak[0] + '-game win streak' },
@@ -142,6 +152,7 @@
     { tier:'epic', emoji:'🌟', name:'Superstar',     desc:T.fixed.gameScore[1] + '+ points in a single game. A dominant showing.', pill:T.fixed.gameScore[1] + '+ pts · 1 game' },
     { tier:'epic', emoji:'⚡', name:NAME.winStreak(1), desc:'Won ' + T.winStreak[1] + ' games in a row. On an incredible run.', pill:T.winStreak[1] + '-game win streak' },
     { tier:'epic', emoji:'👑', name:NAME.wins(0),    desc:T.wins[0] + ' match wins this season. A dominant competitor.', pill:T.wins[0] + ' season wins' },
+    { tier:'epic', emoji:'💫', name:NAME.mvp(0),     desc:'Named MVP in ' + T.mvp[0] + ' games — around twice what an average season brings. The game picks one player per match, and it keeps picking you.', pill:T.mvp[0] + ' MVP awards' },
     { tier:'epic', emoji:'💰', name:NAME.score(1),   desc:T.score[1].toLocaleString() + '+ total points. A massive scoring season.', pill:T.score[1].toLocaleString() + '+ season pts' },
     { tier:'epic', emoji:'☄️', name:NAME.goals(1),   desc:T.goals[1] + ' total goals this season. A true goal-scorer.', pill:T.goals[1] + ' season goals' },
     { tier:'epic', emoji:'🎱', name:'Perfect Aim',   desc:'100% shooting accuracy with at least ' + T.fixed.perfectAimMinShots + ' shots. Never missed.', pill:'100% SH% · ' + T.fixed.perfectAimMinShots + '+ shots' },
@@ -153,6 +164,7 @@
     { tier:'rare', emoji:'🎸', name:'Rock Star',       desc:T.fixed.gameScore[2] + '+ points in a single game. An explosive performance.', pill:T.fixed.gameScore[2] + '+ pts · 1 game' },
     { tier:'rare', emoji:'🔥', name:NAME.winStreak(2), desc:'Won ' + T.winStreak[2] + ' games in a row. Building serious momentum.', pill:T.winStreak[2] + '-game win streak' },
     { tier:'rare', emoji:'🏆', name:NAME.wins(1),      desc:T.wins[1] + ' match wins this season. A proven winner.', pill:T.wins[1] + ' season wins' },
+    { tier:'rare', emoji:'🎗️', name:NAME.mvp(1),       desc:'Named MVP in ' + T.mvp[1] + ' games, about what a full season of steady play brings. Defending counts here as much as scoring.', pill:T.mvp[1] + ' MVP awards' },
     { tier:'rare', emoji:'🚀', name:'Rocket',          desc:'Averaging ' + T.fixed.avgScore + '+ score per game. Lights out every match.', pill:'avg ' + T.fixed.avgScore + '+ score/game' },
     { tier:'rare', emoji:'🗿', name:NAME.saves(0),     desc:T.saves[0] + ' total saves this season. An immovable wall in goal.', pill:T.saves[0] + ' season saves' },
     { tier:'rare', emoji:'🎭', name:NAME.assists(0),   desc:T.assists[0] + ' total assists this season. The ultimate team player.', pill:T.assists[0] + ' season assists' },
@@ -191,6 +203,7 @@
 
     /* ══ COMMON ══ */
     { tier:'common', emoji:'⭐', name:'Solid Game',   desc:T.fixed.gameScore[4] + '+ points in a single game. A strong showing.', pill:T.fixed.gameScore[4] + '+ pts · 1 game' },
+    { tier:'common', emoji:'✨', name:'First Star',   desc:'Named MVP of a game. One player per match earns it, and the game weighs everything you did — goals, saves, assists and pressure.', pill:'1 MVP award' },
     { tier:'common', emoji:'🛡️', name:NAME.saves(2),  desc:T.saves[2] + ' total saves this season. Protecting the goal all season.', pill:T.saves[2] + ' season saves' },
     { tier:'common', emoji:'🤝', name:NAME.assists(2),desc:T.assists[2] + ' total assists. Helping the team score.', pill:T.assists[2] + ' season assists' },
     { tier:'common', emoji:'⚽', name:NAME.goals(4),  desc:T.goals[4] + ' total goals. Getting on the scoresheet regularly.', pill:T.goals[4] + ' season goals' },
@@ -214,6 +227,24 @@
   function weekOf(g) { var m = String(g['Week'] || '').match(/\d+/); return m ? parseInt(m[0], 10) : 0; }
   function played(p) { return p.games.filter(function (g) { return !g.__forfeit; }); }
   function maxOf(games, field) { return games.reduce(function (m, g) { return Math.max(m, num(g[field])); }, 0); }
+
+  /**
+   * How many games this player was named MVP of.
+   *
+   * The stats pages aggregate this into `mvps`, but reading it back off the
+   * games keeps the fallback honest for any caller that has not: a badge that
+   * silently reads zero for everyone would look like nobody earned it rather
+   * than like something is wrong.
+   */
+  function mvpsOf(p) {
+    if (typeof p.mvps === 'number') return p.mvps;
+    return played(p).filter(function (g) { return isMvp(g['MVP']); }).length;
+  }
+
+  /** Coaches type this by hand every week, so accept what they might write. */
+  function isMvp(v) {
+    return /^(y|yes|true|1|x|✓|mvp)$/i.test(String(v == null ? '' : v).trim());
+  }
 
   /**
    * Badges a player has earned.
@@ -242,6 +273,9 @@
       if (sole(all.map(function(p){return p.saves;}),   player.saves))   uq('🧤','Golden Glove','Most saves in the entire league');
       if (sole(all.map(function(p){return p.assists;}), player.assists)) uq('🎭','Playmaker of the Year','Most assists in the entire league');
       if (sole(all.map(function(p){return p.shots;}),   player.shots))   uq('💥','Trigger Happy','Most shots in the entire league');
+
+      if (sole(all.map(function(p){return mvpsOf(p);}), mvpsOf(player)))
+        uq('💎','Most Valuable','Named MVP more times than anyone else in the league');
 
       var min = T.fixed.sniperMinShots;
       var eligible = all.filter(function (p) { return p.shots >= min; });
@@ -345,6 +379,18 @@
       return { icon:['🎭','🍎','🤝'][k], label:NAME.assists(k), color:['#FFD166','#FFD166','#9ca3af'][k], pri:[8,6,3][k], tip:T.assists[k] + ' total assists this season' };
     });
 
+    /* The bottom rung is a moment rather than a tally, so it is named for the
+       moment. The two above it are counts, like every other ladder here. */
+    ladder(mvpsOf(player), T.mvp, function (k) {
+      return {
+        icon:  ['💫','🎗️','✨'][k],
+        label: k === T.mvp.length - 1 ? 'First Star' : NAME.mvp(k),
+        color: ['#FFD166','#FFD166','#9ca3af'][k],
+        pri:   [10,7,3][k],
+        tip:   k === T.mvp.length - 1 ? 'Named MVP of a game' : 'Named MVP in ' + T.mvp[k] + ' games this season'
+      };
+    });
+
     /* ── COMBINATION ────────────────────────────────────────────────────── */
     var tt = T.tripleThreat;
     if (player.goals >= tt && player.assists >= tt && player.saves >= tt)
@@ -433,7 +479,10 @@
     defs: DEFS,
     tierOrder: TIER_ORDER,
     tierMeta: TIER_META,
-    award: award
+    award: award,
+    /* Shared so the stats pages read the MVP column exactly as the badges do —
+       two copies of this test would eventually disagree about "y". */
+    isMvp: isMvp
   };
 
 })(window);

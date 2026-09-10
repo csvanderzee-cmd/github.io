@@ -161,6 +161,12 @@
   .player-details { flex: 1; min-width: 0; z-index: 1; }
   .player-name { font-family: 'Rajdhani', sans-serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .player-school { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+  /* The title the game gave them most recently — flavour, so it reads quieter
+     than the school it sits beside. */
+  .player-title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--psd-yellow-text); opacity: 0.85; margin-left: 0.35rem; }
+  .meta-mvp { color: var(--psd-yellow-text); font-weight: 700; }
+  .mvp-star { color: var(--psd-yellow-text); font-size: 1rem; line-height: 1; }
+  .mvp-blank { color: var(--border-mid); }
   .player-meta { margin-top: 3px; font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
 
   .player-stats-row { display: flex; flex-shrink: 0; justify-content: flex-end; gap: 0.4rem; z-index: 1; }
@@ -410,8 +416,22 @@ let lastFocusedElement = null;
 
 function lockScroll(lock) { document.body.style.overflow = lock ? 'hidden' : ''; }
 function isForfeitRow(row) { return ['Score','Goals','Assists','Saves','Shots'].every(k => (row[k] ?? '').toString().trim() === ''); }
-function normalizeName(name) { return name.toUpperCase().replace(/[\-_]/g, ' ').replace(/\s+/g, ' ').trim(); }
-function getMergeKey(name) { return name.toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+/* Gamertags arrive carrying a clan tag — "[NROK] Falcons-32", "[****] SHFalcons-11".
+   It is stripped before anything else touches the name: the same student turns
+   up with and without it across weeks, and the merge key is built from the
+   letters, so the tag would split one player's season into two entries and
+   award each half its own badges. */
+function stripTag(name) { return String(name || '').replace(/\[[^\]]*\]/g, ' ').replace(/\s+/g, ' ').trim(); }
+
+/* Titles are free text typed into a shared sheet and rendered into HTML, so
+   they are escaped rather than trusted. */
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+    { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
+  ));
+}
+function normalizeName(name) { return stripTag(name).toUpperCase().replace(/[\-_]/g, ' ').replace(/\s+/g, ' ').trim(); }
+function getMergeKey(name) { return stripTag(name).toUpperCase().replace(/[^A-Z0-9]/g, ''); }
 
 window.onload = loadAndProcessData;
 document.getElementById('sort-select').addEventListener('change', updateDisplay);
@@ -529,19 +549,43 @@ function renderPotwBanner() {
     </div>`;
 }
 
+/* One CSV line -> its fields.
+   Splitting on every comma was fine while every column was a number or a
+   school name. The sheet now carries a free-text Title, and Google quotes any
+   field containing a comma, so "BACKUP PLAN, JR" would split into two fields,
+   leave the row a column too long and drop it — losing that player's game
+   silently. This walks the line instead, honouring quotes and the "" escape. */
+function splitCsvLine(line) {
+  const out = [];
+  let field = '', inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (line[i + 1] === '"') { field += '"'; i++; }   // "" is a literal quote
+        else inQuotes = false;
+      } else field += c;
+    } else if (c === '"') inQuotes = true;
+    else if (c === ',') { out.push(field); field = ''; }
+    else field += c;
+  }
+  out.push(field);
+  return out;
+}
+
 function parseCSV(text) {
   const allRows = text.split(/\r?\n/);
   if (allRows.length < 2) return [];
   let sheetWeek = '—';
   if (allRows[0]) {
-    const cells = allRows[0].split(',');
-    if (cells.length > 0 && cells[0].trim()) sheetWeek = cells[0].trim().replace(/"/g, '');
+    const cells = splitCsvLine(allRows[0]);
+    if (cells.length > 0 && cells[0].trim()) sheetWeek = cells[0].trim();
   }
   const headerRowIndex = allRows.findIndex(row => row.includes('Student Name'));
   if (headerRowIndex === -1) return [];
-  const headers = allRows[headerRowIndex].split(',').map(h => h.trim());
+  const headers = splitCsvLine(allRows[headerRowIndex]).map(h => h.trim());
   return allRows.slice(headerRowIndex + 1)
-    .map(rowStr => rowStr.split(','))
+    .map(splitCsvLine)
     .filter(rowArr => rowArr.length === headers.length && rowArr.some(f => f.trim() !== ''))
     .map(rowArr => {
       const obj = {};
@@ -564,7 +608,7 @@ function aggregateStats(rawData) {
     const result = row['Win/Lose'] ? row['Win/Lose'].toUpperCase() : 'N/A';
     const isForfeit = isForfeitRow(row);
     if (!players[key]) {
-      players[key] = { name: displayName, school, wins: 0, losses: 0, score: 0, goals: 0, assists: 0, saves: 0, shots: 0, statGames: 0, recordGames: 0, games: [] };
+      players[key] = { name: displayName, school, wins: 0, losses: 0, score: 0, goals: 0, assists: 0, saves: 0, shots: 0, mvps: 0, statGames: 0, recordGames: 0, games: [], title: '', titleWeek: -1 };
     }
     if (displayName.includes(' ') && !players[key].name.includes(' ')) players[key].name = displayName;
     if (result === 'W') players[key].wins++;
@@ -576,7 +620,17 @@ function aggregateStats(rawData) {
       players[key].assists  += parseInt(row['Assists']) || 0;
       players[key].saves    += parseInt(row['Saves'])   || 0;
       players[key].shots    += parseInt(row['Shots'])   || 0;
+      if (PSD_BADGES.isMvp(row['MVP'])) players[key].mvps++;
       players[key].statGames++;
+    }
+
+    /* The title shown is the most recent one, so a player's card reflects who
+       they are now rather than week one. An em dash is the sheet's way of
+       saying the game gave them none, so it is skipped rather than stored. */
+    const rawTitle = (row['Title'] || '').trim();
+    if (rawTitle && !/^[-—–]+$/.test(rawTitle)) {
+      const wk = parseInt((row['Week'] || '').match(/\d+/)?.[0] || '0', 10);
+      if (wk >= players[key].titleWeek) { players[key].title = rawTitle; players[key].titleWeek = wk; }
     }
     players[key].games.push({ ...row, __forfeit: isForfeit });
   });
@@ -585,6 +639,7 @@ function aggregateStats(rawData) {
     return {
       name: p.name, school: p.school, wins: p.wins, losses: p.losses,
       score: p.score, goals: p.goals, assists: p.assists, saves: p.saves, shots: p.shots,
+      mvps: p.mvps, title: p.title,
       gamesPlayed: p.statGames, recordGames: p.recordGames,
       shootingPercentage: p.shots > 0 ? Math.round((p.goals / p.shots) * 100) : 0,
       avgScore:   d > 0 ? Math.round(p.score / d)                : 0,
@@ -610,8 +665,8 @@ function updateSortOptions() {
   const isAvg = document.getElementById('stat-mode-select').value === 'averages';
   const cur = sortSelect.value;
   const opts = isAvg
-    ? [['avg_score','Avg Score'],['avg_goals','Avg Goals'],['avg_shots','Avg Shots'],['shootingPercentage','Shooting %'],['avg_assists','Avg Assists'],['avg_saves','Avg Saves'],['gamesPlayed','Games (Stats Only)'],['name_asc','Name (A-Z)'],['wins','Wins']]
-    : [['total_score','Total Score'],['goals','Goals Total'],['shots','Shots Total'],['shootingPercentage','Shooting %'],['assists','Assists Total'],['saves','Saves Total'],['gamesPlayed','Games (Stats Only)'],['name_asc','Name (A-Z)'],['wins','Wins']];
+    ? [['avg_score','Avg Score'],['avg_goals','Avg Goals'],['avg_shots','Avg Shots'],['shootingPercentage','Shooting %'],['avg_assists','Avg Assists'],['avg_saves','Avg Saves'],['mvps','MVPs'],['gamesPlayed','Games (Stats Only)'],['name_asc','Name (A-Z)'],['wins','Wins']]
+    : [['total_score','Total Score'],['goals','Goals Total'],['shots','Shots Total'],['shootingPercentage','Shooting %'],['assists','Assists Total'],['saves','Saves Total'],['mvps','MVPs'],['gamesPlayed','Games (Stats Only)'],['name_asc','Name (A-Z)'],['wins','Wins']];
   sortSelect.innerHTML = opts.map(([v,t]) => `<option value="${v}">${t}</option>`).join('');
   sortSelect.value = opts.some(([v]) => v === cur) ? cur : (isAvg ? 'avg_score' : 'total_score');
 }
@@ -623,7 +678,7 @@ function updateDisplay() {
   const search = getMergeKey(document.getElementById('player-search-input').value);
   if (search) data = data.filter(p => getMergeKey(p.name).includes(search));
   const sort = document.getElementById('sort-select').value;
-  const map = { total_score:'score', avg_score:'avgScore', gamesPlayed:'gamesPlayed', goals:'goals', assists:'assists', saves:'saves', shots:'shots', wins:'wins', avg_goals:'avgGoals', avg_assists:'avgAssists', avg_saves:'avgSaves', avg_shots:'avgShots', shootingPercentage:'shootingPercentage' };
+  const map = { total_score:'score', avg_score:'avgScore', gamesPlayed:'gamesPlayed', goals:'goals', assists:'assists', saves:'saves', shots:'shots', wins:'wins', mvps:'mvps', avg_goals:'avgGoals', avg_assists:'avgAssists', avg_saves:'avgSaves', avg_shots:'avgShots', shootingPercentage:'shootingPercentage' };
   data.sort((a, b) => sort === 'name_asc' ? a.name.localeCompare(b.name) : b[map[sort]||'avgScore'] - a[map[sort]||'avgScore']);
   const statMode = document.getElementById('stat-mode-select').value;
   renderTotalStats(calculateTotalStats(data), school, statMode);
@@ -718,8 +773,8 @@ function renderPlayerCards(data, statMode) {
         ${logo}
         <div class="player-details">
           <div class="player-name">${player.name}</div>
-          <div class="player-school">${player.school || ''}</div>
-          <div class="player-meta">${player.gamesPlayed} GP &bull; ${player.wins}-${player.losses} &bull; ${player.shootingPercentage}% SH%</div>
+          <div class="player-school">${player.school || ''}${player.title ? ` <span class="player-title">${escapeHtml(player.title)}</span>` : ''}</div>
+          <div class="player-meta">${player.gamesPlayed} GP &bull; ${player.wins}-${player.losses} &bull; ${player.shootingPercentage}% SH%${player.mvps ? ` &bull; <span class="meta-mvp">${player.mvps} MVP</span>` : ''}</div>
           ${badgeHtml}
         </div>
       </div>
@@ -746,7 +801,9 @@ function showPlayerDetails(playerName, playerSchool, event) {
   modal.style.setProperty('--modal-logo-url', logoUrl ? `url('${logoUrl}')` : 'none');
 
   document.getElementById('modal-player-name').textContent = playerData.name;
-  document.getElementById('modal-player-school').textContent = playerData.school || '';
+  document.getElementById('modal-player-school').innerHTML =
+    escapeHtml(playerData.school || '') +
+    (playerData.title ? ` <span class="player-title">${escapeHtml(playerData.title)}</span>` : '');
   document.getElementById('modal-logo-wrap').innerHTML = logoHtml(playerData.school || '', 'modal-school-logo', 'modal-school-logo-fallback');
 
   const wlSeq = [...playerData.games]
@@ -769,6 +826,7 @@ function showPlayerDetails(playerName, playerSchool, event) {
     <div class="msc"><span class="msc-val">${playerData.avgAssists}</span><span class="msc-lbl">Avg Assists</span></div>
     <div class="msc"><span class="msc-val">${playerData.avgSaves}</span><span class="msc-lbl">Avg Saves</span></div>
     <div class="msc"><span class="msc-val ${shPct>=60?'g':shPct>=40?'y':''}">${shPct}%</span><span class="msc-lbl">SH%</span></div>
+    <div class="msc"><span class="msc-val ${playerData.mvps ? 'y' : ''}">${playerData.mvps || 0}</span><span class="msc-lbl">MVP</span></div>
   `;
 
   const sorted = [...playerData.games].sort((a, b) => {
@@ -779,7 +837,7 @@ function showPlayerDetails(playerName, playerSchool, event) {
   const avgScore = playerData.avgScore || 1;
   const maxScore = Math.max(...sorted.filter(g=>!g.__forfeit).map(g=>parseInt(g['Score'])||0), 1);
 
-  let html = `<table><thead><tr><th>Week</th><th>Team</th><th>Result</th><th class="score-th" data-tip="🟢 Above your avg  🟡 Near your avg  🔴 Below your avg">Score ℹ</th><th>Goals</th><th>Shots</th><th>Assists</th><th>Saves</th></tr></thead><tbody>`;
+  let html = `<table><thead><tr><th>Week</th><th>Team</th><th>Result</th><th class="score-th" data-tip="🟢 Above your avg  🟡 Near your avg  🔴 Below your avg">Score ℹ</th><th>Goals</th><th>Shots</th><th>Assists</th><th>Saves</th><th data-tip="Named MVP of this game">MVP</th></tr></thead><tbody>`;
   sorted.forEach(game => {
     const result = (game['Win/Lose'] || 'N/A').toUpperCase();
     const isForfeit = !!game.__forfeit;
@@ -798,10 +856,11 @@ function showPlayerDetails(playerName, playerSchool, event) {
     }
     html += `<tr class="${rowClass} ${isForfeit?'forfeit':''}">
       <td>${game['Week']||'—'}</td>
-      <td>${sideCell(game['Team'])}</td>
+      <td>${sideCell(game['Color'])}</td>
       <td><span class="wl-pill ${pillClass}">${pillLabel}</span></td>
       <td>${scoreHtml}</td>
       <td>${d(game['Goals'])}</td><td>${d(game['Shots'])}</td><td>${d(game['Assists'])}</td><td>${d(game['Saves'])}</td>
+      <td>${!isForfeit && PSD_BADGES.isMvp(game['MVP']) ? '<span class="mvp-star" title="MVP of this game">★</span>' : '<span class="mvp-blank">–</span>'}</td>
     </tr>`;
   });
   html += '</tbody></table>';
