@@ -83,7 +83,8 @@
         // Fast-read ids. See FAST READS at the bottom of this file.
         // Leave null for the normal cached publish-to-web feed.
         matchSheetFastId: '1vRD00zWkwd5ccLCvnS_S4EfFIFEoSE2LobiMUZLAtuY',
-        statsSheetFastId: '1Orm083Obxr5ILNsXZNifiZbwQsmO3GVbDAO7HZa1uU0',
+        // Deliberately off the fast feed — see the note above CONFIG.fastRead.
+        statsSheetFastId: null,
 
         // Finals bracket lives on its own tab in the match workbook.
         // Formatting on this tab is expected to change for 2026-27.
@@ -132,7 +133,8 @@
 
         // Fast-read ids. See FAST READS at the bottom of this file.
         matchSheetFastId: '1LZerFC0RIPzVR_P6SX0yRNKLfoOk7ZKcd8xvIZrQUqw',
-        statsSheetFastId: '1cA4Cb2PbW0LXEDBcMmai4cH9kvLncmSGOwuni7_PF-M',
+        // Deliberately off the fast feed — see the note above CONFIG.fastRead.
+        statsSheetFastId: null,
 
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '2049340971',
@@ -243,6 +245,22 @@
      workbook's ordinary edit URL, and every workbook has its own.
 
      Leave an id null and that workbook behaves exactly as it always has.
+     ------------------------------------------------------------------------ */
+
+  /* ---- why the stats workbooks are NOT on the fast feed -------------------
+
+     gviz types each column from the data it holds and then cannot represent a
+     text header sitting above a numeric one, so it returns that header cell
+     empty. The stats tabs put "Score", "Goals", "Assists", "Saves", "Shots"
+     and "Ping" above columns of numbers, and every one of those names came
+     back blank — leaving the parser, which finds columns by their header, with
+     nothing to match. Every row then looked like a forfeit and every player
+     scored zero.
+
+     The match tabs survive only because their Points columns are still empty:
+     with no numbers in them gviz reads them as text and the header lives. Once
+     week 1 scores land those headers will blank too, and the schedule pages
+     will be leaning on their fixed-position fallback.
      ------------------------------------------------------------------------ */
 
   CONFIG.fastRead = {};
