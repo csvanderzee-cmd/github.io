@@ -137,19 +137,21 @@
     { text: '📰 In the News', href: '/media.html' }
   ];
 
-  /* Registration leads the pills while it is open, so it is the first thing
-     the eye lands on in the top right, and disappears entirely once it is not. */
+  /* Open registration gets the centre of the bar to itself, apart from the
+     sitewide pills, so it reads as the one call to action rather than one more
+     link. There is only ever one sign-up open at a time, so one slot is all it
+     needs. Null once entries close, and the bar goes back to its usual shape. */
+  var PROMO = null;
   if (registrationOpen()) {
     var closesOn = new Date(REGISTRATION.closes + 'T00:00:00');
-    SITEWIDE.unshift({
+    PROMO = {
       text: REGISTRATION.label + ' · ' +
             closesOn.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       title: REGISTRATION.title + ' — entries close ' +
              closesOn.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
       href: REGISTRATION.url,
-      cls: 'pill-register',
       external: true
-    });
+    };
   }
 
   var CSS = [
@@ -197,6 +199,18 @@
     '#psd-nav .pill-register{background:#FDB913;color:#0B0E14;border:1px solid #FDB913;font-weight:800;}',
     '#psd-nav .pill-register:hover{background:#FFD166;border-color:#FFD166;}',
     '#psd-nav-drawer a.drawer-register{color:#0B0E14;background:#FDB913;font-weight:800;border-radius:6px;margin:.35rem 0;}',
+    '#psd-nav .nav-left{display:flex;align-items:center;flex:1;}',
+    '#psd-nav .nav-end{display:flex;align-items:center;margin-left:auto;}',
+    /* With a promo the bar becomes three columns, 1fr | auto | 1fr, so the pill
+       sits at the true centre of the bar. A 1fr track will not shrink below its
+       content, so when the window is too narrow for equal sides the left column
+       keeps its width and the pill slides right instead of sliding under the
+       game menus. Explicit columns keep the right-hand group in column 3 when
+       the pill is hidden on small screens. */
+    '#psd-nav .nav-inner.has-promo{display:grid;grid-template-columns:1fr auto 1fr;column-gap:1rem;}',
+    '#psd-nav .has-promo .nav-left{grid-column:1;}',
+    '#psd-nav .has-promo .nav-promo{grid-column:2;}',
+    '#psd-nav .has-promo .nav-end{grid-column:3;justify-self:end;}',
     '#psd-nav .nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:.5rem;background:none;border:none;margin-left:auto;}',
     '#psd-nav .nav-hamburger span{display:block;width:22px;height:2px;background:#9ca3af;border-radius:2px;transition:all .25s;}',
     '#psd-nav .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}',
@@ -216,7 +230,7 @@
        drawer takes over below 1000 rather than letting the last pill slide off
        the edge. Re-measure if a pill or a section is added: the bar only gets
        wider, and this number is the one that has to move with it. */
-    '@media(max-width:1000px){#psd-nav .nav-links,#psd-nav .nav-right{display:none;}#psd-nav .nav-hamburger{display:flex;}}',
+    '@media(max-width:1000px){#psd-nav .nav-links,#psd-nav .nav-right,#psd-nav .nav-promo{display:none;}#psd-nav .nav-hamburger{display:flex;}}',
     '@media print{#psd-nav,#psd-nav-drawer{display:none!important;}}'
   ].join('');
 
@@ -292,19 +306,33 @@
     var nav = document.createElement('nav');
     nav.id = 'psd-nav';
     nav.setAttribute('aria-label', 'Site navigation');
+    var promo = PROMO
+      ? '<a href="' + esc(PROMO.href) + '"' + out(PROMO) + ' class="nav-pill pill-register nav-promo">' +
+          esc(PROMO.text) + '</a>'
+      : '';
+
     nav.innerHTML =
-      '<div class="nav-inner">' +
-        '<a href="/index.html" class="nav-brand">PSD <span>Esports</span></a>' +
-        '<ul class="nav-links" role="list">' + items + '</ul>' +
-        '<div class="nav-right">' + pills + '</div>' +
-        '<button class="nav-hamburger" id="psd-hamburger" aria-label="Toggle navigation" aria-expanded="false">' +
-          '<span></span><span></span><span></span>' +
-        '</button>' +
+      '<div class="nav-inner' + (PROMO ? ' has-promo' : '') + '">' +
+        '<div class="nav-left">' +
+          '<a href="/index.html" class="nav-brand">PSD <span>Esports</span></a>' +
+          '<ul class="nav-links" role="list">' + items + '</ul>' +
+        '</div>' +
+        promo +
+        '<div class="nav-end">' +
+          '<div class="nav-right">' + pills + '</div>' +
+          '<button class="nav-hamburger" id="psd-hamburger" aria-label="Toggle navigation" aria-expanded="false">' +
+            '<span></span><span></span><span></span>' +
+          '</button>' +
+        '</div>' +
       '</div>';
 
     /* The drawer lists every section in full — on a phone there is no hover,
-       and burying the other titles behind a second tap helps nobody. */
+       and burying the other titles behind a second tap helps nobody. An open
+       sign-up goes straight under Home, so on a phone it is the first real
+       thing in the menu rather than the last. */
     var drawerInner = '<a href="/index.html"' + (isActive('/index.html') ? ' class="active"' : '') + '>Home</a>' +
+      (PROMO ? '<a href="' + esc(PROMO.href) + '"' + out(PROMO) + ' class="drawer-register">' +
+                 esc(PROMO.text) + '</a>' : '') +
       shown.map(function (s) {
         return '<div class="drawer-section drawer-title">' + s.icon + ' ' + esc(s.name) + '</div>' +
           s.groups.map(function (g) {
@@ -317,10 +345,7 @@
       }).join('') +
       '<div class="drawer-section drawer-title">More</div>' +
       SITEWIDE.map(function (l) {
-        var cls = (l.cls === 'pill-register' ? 'drawer-register ' : '') +
-                  (isActive(l.href) ? 'active' : '');
-        return '<a href="' + esc(l.href) + '"' + out(l) +
-               (cls.trim() ? ' class="' + cls.trim() + '"' : '') + '>' +
+        return '<a href="' + esc(l.href) + '"' + out(l) + (isActive(l.href) ? ' class="active"' : '') + '>' +
                esc(l.text) + '</a>';
       }).join('');
 
