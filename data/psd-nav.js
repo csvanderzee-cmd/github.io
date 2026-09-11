@@ -37,10 +37,16 @@
      two drifting apart on any page where both are present.
      -------------------------------------------------------------------------- */
 
+  /* `label` names the game on purpose. The pill sits on every page, Rocket
+     League included, and a bare "Register" beside a multi-game nav reads as
+     "register for the league" — a Rocket League parent clicking it would land
+     on a Smash form. The closing date is appended from `closes` below rather
+     than typed into the label, so the two cannot disagree. */
   var REGISTRATION = {
     url:    'https://forms.gle/PHLTBQBWvUJktBgw8',
     closes: '2026-10-30',
-    label:  '⚔️ Register'
+    label:  '⚔️ Smash Sign-Up',
+    title:  'Register a team for the Super Smash Bros. tournament'
   };
 
   /**
@@ -52,7 +58,8 @@
    * because a new tab otherwise gets a handle on this one.
    */
   function out(l) {
-    return l && l.external ? ' target="_blank" rel="noopener"' : '';
+    return (l && l.external ? ' target="_blank" rel="noopener"' : '') +
+           (l && l.title ? ' title="' + esc(l.title) + '"' : '');
   }
 
   /** True until the end of the closing day, in the reader's own time zone. */
@@ -133,8 +140,12 @@
   /* Registration leads the pills while it is open, so it is the first thing
      the eye lands on in the top right, and disappears entirely once it is not. */
   if (registrationOpen()) {
+    var closesOn = new Date(REGISTRATION.closes + 'T00:00:00');
     SITEWIDE.unshift({
-      text: REGISTRATION.label,
+      text: REGISTRATION.label + ' · ' +
+            closesOn.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+      title: REGISTRATION.title + ' — entries close ' +
+             closesOn.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
       href: REGISTRATION.url,
       cls: 'pill-register',
       external: true
@@ -201,7 +212,11 @@
     '#psd-nav-drawer .drawer-title{font-size:.72rem;letter-spacing:.16em;color:#e5e7eb;padding:.6rem .75rem .2rem;margin-top:.6rem;',
       'border-top:1px solid rgba(255,255,255,.07);}',
     '#psd-nav-drawer .drawer-indent{padding-left:1.5rem;}',
-    '@media(max-width:900px){#psd-nav .nav-links,#psd-nav .nav-right{display:none;}#psd-nav .nav-hamburger{display:flex;}}',
+    /* The full bar measures about 955px with the registration pill in it, so the
+       drawer takes over below 1000 rather than letting the last pill slide off
+       the edge. Re-measure if a pill or a section is added: the bar only gets
+       wider, and this number is the one that has to move with it. */
+    '@media(max-width:1000px){#psd-nav .nav-links,#psd-nav .nav-right{display:none;}#psd-nav .nav-hamburger{display:flex;}}',
     '@media print{#psd-nav,#psd-nav-drawer{display:none!important;}}'
   ].join('');
 
