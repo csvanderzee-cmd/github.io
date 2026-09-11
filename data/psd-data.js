@@ -162,6 +162,12 @@
     return (CONFIG.fastRead && CONFIG.fastRead[sheetId]) || null;
   }
 
+  /** The publish-to-web URL for a tab — also the fallback when gviz fails. */
+  function publishedUrl(sheetId, gid) {
+    return 'https://docs.google.com/spreadsheets/d/e/' + sheetId +
+           '/pub?output=csv&gid=' + gid + '&_=' + Date.now();
+  }
+
   function liveUrl(sheetId, gid) {
     var bust = '&_=' + Date.now();
     var fastId = fastIdFor(sheetId, gid);
@@ -290,11 +296,29 @@
       clearTimeout(timer);
       if (!res.ok) throw new Error('gid ' + gid + ' -> HTTP ' + res.status);
       return res.text().then(function (text) {
-        return isFast ? normalizeGviz(text) : text;
+        if (!isFast) return text;
+        /* A workbook that is not link-shared answers gviz with Google's
+           sign-in page and a 200, not an error. Markup where CSV should be is
+           therefore a failure, not a very strange spreadsheet. */
+        if (/^\s*</.test(text)) throw new Error('gid ' + gid + ' -> gviz returned a page, not CSV');
+        return normalizeGviz(text);
       });
     }, function (err) {
       clearTimeout(timer);
       throw err;
+    }).catch(function (err) {
+      if (!isFast) throw err;
+      /* The fast feed failed — sharing was closed, a rate limit, a Google
+         hiccup in the middle of a final. Fall back to the published copy:
+         a few minutes stale beats a bracket that reads "Failed to load" in
+         front of the arena. */
+      if (root.console && console.warn) {
+        console.warn('[PSD] fast feed failed for gid ' + gid + ', using the published copy:', err.message);
+      }
+      return fetch(publishedUrl(sheetId, gid), { cache: 'no-store' }).then(function (res) {
+        if (!res.ok) throw new Error('gid ' + gid + ' -> HTTP ' + res.status);
+        return res.text();
+      });
     });
   }
 
