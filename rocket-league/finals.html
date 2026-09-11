@@ -358,7 +358,7 @@
     <div id="jrpl-banner" class="winner-banner" aria-live="polite"></div>
   </section>
 
-  <footer><p>PSD Esports · Finals Day · Auto-refreshes every 60 seconds</p></footer>
+  <footer><p>PSD Esports · Finals Day · Auto-refreshes every 30 seconds</p></footer>
 </div>
 
 <script src="/data/leagues.js"></script>
@@ -673,7 +673,7 @@ async function refresh() {
       renderLeague(lg, d);
     }));
     const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    document.getElementById('update-msg').textContent = `Live scores · Updated ${t} · Auto-refreshes every 60s`;
+    document.getElementById('update-msg').textContent = `Live scores · Updated ${t} · Auto-refreshes every 30s`;
   } catch(e) {
     console.error(e);
     document.getElementById('update-msg').textContent = 'Failed to load — will retry';
@@ -735,7 +735,14 @@ document.addEventListener('DOMContentLoaded', () => {
   initCountdown();
   if(!window.matchMedia('(prefers-reduced-motion:reduce)').matches) initParticles();
   refresh();
-  setInterval(refresh, 60000);
+  /* The bracket tab is read through the fast feed, so on finals day the page
+     itself is the slowest link — hence every 30 seconds rather than 60. A tab
+     left open in the background stops asking and catches up the moment it is
+     looked at again, so a room full of phones in pockets costs nothing. */
+  setInterval(() => { if (document.visibilityState === 'visible') refresh(); }, 30000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') refresh();
+  });
 });
 </script>
 <style>

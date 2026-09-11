@@ -148,9 +148,23 @@
    * sitting between a school laptop and Google, neither of which should be
    * handing back a stale bracket. It cannot touch Google's own cache.
    */
+  /**
+   * The gviz id to read this tab through, or null for the published feed.
+   *
+   * A single tab can be on the fast feed (CONFIG.fastTabs — the finals) while
+   * the rest of its workbook is not (CONFIG.fastRead). Both liveUrl and
+   * fetchCSV ask THIS function, so they can never disagree: a tab fetched from
+   * gviz but not then normalised would reach the parser as quoted, padded CSV.
+   */
+  function fastIdFor(sheetId, gid) {
+    var tab = CONFIG.fastTabs && CONFIG.fastTabs[sheetId + '|' + gid];
+    if (tab) return tab;
+    return (CONFIG.fastRead && CONFIG.fastRead[sheetId]) || null;
+  }
+
   function liveUrl(sheetId, gid) {
     var bust = '&_=' + Date.now();
-    var fastId = CONFIG.fastRead && CONFIG.fastRead[sheetId];
+    var fastId = fastIdFor(sheetId, gid);
 
     if (fastId) {
       /* headers=0 is load-bearing. Without it gviz guesses how many leading
@@ -270,7 +284,7 @@
     var init = { cache: 'no-store' };
     if (ctrl) init.signal = ctrl.signal;
 
-    var isFast = !!(CONFIG.fastRead && CONFIG.fastRead[sheetId]);
+    var isFast = !!fastIdFor(sheetId, gid);
 
     return fetch(liveUrl(sheetId, gid), init).then(function (res) {
       clearTimeout(timer);

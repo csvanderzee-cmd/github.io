@@ -82,10 +82,15 @@
 
         // Fast-read ids. See FAST READS at the bottom of this file.
         // Leave null for the normal cached publish-to-web feed.
-        // Both off the fast feed — see the note above CONFIG.fastRead. The ids
-        // stay here so switching back is one edit rather than a hunt.
+        // Weekly tabs off the fast feed — see the note above CONFIG.fastRead.
+        // The ids stay here so switching back is one edit rather than a hunt.
         matchSheetFastId: null,   // '1vRD00zWkwd5ccLCvnS_S4EfFIFEoSE2LobiMUZLAtuY'
         statsSheetFastId: null,   // '1Orm083Obxr5ILNsXZNifiZbwQsmO3GVbDAO7HZa1uU0'
+
+        // ...except the finals tab, read live on finals day. The finals page
+        // reads fixed cells rather than headers, so gviz blanking header text
+        // cannot reach it. It lives in the match workbook, hence the same id.
+        finalsFastId: '1vRD00zWkwd5ccLCvnS_S4EfFIFEoSE2LobiMUZLAtuY',
 
         // Finals bracket lives on its own tab in the match workbook.
         // Formatting on this tab is expected to change for 2026-27.
@@ -133,10 +138,15 @@
         statsSheet: '2PACX-1vT1NHFDysYXCPgoA6dDWAYIakjQXD2xdivTdJmMMIdUzyWr__hTrAPrqPD5sh8LKgMa-1KmUFS8rbhd',
 
         // Fast-read ids. See FAST READS at the bottom of this file.
-        // Both off the fast feed — see the note above CONFIG.fastRead. The ids
-        // stay here so switching back is one edit rather than a hunt.
+        // Weekly tabs off the fast feed — see the note above CONFIG.fastRead.
+        // The ids stay here so switching back is one edit rather than a hunt.
         matchSheetFastId: null,   // '1LZerFC0RIPzVR_P6SX0yRNKLfoOk7ZKcd8xvIZrQUqw'
         statsSheetFastId: null,   // '1cA4Cb2PbW0LXEDBcMmai4cH9kvLncmSGOwuni7_PF-M'
+
+        // ...except the finals tab, read live on finals day. The finals page
+        // reads fixed cells rather than headers, so gviz blanking header text
+        // cannot reach it. It lives in the match workbook, hence the same id.
+        finalsFastId: '1LZerFC0RIPzVR_P6SX0yRNKLfoOk7ZKcd8xvIZrQUqw',
 
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '2049340971',
@@ -284,6 +294,23 @@
   CONFIG.leagues.forEach(function (lg) {
     if (lg.matchSheet && lg.matchSheetFastId) CONFIG.fastRead[lg.matchSheet] = lg.matchSheetFastId;
     if (lg.statsSheet && lg.statsSheetFastId) CONFIG.fastRead[lg.statsSheet] = lg.statsSheetFastId;
+  });
+
+  /* ---- the one exception: single tabs on the fast feed --------------------
+
+     Finals day is watched live and cannot wait minutes for a refresh. The
+     bracket tab is safe on gviz where the weekly tabs are not, because the
+     finals page reads fixed cells rather than looking columns up by header,
+     and it has no text-in-a-score-cell convention (no "F") to lose.
+
+     This is keyed by TAB — "<publish id>|<gid>" — so putting the finals on the
+     fast feed leaves every weekly tab in the same workbook on the published
+     one. gviz does need the match workbook shared "anyone with the link can
+     view"; close that and the finals quietly fall back to the published feed. */
+  CONFIG.fastTabs = {};
+  CONFIG.leagues.forEach(function (lg) {
+    if (lg.matchSheet && lg.finalsGid && lg.finalsFastId)
+      CONFIG.fastTabs[lg.matchSheet + '|' + lg.finalsGid] = lg.finalsFastId;
   });
 
   /**
