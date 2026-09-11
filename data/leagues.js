@@ -82,9 +82,10 @@
 
         // Fast-read ids. See FAST READS at the bottom of this file.
         // Leave null for the normal cached publish-to-web feed.
-        matchSheetFastId: '1vRD00zWkwd5ccLCvnS_S4EfFIFEoSE2LobiMUZLAtuY',
-        // Deliberately off the fast feed — see the note above CONFIG.fastRead.
-        statsSheetFastId: null,
+        // Both off the fast feed — see the note above CONFIG.fastRead. The ids
+        // stay here so switching back is one edit rather than a hunt.
+        matchSheetFastId: null,   // '1vRD00zWkwd5ccLCvnS_S4EfFIFEoSE2LobiMUZLAtuY'
+        statsSheetFastId: null,   // '1Orm083Obxr5ILNsXZNifiZbwQsmO3GVbDAO7HZa1uU0'
 
         // Finals bracket lives on its own tab in the match workbook.
         // Formatting on this tab is expected to change for 2026-27.
@@ -132,9 +133,10 @@
         statsSheet: '2PACX-1vT1NHFDysYXCPgoA6dDWAYIakjQXD2xdivTdJmMMIdUzyWr__hTrAPrqPD5sh8LKgMa-1KmUFS8rbhd',
 
         // Fast-read ids. See FAST READS at the bottom of this file.
-        matchSheetFastId: '1LZerFC0RIPzVR_P6SX0yRNKLfoOk7ZKcd8xvIZrQUqw',
-        // Deliberately off the fast feed — see the note above CONFIG.fastRead.
-        statsSheetFastId: null,
+        // Both off the fast feed — see the note above CONFIG.fastRead. The ids
+        // stay here so switching back is one edit rather than a hunt.
+        matchSheetFastId: null,   // '1LZerFC0RIPzVR_P6SX0yRNKLfoOk7ZKcd8xvIZrQUqw'
+        statsSheetFastId: null,   // '1cA4Cb2PbW0LXEDBcMmai4cH9kvLncmSGOwuni7_PF-M'
 
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '2049340971',
@@ -247,20 +249,35 @@
      Leave an id null and that workbook behaves exactly as it always has.
      ------------------------------------------------------------------------ */
 
-  /* ---- why the stats workbooks are NOT on the fast feed -------------------
+  /* ---- why NO workbook is on the fast feed ---------------------------------
 
-     gviz types each column from the data it holds and then cannot represent a
-     text header sitting above a numeric one, so it returns that header cell
-     empty. The stats tabs put "Score", "Goals", "Assists", "Saves", "Shots"
-     and "Ping" above columns of numbers, and every one of those names came
-     back blank — leaving the parser, which finds columns by their header, with
-     nothing to match. Every row then looked like a forfeit and every player
-     scored zero.
+     gviz types each column from the data it holds, then returns any text cell
+     in a column it has decided is numeric as EMPTY. These sheets put meaningful
+     text in numeric columns in three places, and all three break:
 
-     The match tabs survive only because their Points columns are still empty:
-     with no numbers in them gviz reads them as text and the header lives. Once
-     week 1 scores land those headers will blank too, and the schedule pages
-     will be leaning on their fixed-position fallback.
+     1. Headers. "Score", "Goals", "Saves" and the rest sit above numbers, came
+        back blank, and the stats parser — which finds columns by header —
+        matched nothing. Every player scored zero.
+
+     2. Partially. On a match tab, a week where only Games 1 and 2 were played
+        blanks those two "Points" headers but leaves Game 3's, because Game 3
+        is still empty and so still reads as text. The standings parser found
+        one score column, the empty one; and because it found one, its
+        fall-back to fixed positions never fired. Every school sat on 0-0.
+        Whether a tab parsed correctly depended on whether any series that
+        week happened to go to three games.
+
+     3. Forfeits. A forfeit is recorded as "F" in a Points column — text in a
+        numeric column — so the same mechanism would turn it into an unplayed
+        game, silently.
+
+     The published CSV preserves every cell as typed. The cost is freshness:
+     Google refreshes the published copy on its own schedule, usually within a
+     few minutes of an edit, where gviz was near-instant. Correct and a few
+     minutes late beats instant and wrong.
+
+     To put a workbook back on gviz, restore its id from the comment beside
+     it — but only once nothing it holds relies on text in a numeric column.
      ------------------------------------------------------------------------ */
 
   CONFIG.fastRead = {};
