@@ -126,11 +126,11 @@
         forfeitTimeLabel: '2:15 PM',
 
         schools: ['Cimarron', 'Desert Rose', 'Innovations Academy', 'Los Amigos',
-                  'Manzanita', 'Mesquite', 'Palmtree', 'Tumbleweed', 'Yucca'],
+                  'Manzanita', 'Mesquite', 'Palm Tree', 'Tumbleweed', 'Yucca'],
 
         // Misspellings that appear in the sheet, mapped to the roster name.
         // Spacing and case do not need an entry — canonicalSchool() already
-        // ignores those, so "Palm Tree" finds "Palmtree" on its own. Only
+        // ignores those, so "Palmtree" finds "Palm Tree" on its own. Only
         // genuinely different letters belong here.
         aliases: { 'Cimmaron': 'Cimarron', 'Cimmarron': 'Cimarron' },
 
@@ -182,7 +182,7 @@
 
      `also` lists other spellings that should resolve to the same badge —
      nicknames the sheets use, or misspellings seen in the wild. Case, spaces
-     and punctuation are already ignored, so "Palm Tree" needs no entry.
+     and punctuation are already ignored, so "Palmtree" needs no entry.
      ------------------------------------------------------------------------ */
 
   var SCHOOLS = {
@@ -200,7 +200,7 @@
     'Manzanita':           { color: '#7c2d12', logo: 'https://3.files.edl.io/78d0/24/11/12/173918-dbf6ddaa-bf7b-408d-aa49-db4cdecdc9bb.png' },
     // New for 2026-27. Edlio serves this one as a .jpg, unlike the rest.
     'Mesquite':            { color: '#5b21b6', logo: 'https://3.files.edl.io/6737/24/01/08/225238-a58895d9-74ec-4463-9225-f720109953c4.jpg' },
-    'Palmtree':            { color: '#047857', logo: 'https://3.files.edl.io/deef/24/01/30/203132-727d82ee-15ae-4e4a-9e3b-95f7e677e038.png' },
+    'Palm Tree':           { color: '#047857', logo: 'https://3.files.edl.io/deef/24/01/30/203132-727d82ee-15ae-4e4a-9e3b-95f7e677e038.png' },
     'Tumbleweed':          { color: '#92400e', logo: 'https://3.files.edl.io/419d/25/10/02/220537-89da6677-8013-4232-bf2b-62aab2b64d29.png' },
     'Yucca':               { color: '#4d7c0f', logo: 'https://3.files.edl.io/c0fd/24/01/30/203144-7cccf38b-4ea6-4ca5-ac4e-1c5cb2ecdc53.png' }
   };
@@ -373,7 +373,7 @@
    * The registry entry for a school, by any spelling it is written with.
    *
    * Matching ignores case, spacing and punctuation, and also checks the
-   * `also` list, so "DGM", "Palm Tree" and "CIMMARON" all resolve. Returns
+   * `also` list, so "DGM", "Palmtree" and "CIMMARON" all resolve. Returns
    * null for an unknown name — callers fall back to initials.
    */
   function schoolEntry(name) {
