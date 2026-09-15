@@ -117,6 +117,12 @@
         .week-chip .wk-date { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: .92rem; color: #d1d5db; line-height: 1.35; margin-top: .5rem; }
         .week-chip .wk-badge { position: absolute; top: .6rem; right: .6rem; font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: .55rem; letter-spacing: .14em; text-transform: uppercase; padding: 2px 6px; border-radius: 9999px; background: linear-gradient(90deg, #FDB913, #facc15); color: #0B0E14; }
         .week-chip .wk-tick { position: absolute; top: .7rem; right: .7rem; color: #4ade80; font-size: .8rem; font-weight: 900; }
+        /* Two chips to a row on a phone leaves no room beside "Week 1" for a
+           corner tag, so "Up Next" drops into the flow above the week instead
+           of sitting on top of it. */
+        @media (max-width: 639px) {
+            .week-chip .wk-badge { position: static; display: inline-block; margin-bottom: .45rem; }
+        }
 
         /* ── School pills ── */
         .school-pill { display: inline-flex; align-items: center; gap: .4rem; padding: .3rem .7rem; border-radius: 9999px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); font-size: .74rem; font-weight: 700; color: #d1d5db; white-space: nowrap; }

@@ -191,7 +191,24 @@
   #fixed-tip { position:fixed; background:#070a10; color:#e5e7eb; padding:6px 12px; border-radius:8px; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:400; letter-spacing:0; white-space:nowrap; border:1px solid rgba(255,255,255,0.15); box-shadow:0 8px 24px rgba(0,0,0,0.85); z-index:9999; pointer-events:none; display:none; }
 
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } canvas#heroParticles { display: none; } }
-  @media (max-width: 700px) { #stats-display-area { overflow-x: auto; padding-bottom: 10px; } .player-card { min-width: 640px; } }
+  /* Phones. Each card used to keep a 640px minimum and scroll sideways inside
+     the page, which on a phone meant a squeezed name, badges stacked one per
+     line, and stat tiles cut off at the edge. The card now stacks: player on
+     top at full width, stats beneath as an even row that always fits. */
+  @media (max-width: 700px) {
+    #stats-display-area { overflow-x: visible; }
+    .player-card { min-width: 0; flex-direction: column; align-items: stretch; gap: 12px; padding: 14px; }
+    .player-left { align-items: flex-start; }
+    .player-name { white-space: normal; }
+    /* Clear the TOP 10 tag in the corner, now that the name can use the width. */
+    .player-card.top-player .player-details { padding-right: 52px; }
+    .player-stats-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; width: 100%; }
+    .stat-item { width: auto; padding: 6px 2px 5px; }
+    .stat-label { font-size: 0.52rem; letter-spacing: 0.04em; }
+    .stat-value { font-size: 1.05rem; }
+    /* The totals card carries eight figures: two rows of four. */
+    .total-stats-card .player-stats-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
 
   .badge-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
   .badge-chip { position: relative; display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 9999px; font-family: 'Rajdhani', sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; border: 1px solid; white-space: nowrap; line-height: 1.6; cursor: default; }
