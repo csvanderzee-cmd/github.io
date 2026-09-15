@@ -449,7 +449,6 @@
                     </div>
                 </div>
             </div>
-            <div id="photo-ticker-empty" class="hidden text-center text-gray-600 text-sm py-4">No photos yet — add images to the <code>photos/</code> folder in the repo.</div>
         </div>
         <style>
             /* The strip holds the photo list twice over. Scrolling exactly one
@@ -486,7 +485,6 @@
             var api = 'https://api.github.com/repos/csvanderzee-cmd/github.io/contents/photos';
             var raw = 'https://raw.githubusercontent.com/csvanderzee-cmd/github.io/main/photos/';
             var ticker = document.getElementById('photo-ticker');
-            var empty = document.getElementById('photo-ticker-empty');
             var section = document.getElementById('photo-ticker-section');
             var exts = /\.(jpg|jpeg|png|gif|webp|avif)$/i;
             /* Reduce a photo to a 64-bit average hash: an 8x8 greyscale
@@ -573,7 +571,8 @@
                 .then(function(files) {
                     if (!Array.isArray(files)) { section.style.display = 'none'; return; }
                     var imgs = files.filter(function(f) { return exts.test(f.name); });
-                    if (imgs.length === 0) { ticker.style.display = 'none'; empty.classList.remove('hidden'); return; }
+                    // No photos means no strip at all, rather than a message about the repository.
+                    if (imgs.length === 0) { section.style.display = 'none'; return; }
                     // shuffle
                     for (var i = imgs.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = imgs[i]; imgs[i] = imgs[j]; imgs[j] = tmp; }
 
@@ -611,7 +610,7 @@
                             if (!dupe) kept.push(item);
                         });
 
-                        if (!kept.length) { ticker.style.display = 'none'; empty.classList.remove('hidden'); return; }
+                        if (!kept.length) { section.style.display = 'none'; return; }
 
                         // duplicate for seamless loop
                         kept.concat(kept).forEach(function(item) {
