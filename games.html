@@ -211,16 +211,18 @@
             }));
     }
 
-    /* The two league titles link through to their own section. Smash is left
-       out until that section is announced. */
-    const LEAGUE_LINK = {
-        'rocket league': { href: '/rocket-league/promise-league.html', text: 'See the Rocket League league' }
-    };
+    /* Games the district competes in link through to their own section.
+       Matched on part of the title, so "Super Smash Bros. Ultimate" still finds
+       its link if the sheet shortens it or picks up a stray space. */
+    const LEAGUE_LINKS = [
+        { match: /rocket\s*league/i, href: '/rocket-league/promise-league.html', text: 'Rocket League standings &amp; schedule' },
+        { match: /smash/i,           href: '/smash/tournament.html',             text: 'Smash Bros. tournament' }
+    ];
 
     function cardHtml(g) {
         const noDescriptors = !g.content || /^none$/i.test(g.content);
         const costCls = /purchase/i.test(g.cost) ? 'cost-purchase' : /free/i.test(g.cost) ? 'cost-free' : '';
-        const league = LEAGUE_LINK[g.title.toLowerCase()];
+        const league = LEAGUE_LINKS.find(l => l.match.test(g.title));
         const [ratingMain, ...ratingRest] = g.rating.split(/\s+/);
 
         return `
@@ -249,7 +251,7 @@
 
                 ${g.notes ? `<p class="mt-5 text-sm text-gray-300 bg-white/5 border border-white/10 rounded-lg px-3 py-2">${esc(g.notes)}</p>` : ''}
             </div>
-            ${league ? `<a href="${league.href}" class="block px-6 py-3 border-t border-white/10 text-sm font-bold text-esports-blue-text hover:text-esports-yellow-text hover:bg-white/5 transition-colors no-underline">${esc(league.text)} →</a>` : ''}
+            ${league ? `<a href="${league.href}" class="block px-6 py-3 border-t border-white/10 text-sm font-bold text-esports-blue-text hover:text-esports-yellow-text hover:bg-white/5 transition-colors no-underline">${league.text} →</a>` : ''}
         </article>`;
     }
 
