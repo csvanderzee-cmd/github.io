@@ -21,6 +21,20 @@
 (function (root) {
   'use strict';
 
+  /* ---- visit counting: Cloudflare Web Analytics ------------------------------
+     No cookies, no personal data. Loaded from here because every page loads
+     this file, so new pages are counted automatically. Only on the real domain,
+     so local testing does not inflate the numbers. Dashboard: Cloudflare →
+     Analytics & Logs → Web Analytics. */
+  if (/(^|\.)psdesports\.com$/i.test(location.hostname) &&
+      !document.querySelector('script[src*="cloudflareinsights.com"]')) {
+    var beacon = document.createElement('script');
+    beacon.defer = true;
+    beacon.src = 'https://static.cloudflareinsights.com/beacon.min.js';
+    beacon.setAttribute('data-cf-beacon', '{"token": "4e3719cfa28547039e276aad9dbd63e9"}');
+    document.head.appendChild(beacon);
+  }
+
   /* ---- open registration ---------------------------------------------------
 
      A time-limited call to action, so it lives here rather than in SECTIONS:
