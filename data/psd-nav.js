@@ -134,7 +134,8 @@
   /* Links that belong to the whole site rather than any one title. */
   var SITEWIDE = [
     { text: '🏅 Champions', href: '/champions.html', cls: 'pill-champs' },
-    { text: '📰 In the News', href: '/media.html' }
+    { text: '📰 In the News', href: '/media.html' },
+    { text: '🎮 Games', href: '/games.html' }
   ];
 
   /* Open registration gets the centre of the bar to itself, apart from the
@@ -226,11 +227,13 @@
     '#psd-nav-drawer .drawer-title{font-size:.72rem;letter-spacing:.16em;color:#e5e7eb;padding:.6rem .75rem .2rem;margin-top:.6rem;',
       'border-top:1px solid rgba(255,255,255,.07);}',
     '#psd-nav-drawer .drawer-indent{padding-left:1.5rem;}',
-    /* The full bar measures about 955px with the registration pill in it, so the
-       drawer takes over below 1000 rather than letting the last pill slide off
-       the edge. Re-measure if a pill or a section is added: the bar only gets
-       wider, and this number is the one that has to move with it. */
-    '@media(max-width:1000px){#psd-nav .nav-links,#psd-nav .nav-right,#psd-nav .nav-promo{display:none;}#psd-nav .nav-hamburger{display:flex;}}',
+    /* The full bar fits down to 1065px with the registration pill and the three
+       sitewide pills (Champions, In the News, Games) in it — measured by
+       narrowing the bar until the last pill ran past the edge. The drawer takes
+       over below 1100, which leaves room for a Windows scrollbar. Re-measure if
+       a pill or a section is added: the bar only gets wider, and this number is
+       the one that has to move with it. */
+    '@media(max-width:1100px){#psd-nav .nav-links,#psd-nav .nav-right,#psd-nav .nav-promo{display:none;}#psd-nav .nav-hamburger{display:flex;}}',
     '@media print{#psd-nav,#psd-nav-drawer{display:none!important;}}'
   ].join('');
 

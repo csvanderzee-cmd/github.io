@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#0B0E14">
+    <!-- Link preview. Pasted into Gmail, Google Classroom or a newsletter,
+         a page without these renders as a bare URL with no title or image. -->
+    <link rel="canonical" href="https://psdesports.com/games.html">
+    <meta name="description" content="Every game approved for Palmdale School District esports, with its ESRB rating, content descriptors, platform, player count and grade levels.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="PSD Esports">
+    <meta property="og:title" content="Approved Games">
+    <meta property="og:description" content="Every game approved for Palmdale School District esports, with its ESRB rating, content descriptors, platform, player count and grade levels.">
+    <meta property="og:url" content="https://psdesports.com/games.html">
+    <meta property="og:image" content="https://psdesports.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="PSD Esports, Palmdale School District">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>Approved Games | PSD Esports</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: { esports: {
+                    dark: '#0B0E14', card: '#151B26',
+                    yellow: '#FDB913', 'yellow-text': '#FFD166',
+                    red: '#C8102E', 'red-text': '#FF6B6B',
+                    blue: '#005696', 'blue-text': '#4DABF7'
+                } },
+                fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Rajdhani', 'sans-serif'] }
+            } }
+        }
+    </script>
+    <style>
+        .clip-slant { clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); }
+
+        /* Grade filter: a segmented control rather than a dropdown — two real
+           choices plus "all" are quicker to read as buttons. */
+        .seg { display: inline-flex; padding: 4px; gap: 4px; border-radius: 9999px; background: #151B26; border: 1px solid rgba(255,255,255,.08); }
+        .seg button {
+            font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase;
+            padding: .5rem 1.1rem; border-radius: 9999px; color: #9ca3af; background: transparent; border: 0; cursor: pointer;
+            transition: background .18s ease, color .18s ease;
+        }
+        .seg button:hover { color: #fff; }
+        .seg button[aria-pressed="true"] { background: #FDB913; color: #0B0E14; }
+        .seg button:focus-visible { outline: 2px solid #FFD166; outline-offset: 2px; }
+        /* A label broken over two lines reads as two buttons. On a phone the
+           three share the width equally and tighten up instead of wrapping. */
+        .seg button { white-space: nowrap; }
+        @media (max-width: 480px) {
+            .seg { display: flex; width: 100%; }
+            .seg button { flex: 1; padding: .55rem .4rem; font-size: .7rem; letter-spacing: .06em; }
+        }
+
+        .game-card { display: flex; flex-direction: column; background: #151B26; border: 1px solid rgba(255,255,255,.08); border-radius: 1rem; overflow: hidden; }
+
+        /* A rating reads as text, deliberately. The ESRB's rating icons are its
+           trademarks; the letters themselves are plain information. */
+        .rating {
+            flex-shrink: 0; min-width: 3.25rem; padding: .35rem .5rem; border-radius: .5rem; text-align: center;
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 1.15rem; line-height: 1;
+            background: #fff; color: #0B0E14;
+        }
+        .rating small { display: block; font-size: .5rem; letter-spacing: .12em; font-weight: 700; margin-top: 2px; color: #4b5563; }
+
+        .fact dt { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: #6b7280; }
+        .fact dd { margin: .15rem 0 0; font-size: .88rem; color: #e5e7eb; }
+
+        .grade-chip { display: inline-flex; align-items: center; gap: .35rem; padding: .25rem .6rem; border-radius: 9999px; font-size: .72rem; font-weight: 700; border: 1px solid; }
+        .grade-yes { color: #4ade80; border-color: rgba(74,222,128,.35); background: rgba(74,222,128,.08); }
+        .grade-no  { color: #6b7280; border-color: rgba(255,255,255,.08); background: transparent; text-decoration: line-through; }
+
+        .cost-free     { color: #4ade80; }
+        .cost-purchase { color: #FFD166; }
+    </style>
+</head>
+
+<body class="bg-esports-dark text-gray-100 font-sans antialiased">
+
+<script src="/data/psd-nav.js"></script>
+<script>PSD_NAV.init();</script>
+
+<header role="banner" class="relative py-16 border-b border-white/10 overflow-hidden">
+    <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-esports-blue/15 via-transparent to-esports-yellow/10"></div>
+    <div class="relative max-w-5xl mx-auto px-4 z-10">
+        <div class="inline-block px-4 py-1 bg-esports-yellow text-black font-display font-black uppercase tracking-widest text-xs clip-slant mb-5">
+            Approved for PSD Esports
+        </div>
+        <h1 class="font-display font-black text-5xl md:text-7xl uppercase leading-[0.85] mb-4 italic">
+            Approved <span class="text-transparent bg-clip-text bg-gradient-to-r from-esports-blue-text via-esports-yellow-text to-esports-red-text">Games</span>
+        </h1>
+        <p class="text-gray-400 max-w-2xl leading-relaxed">
+            Every game on this list has been reviewed and approved for use in Palmdale School District esports by the
+            district's <span class="text-gray-200 font-semibold">EdTech and IT joint committee</span>. Each one shows its
+            ESRB rating and content descriptors as listed by the committee, the grade levels it is approved for, and what
+            it takes to play.
+        </p>
+    </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-4 py-12">
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div class="seg" role="group" aria-label="Filter by grade level">
+            <button type="button" data-grade="all" aria-pressed="true">All Games</button>
+            <button type="button" data-grade="k5" aria-pressed="false">5th &amp; Under</button>
+            <button type="button" data-grade="68" aria-pressed="false">Grades 6–8</button>
+        </div>
+        <p id="games-count" class="text-sm text-gray-500" role="status" aria-live="polite">Loading approved games…</p>
+    </div>
+
+    <div id="games-grid" class="grid md:grid-cols-2 gap-6"></div>
+
+    <p class="text-xs text-gray-600 mt-10 leading-relaxed max-w-3xl">
+        The list is maintained by the committee and updates here automatically; a change can take a few minutes to appear.
+        ESRB ratings describe a game's content and suggested age, and are shown so families can see at a glance what each
+        game involves. Questions about a game on this list can go to your school's esports coach.
+    </p>
+
+</main>
+
+<footer class="border-t border-white/10 py-8 text-center text-xs text-gray-600">
+    PSD Esports &middot; Palmdale School District
+</footer>
+
+<script src="/data/leagues.js"></script>
+<script src="/data/psd-data.js"></script>
+<script>
+(function () {
+    'use strict';
+
+    const grid  = document.getElementById('games-grid');
+    const count = document.getElementById('games-count');
+    let games = [];
+
+    /* Sheet text is rendered into HTML, so it is escaped rather than trusted. */
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+        ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+
+    /* Whole CSV -> rows, honouring quotes. Content descriptors contain commas
+       ("Cartoon Violence, Comic Mischief") and a note may one day hold a line
+       break, so this cannot split naively on commas or newlines. */
+    function parseCsv(text) {
+        const rows = []; let row = [], cur = '', q = false;
+        const s = String(text).replace(/\r\n?/g, '\n');
+        for (let i = 0; i < s.length; i++) {
+            const c = s[i];
+            if (q) {
+                if (c === '"') { if (s[i + 1] === '"') { cur += '"'; i++; } else q = false; }
+                else cur += c;
+            } else if (c === '"') q = true;
+            else if (c === ',') { row.push(cur); cur = ''; }
+            else if (c === '\n') { row.push(cur); rows.push(row); row = []; cur = ''; }
+            else cur += c;
+        }
+        if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
+        return rows;
+    }
+
+    /* Columns are found by what their header says, not where they sit, so the
+       committee can reorder or add columns without breaking the page. */
+    const COLUMNS = {
+        title:   h => /^titles?$/.test(h),
+        rating:  h => h.includes('esrb') || h === 'rating',
+        content: h => h.includes('descriptor'),
+        players: h => h.includes('player'),
+        platform:h => h.includes('platform'),
+        k5:      h => h.includes('5th') || h.includes('under'),
+        g68:     h => /6\s*[-–]\s*8/.test(h),
+        cost:    h => h.includes('free') || h.includes('purchase') || h.includes('cost'),
+        approved:h => h.includes('approved'),
+        notes:   h => h.includes('note')
+    };
+
+    /* A ✅ in the sheet is a yes. Anything a person might type for yes counts
+       too, so a coach entering "Y" does not quietly remove a grade level. */
+    const isYes = v => /^(✅|✔️?|☑️?|y|yes|true|x|1)$/i.test(String(v || '').trim());
+
+    function toGames(rows) {
+        const head = (rows[0] || []).map(h => h.trim().toLowerCase().replace(/\s+/g, ' '));
+        const col = {};
+        Object.keys(COLUMNS).forEach(k => { col[k] = head.findIndex(COLUMNS[k]); });
+        const cell = (r, k) => (col[k] >= 0 ? (r[col[k]] || '').trim() : '');
+
+        return rows.slice(1)
+            .filter(r => cell(r, 'title'))
+            /* The approval column is the gate: a game under review can sit in
+               the sheet without appearing here. A sheet with no approval
+               column at all shows everything rather than nothing. */
+            .filter(r => col.approved < 0 || isYes(cell(r, 'approved')))
+            .map(r => ({
+                title:    cell(r, 'title'),
+                rating:   cell(r, 'rating'),
+                content:  cell(r, 'content'),
+                players:  cell(r, 'players'),
+                platform: cell(r, 'platform'),
+                k5:       isYes(cell(r, 'k5')),
+                g68:      isYes(cell(r, 'g68')),
+                cost:     cell(r, 'cost'),
+                notes:    cell(r, 'notes')
+            }));
+    }
+
+    /* The two league titles link through to their own section. Smash is left
+       out until that section is announced. */
+    const LEAGUE_LINK = {
+        'rocket league': { href: '/rocket-league/promise-league.html', text: 'See the Rocket League league' }
+    };
+
+    function cardHtml(g) {
+        const noDescriptors = !g.content || /^none$/i.test(g.content);
+        const costCls = /purchase/i.test(g.cost) ? 'cost-purchase' : /free/i.test(g.cost) ? 'cost-free' : '';
+        const league = LEAGUE_LINK[g.title.toLowerCase()];
+        const [ratingMain, ...ratingRest] = g.rating.split(/\s+/);
+
+        return `
+        <article class="game-card">
+            <div class="p-6 flex-1">
+                <div class="flex items-start gap-4 mb-4">
+                    <div class="rating" title="ESRB rating: ${esc(g.rating)}">${esc(ratingMain || '—')}${ratingRest.length ? ' ' + esc(ratingRest.join(' ')) : ''}<small>ESRB</small></div>
+                    <div class="min-w-0">
+                        <h2 class="font-display font-black text-2xl uppercase text-white leading-tight">${esc(g.title)}</h2>
+                        <p class="text-xs mt-1 ${noDescriptors ? 'text-gray-500' : 'text-gray-400'}">
+                            ${noDescriptors ? 'No content descriptors' : esc(g.content)}
+                        </p>
+                    </div>
+                </div>
+
+                <dl class="grid grid-cols-3 gap-4 mb-5">
+                    <div class="fact"><dt>Platform</dt><dd>${esc(g.platform || '—')}</dd></div>
+                    <div class="fact"><dt>Players</dt><dd>${esc(g.players || '—')}</dd></div>
+                    <div class="fact"><dt>Cost</dt><dd class="${costCls} font-semibold">${esc(g.cost || '—')}</dd></div>
+                </dl>
+
+                <div class="flex flex-wrap gap-2" aria-label="Approved grade levels">
+                    <span class="grade-chip ${g.k5 ? 'grade-yes' : 'grade-no'}">${g.k5 ? '✓' : '✕'} 5th &amp; Under</span>
+                    <span class="grade-chip ${g.g68 ? 'grade-yes' : 'grade-no'}">${g.g68 ? '✓' : '✕'} Grades 6–8</span>
+                </div>
+
+                ${g.notes ? `<p class="mt-5 text-sm text-gray-300 bg-white/5 border border-white/10 rounded-lg px-3 py-2">${esc(g.notes)}</p>` : ''}
+            </div>
+            ${league ? `<a href="${league.href}" class="block px-6 py-3 border-t border-white/10 text-sm font-bold text-esports-blue-text hover:text-esports-yellow-text hover:bg-white/5 transition-colors no-underline">${esc(league.text)} →</a>` : ''}
+        </article>`;
+    }
+
+    function render(grade) {
+        const shown = games.filter(g => grade === 'all' || (grade === 'k5' ? g.k5 : g.g68));
+        grid.innerHTML = shown.length
+            ? shown.map(cardHtml).join('')
+            : `<p class="md:col-span-2 text-center text-gray-500 py-12">No approved games for this grade level yet.</p>`;
+        const label = grade === 'k5' ? ' for 5th grade and under' : grade === '68' ? ' for grades 6–8' : '';
+        count.textContent = `${shown.length} approved game${shown.length === 1 ? '' : 's'}${label}`;
+    }
+
+    document.querySelectorAll('.seg button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+            render(btn.dataset.grade);
+        });
+    });
+
+    const src = PSD.config.approvedGames;
+    PSD.fetchCSV(src.sheet, src.gid)
+        .then(text => {
+            games = toGames(parseCsv(text));
+            render('all');
+        })
+        .catch(err => {
+            console.error('Approved games failed to load:', err);
+            count.textContent = '';
+            grid.innerHTML = `<p class="md:col-span-2 text-center text-gray-400 py-12">The approved games list could not be loaded. Please refresh the page in a moment.</p>`;
+        });
+})();
+</script>
+</body>
+</html>

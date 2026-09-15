@@ -432,6 +432,24 @@
     return !CONFIG.leagues.some(function (lg) { return CONFIG.hasLiveData(lg.id); });
   };
 
+  /* ---- approved games ------------------------------------------------------
+
+     The games the district's EdTech and IT joint committee has approved, kept
+     in a shared sheet that coaches already use. games.html reads its published
+     CSV, so a change to the sheet reaches the site with no code change — a few
+     minutes after the edit, once Google refreshes the published copy.
+
+     Only rows marked "Yes" under Approved? are shown, so a game can sit in the
+     sheet under review without appearing publicly.
+
+     Number of Players must stay formatted as Plain text. Left automatic,
+     Sheets reads "1-6" as a date (January 6) and anything that cannot be a
+     date, such as "1-100+", is lost when the sheet is read as data. */
+  CONFIG.approvedGames = {
+    sheet: '2PACX-1vSAM3h04uQ16YST4kOw_gVz7NRae0-J3OBkowD8BI1I8X6R7JDVwSKDNOYjafYbpOkS7SuWd7a0qv7i',
+    gid:   '0'
+  };
+
   root.PSD_CONFIG = CONFIG;
 
 })(window);
