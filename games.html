@@ -216,7 +216,11 @@
        its link if the sheet shortens it or picks up a stray space. */
     const LEAGUE_LINKS = [
         { match: /rocket\s*league/i, href: '/rocket-league/promise-league.html', text: 'Rocket League standings &amp; schedule' },
-        { match: /smash/i,           href: '/smash/tournament.html',             text: 'Smash Bros. tournament' }
+        { match: /smash/i,           href: '/smash/tournament.html',             text: 'Smash Bros. tournament' },
+        /* Browser games, where the link is the game itself. These open in a new
+           tab so the approved list stays open behind them. */
+        { match: /tetr\.?io/i,       href: 'https://tetr.io/',                   text: 'Play at tetr.io',   external: true },
+        { match: /chess\.com/i,      href: 'https://www.chess.com/',             text: 'Play at chess.com', external: true }
     ];
 
     function cardHtml(g) {
@@ -251,7 +255,7 @@
 
                 ${g.notes ? `<p class="mt-5 text-sm text-gray-300 bg-white/5 border border-white/10 rounded-lg px-3 py-2">${esc(g.notes)}</p>` : ''}
             </div>
-            ${league ? `<a href="${league.href}" class="block px-6 py-3 border-t border-white/10 text-sm font-bold text-esports-blue-text hover:text-esports-yellow-text hover:bg-white/5 transition-colors no-underline">${league.text} →</a>` : ''}
+            ${league ? `<a href="${league.href}"${league.external ? ' target="_blank" rel="noopener noreferrer"' : ''} class="block px-6 py-3 border-t border-white/10 text-sm font-bold text-esports-blue-text hover:text-esports-yellow-text hover:bg-white/5 transition-colors no-underline">${league.text} ${league.external ? '↗<span class="sr-only"> (opens in a new tab)</span>' : '→'}</a>` : ''}
         </article>`;
     }
 
