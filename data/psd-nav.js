@@ -231,7 +231,7 @@
     '#psd-nav .nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}',
     '#psd-nav .nav-hamburger.open span:nth-child(2){opacity:0;}',
     '#psd-nav .nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}',
-    '#psd-nav-drawer{display:none;background:#0d1119;border-bottom:1px solid rgba(255,255,255,.08);padding:.75rem 1.25rem 1rem;}',
+    '#psd-nav-drawer{display:none;position:relative;z-index:999;background:#0d1119;border-bottom:1px solid rgba(255,255,255,.08);padding:.75rem 1.25rem 1rem;}',
     '#psd-nav-drawer.open{display:block;}',
     "#psd-nav-drawer a{display:block;padding:.5rem .75rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;",
       'letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;border-radius:6px;}',
@@ -241,6 +241,22 @@
     '#psd-nav-drawer .drawer-title{font-size:.72rem;letter-spacing:.16em;color:#e5e7eb;padding:.6rem .75rem .2rem;margin-top:.6rem;',
       'border-top:1px solid rgba(255,255,255,.07);}',
     '#psd-nav-drawer .drawer-indent{padding-left:1.5rem;}',
+    /* Each game is a collapsible block, closed except for the one this page is
+       in, and each group's links sit side by side as chips instead of one per row. */
+    '#psd-nav-drawer details{border-top:1px solid rgba(255,255,255,.07);margin-top:.4rem;}',
+    "#psd-nav-drawer summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:.5rem;padding:.75rem .75rem;",
+      "font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:#e5e7eb;border-radius:6px;}",
+    '#psd-nav-drawer summary::-webkit-details-marker{display:none;}',
+    '#psd-nav-drawer summary:hover{background:rgba(255,255,255,.04);}',
+    '#psd-nav-drawer summary .sum-chev{margin-left:auto;font-size:.6rem;opacity:.6;transition:transform .2s;}',
+    '#psd-nav-drawer details[open] summary .sum-chev{transform:rotate(180deg);}',
+    '#psd-nav-drawer details[open] summary{color:var(--sect,#fff);}',
+    '#psd-nav-drawer .drawer-body{padding:0 0 .5rem;}',
+    '#psd-nav-drawer .drawer-chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem;padding:.15rem .75rem .35rem;}',
+    '#psd-nav-drawer .drawer-chips a{display:flex;align-items:center;justify-content:center;text-align:center;padding:.5rem .3rem;font-size:.74rem;letter-spacing:.06em;',
+      'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);line-height:1.15;}',
+    '#psd-nav-drawer .drawer-chips a.active{border-color:var(--grp,#fff);color:#fff;}',
+    '#psd-nav-drawer .drawer-more{border-top:1px solid rgba(255,255,255,.07);margin-top:.4rem;padding-top:.4rem;}',
     /* The full bar fits down to 1065px with the registration pill and the three
        sitewide pills (Champions, In the News, Games) in it — measured by
        narrowing the bar until the last pill ran past the edge. The drawer takes
@@ -343,24 +359,31 @@
         '</div>' +
       '</div>';
 
-    /* The drawer lists every section in full — on a phone there is no hover,
-       and burying the other titles behind a second tap helps nobody. An open
-       sign-up goes straight under Home, so on a phone it is the first real
-       thing in the menu rather than the last. */
+    /* The drawer gives each game a collapsible block. Only the block for the
+       section this page is in starts open, so the menu opens short and the
+       links you most likely want are already showing. An open sign-up goes
+       straight under Home, so on a phone it is the first real thing in the menu. */
     var drawerInner = '<a href="/index.html"' + (isActive('/index.html') ? ' class="active"' : '') + '>Home</a>' +
       (PROMO ? '<a href="' + esc(PROMO.href) + '"' + out(PROMO) + ' class="drawer-register">' +
                  esc(PROMO.text) + '</a>' : '') +
       shown.map(function (s) {
-        return '<div class="drawer-section drawer-title">' + s.icon + ' ' + esc(s.name) + '</div>' +
+        var isCur = current && s.id === current.id;
+        return '<details style="--sect:' + esc(s.accent) + '"' + (isCur ? ' open' : '') + '>' +
+          '<summary><span aria-hidden="true">' + s.icon + '</span>' + esc(s.name) +
+            '<span class="sum-chev" aria-hidden="true">▼</span></summary>' +
+          '<div class="drawer-body">' +
           s.groups.map(function (g) {
             return '<div class="drawer-section">' + esc(g.label) + '</div>' +
+              '<div class="drawer-chips">' +
               g.links.map(function (l) {
-                return '<a href="' + esc(l.href) + '"' + out(l) + ' class="drawer-indent' +
-                       (isActive(l.href) ? ' active' : '') + '">' + esc(l.text) + '</a>';
-              }).join('');
-          }).join('');
+                return '<a href="' + esc(l.href) + '"' + out(l) + ' style="--grp:' + esc(g.accent) + '"' +
+                       (isActive(l.href) ? ' class="active"' : '') + '>' + esc(l.text) + '</a>';
+              }).join('') +
+              '</div>';
+          }).join('') +
+          '</div></details>';
       }).join('') +
-      '<div class="drawer-section drawer-title">More</div>' +
+      '<div class="drawer-more"></div>' +
       SITEWIDE.map(function (l) {
         return '<a href="' + esc(l.href) + '"' + out(l) + (isActive(l.href) ? ' class="active"' : '') + '>' +
                esc(l.text) + '</a>';
