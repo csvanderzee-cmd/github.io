@@ -116,6 +116,23 @@
   .card-tags.dual{gap:.4rem;}
   .card-tags.dual .tag{font-size:.58rem;padding:2px 7px;}
 
+  /* ── RUNNER-UP ── */
+  .runner-up{display:flex;align-items:center;gap:.55rem;padding:.6rem .75rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--bdr);}
+  .ru-medal{font-size:1rem;line-height:1;}
+  .ru-lbl{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:#c0c7d2;white-space:nowrap;}
+  .ru-logo{width:24px;height:24px;border-radius:6px;object-fit:contain;background:rgba(255,255,255,.06);padding:2px;margin-left:auto;flex-shrink:0;}
+  .ru-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.04em;text-transform:uppercase;color:#e5e7eb;line-height:1.1;text-align:right;white-space:nowrap;}
+
+  /* ── UPCOMING (title not yet decided) ── */
+  .champ-card.upcoming{border-style:dashed;border-color:rgba(255,255,255,.16);box-shadow:none;}
+  .champ-card.upcoming::before{background:linear-gradient(90deg,rgba(255,255,255,.12),rgba(255,255,255,.3),rgba(255,255,255,.12));}
+  .tbd-list{display:flex;flex-direction:column;gap:.45rem;}
+  .tbd-row{display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding:.6rem .75rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--bdr);}
+  .tbd-div{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.05em;text-transform:uppercase;color:#e5e7eb;}
+  .tbd-val{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:#6b7280;white-space:nowrap;}
+  .card-footer.upcoming-footer .card-footer-lbl{color:var(--muted);}
+  .season-pill.current{background:rgba(255,215,0,.1);color:var(--yellow-t);border:1px solid rgba(255,215,0,.3);}
+
   /* ── EMPTY STATE ── */
   .empty-season{padding:2rem;text-align:center;background:rgba(255,255,255,.02);border:1px dashed var(--bdr);border-radius:12px;font-family:'Rajdhani',sans-serif;font-size:.88rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
 
@@ -132,6 +149,7 @@
   .tl-divider{flex:1;height:1px;background:linear-gradient(to right,rgba(255,255,255,.1),transparent);}
 
   @media(max-width:600px){.champ-grid{grid-template-columns:1fr;}}
+  @media(max-width:420px){.runner-up{flex-wrap:wrap;row-gap:.4rem;}.ru-lbl{flex:1 1 calc(100% - 2.4rem);}.ru-logo{margin-left:0;}.ru-name{text-align:left;}}
   @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;}canvas{display:none;}}
 </style>
 </head>
@@ -151,7 +169,7 @@
     <div class="hero-trophy" aria-hidden="true">🏆</div>
     <div class="hero-badge">PSD Esports · All Seasons</div>
     <h1>Hall of<br>Champions</h1>
-    <p class="hero-sub">Every school that has claimed a PSD Esports championship title.</p>
+    <p class="hero-sub">Every PSD Esports champion and runner-up, season by season.</p>
   </div>
 </header>
 
@@ -160,6 +178,42 @@
 
   <!-- ── TIMELINE ── -->
     <div class="timeline">
+
+      <!-- 2026–27 · in progress -->
+      <div class="tl-entry">
+        <div class="tl-node">
+          <div class="tl-dot"></div>
+          <h2 class="tl-season-label">2026–27</h2>
+          <span class="season-pill current">In Progress</span>
+          <div class="tl-divider"></div>
+        </div>
+        <div class="champ-grid">
+          <div class="champ-card upcoming">
+            <div class="card-inner">
+              <div class="card-tags">
+                <div class="card-tags-row"><span class="tag game-rl">🚀 Rocket League</span></div>
+              </div>
+              <div class="tbd-list">
+                <div class="tbd-row"><span class="tbd-div">Late Release</span><span class="tbd-val">To be decided</span></div>
+                <div class="tbd-row"><span class="tbd-div">Early Release</span><span class="tbd-val">To be decided</span></div>
+              </div>
+            </div>
+            <div class="card-footer upcoming-footer"><span aria-hidden="true">📅</span><span class="card-footer-lbl">Finals · Sat, Jan 16, 2027</span></div>
+          </div>
+          <div class="champ-card upcoming">
+            <div class="card-inner">
+              <div class="card-tags">
+                <div class="card-tags-row"><span class="tag game-smash">⚔️ Smash Bros</span></div>
+              </div>
+              <div class="tbd-list">
+                <div class="tbd-row"><span class="tbd-div">Grade 5 &amp; Under</span><span class="tbd-val">To be decided</span></div>
+                <div class="tbd-row"><span class="tbd-div">Grades 6–8</span><span class="tbd-val">To be decided</span></div>
+              </div>
+            </div>
+            <div class="card-footer upcoming-footer"><span aria-hidden="true">📅</span><span class="card-footer-lbl">Tournament · Sat, Nov 14, 2026</span></div>
+          </div>
+        </div>
+      </div>
 
       <!-- 2025–26 · Spring -->
       <div class="tl-entry">
@@ -181,6 +235,7 @@
                 <div class="school-logo-fb" style="display:none">DR</div>
                 <span class="school-name">Desert Rose</span>
               </div>
+              <div class="runner-up"><span class="ru-medal" aria-hidden="true">🥈</span><span class="ru-lbl">Runner-up</span><img src="https://3.files.edl.io/5b29/24/01/30/203127-760b8684-7411-463d-84d0-38653baa5249.png" alt="" class="ru-logo" onerror="this.remove()"><span class="ru-name">Innovations</span></div>
             </div>
             <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Champions</span></div>
           </div>
@@ -195,6 +250,7 @@
                 <div class="school-logo-fb" style="display:none">SH</div>
                 <span class="school-name">Shadow Hills</span>
               </div>
+              <div class="runner-up"><span class="ru-medal" aria-hidden="true">🥈</span><span class="ru-lbl">Runner-up</span><img src="https://3.files.edl.io/8dc4/24/01/30/203122-5a3b347a-0d9f-434d-afcb-d500e246f4e3.png" alt="" class="ru-logo" onerror="this.remove()"><span class="ru-name">David G. Millen</span></div>
             </div>
             <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Champions</span></div>
           </div>
@@ -221,6 +277,7 @@
                 <div class="school-logo-fb" style="display:none">CAC</div>
                 <span class="school-name">Cactus</span>
               </div>
+              <div class="runner-up"><span class="ru-medal" aria-hidden="true">🥈</span><span class="ru-lbl">Runner-up</span><img src="https://3.files.edl.io/78d0/24/11/12/173918-dbf6ddaa-bf7b-408d-aa49-db4cdecdc9bb.png" alt="" class="ru-logo" onerror="this.remove()"><span class="ru-name">Manzanita</span></div>
             </div>
             <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Champions</span></div>
           </div>
@@ -235,6 +292,7 @@
                 <div class="school-logo-fb" style="display:none">DR</div>
                 <span class="school-name">Desert Rose</span>
               </div>
+              <div class="runner-up"><span class="ru-medal" aria-hidden="true">🥈</span><span class="ru-lbl">Runner-up</span><img src="https://3.files.edl.io/5b29/24/01/30/203127-760b8684-7411-463d-84d0-38653baa5249.png" alt="" class="ru-logo" onerror="this.remove()"><span class="ru-name">Innovations</span></div>
             </div>
             <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Champions</span></div>
           </div>
@@ -250,6 +308,7 @@
                 <div class="school-logo-fb" style="display:none">SGE</div>
                 <span class="school-name">Sage</span>
               </div>
+              <div class="runner-up"><span class="ru-medal" aria-hidden="true">🥈</span><span class="ru-lbl">Runner-up ×2</span><img src="https://3.files.edl.io/88eb/24/01/30/203136-53ac6114-93b7-46a0-8fae-f78daf6287de.png" alt="" class="ru-logo" onerror="this.remove()"><span class="ru-name">Shadow Hills</span></div>
             </div>
             <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Dual Champions</span></div>
           </div>
@@ -276,6 +335,7 @@
                 <div class="school-logo-fb" style="display:none">DGM</div>
                 <span class="school-name">David G. Millen</span>
               </div>
+              <div class="runner-up"><span class="ru-medal" aria-hidden="true">🥈</span><span class="ru-lbl">Runner-up</span><img src="https://3.files.edl.io/88eb/24/01/30/203136-53ac6114-93b7-46a0-8fae-f78daf6287de.png" alt="" class="ru-logo" onerror="this.remove()"><span class="ru-name">Shadow Hills</span></div>
             </div>
             <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Champions</span></div>
           </div>
