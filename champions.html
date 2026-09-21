@@ -123,6 +123,38 @@
   .ru-logo{width:24px;height:24px;border-radius:6px;object-fit:contain;background:rgba(255,255,255,.06);padding:2px;margin-left:auto;flex-shrink:0;}
   .ru-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.04em;text-transform:uppercase;color:#e5e7eb;line-height:1.1;text-align:right;white-space:nowrap;}
 
+  /* ── TROPHY CASE ── */
+  .trophy-case{margin-bottom:3.5rem;}
+  .tc-head{margin-bottom:1.1rem;}
+  .tc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.75rem;}
+  .tc-tile{display:flex;align-items:center;gap:.8rem;padding:.8rem 1rem;background:var(--card);border:1px solid var(--bdr2);border-radius:12px;}
+  .tc-tile.tc-top{border-color:rgba(255,215,0,.35);box-shadow:0 0 0 1px rgba(255,215,0,.12),0 0 28px rgba(255,215,0,.07);}
+  .tc-rank{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.8rem;color:#6b7280;width:1.1rem;text-align:center;flex-shrink:0;}
+  .tc-tile.tc-top .tc-rank{color:var(--gold);}
+  .tc-logo{width:38px;height:38px;border-radius:8px;object-fit:contain;background:rgba(255,255,255,.06);padding:3px;flex-shrink:0;}
+  .tc-body{min-width:0;flex:1;}
+  .tc-name{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase;color:#fff;line-height:1.1;}
+  .tc-count{display:flex;align-items:center;gap:.6rem;margin-top:.25rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+  .tc-count b{font-size:.95rem;color:#fff;margin-left:.15rem;}
+  .tc-count .tc-gold b{color:var(--gold);}
+  @media(max-width:600px){
+    .tc-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:.5rem;}
+    .tc-tile{padding:.6rem .6rem;gap:.45rem;}
+    .tc-rank{width:.7rem;font-size:.7rem;}
+    .tc-logo{width:30px;height:30px;padding:2px;}
+    .tc-name{font-size:.88rem;}
+    .tc-count{gap:.45rem;font-size:.66rem;}
+    .tc-count b{font-size:.85rem;}
+  }
+
+  /* ── STREAK / RIVALRY BADGES ── */
+  .card-badges{display:flex;flex-wrap:wrap;gap:.35rem;margin:-.25rem 0 .75rem;}
+  .feat{display:inline-flex;align-items:center;gap:.3rem;padding:3px 10px;border-radius:9999px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;border:1px solid;cursor:default;}
+  .feat.streak{background:rgba(255,215,0,.1);color:var(--yellow-t);border-color:rgba(255,215,0,.35);}
+  .feat.dynasty{background:linear-gradient(90deg,rgba(255,215,0,.22),rgba(255,215,0,.08));color:var(--gold);border-color:rgba(255,215,0,.55);}
+  .feat.revenge{background:rgba(239,68,68,.12);color:#fca5a5;border-color:rgba(239,68,68,.4);}
+  .feat.rematch{background:rgba(167,139,250,.12);color:#c4b5fd;border-color:rgba(167,139,250,.38);}
+
   /* ── UPCOMING (title not yet decided) ── */
   .champ-card.upcoming{border-style:dashed;border-color:rgba(255,255,255,.16);box-shadow:none;}
   .champ-card.upcoming::before{background:linear-gradient(90deg,rgba(255,255,255,.12),rgba(255,255,255,.3),rgba(255,255,255,.12));}
@@ -175,6 +207,15 @@
 
 <!-- ── CONTENT ── -->
 <div class="page">
+
+  <!-- ── TROPHY CASE ── filled in by the script at the bottom, counted from the cards below. -->
+  <section class="trophy-case" id="trophy-case" aria-labelledby="tc-heading" hidden>
+    <div class="tl-node tc-head">
+      <h2 class="tl-season-label" id="tc-heading">Trophy Case</h2>
+      <div class="tl-divider"></div>
+    </div>
+    <div class="tc-grid" id="tc-grid"></div>
+  </section>
 
   <!-- ── TIMELINE ── -->
     <div class="timeline">
@@ -348,6 +389,100 @@
 </div><!-- /.page -->
 
 <script>
+/* Trophy case and streak/rivalry badges, both read from the cards above, so
+   adding a season's cards is the only edit a new result needs.
+   An "event" is league + game (Jr. Promise Rocket League, Promise Smash...).
+   A card with two game tags (a sweep) counts as two events. */
+(function () {
+  var GAME = { rl: 'Rocket League', smash: 'Smash Bros' };
+  var seasons = Array.prototype.slice.call(document.querySelectorAll('.timeline .tl-entry')).reverse();
+  var results = [];   // chronological: { season, event, eventName, w, r, card }
+  var logos = {};
+
+  seasons.forEach(function (entry) {
+    var season = entry.querySelector('.tl-season-label').textContent.trim().replace(/\s*·\s*/, ' ');
+    entry.querySelectorAll('.champ-card:not(.upcoming)').forEach(function (card) {
+      var w = card.querySelector('.school-name'), rEl = card.querySelector('.ru-name');
+      if (!w) return;
+      w = w.textContent.trim();
+      var r = rEl ? rEl.textContent.trim() : null;
+      var logo = card.querySelector('.school-logo'), rLogo = card.querySelector('.ru-logo');
+      if (logo && !logos[w]) logos[w] = logo.src;
+      if (r && rLogo && !logos[r]) logos[r] = rLogo.src;
+      var league = card.classList.contains('jrpl') ? 'jrpl' : 'pl';
+      var leagueName = card.querySelector('.tag[class*="league-"]').textContent.trim();
+      card.querySelectorAll('.tag[class*="game-"]').forEach(function (g) {
+        var game = g.classList.contains('game-smash') ? 'smash' : 'rl';
+        results.push({ season: season, event: league + '|' + game,
+                       eventName: leagueName + ' ' + GAME[game], w: w, r: r, card: card });
+      });
+    });
+  });
+
+  /* ---- trophy case ---- */
+  var tally = {};
+  function row(s) { return tally[s] || (tally[s] = { name: s, titles: 0, ru: 0 }); }
+  results.forEach(function (x) { row(x.w).titles++; if (x.r) row(x.r).ru++; });
+  var list = Object.keys(tally).map(function (k) { return tally[k]; }).sort(function (a, b) {
+    return b.titles - a.titles || b.ru - a.ru || a.name.localeCompare(b.name);
+  });
+  var grid = document.getElementById('tc-grid');
+  if (grid && list.length) {
+    var rank = 0, prev = null;
+    grid.innerHTML = list.map(function (s, i) {
+      if (!prev || prev.titles !== s.titles || prev.ru !== s.ru) rank = i + 1;
+      prev = s;
+      var top = s.titles > 0 && s.titles === list[0].titles;
+      return '<div class="tc-tile' + (top ? ' tc-top' : '') + '">' +
+        '<span class="tc-rank">' + rank + '</span>' +
+        (logos[s.name] ? '<img class="tc-logo" src="' + logos[s.name] + '" alt="" onerror="this.remove()">' : '') +
+        '<div class="tc-body"><div class="tc-name">' + s.name + '</div>' +
+          '<div class="tc-count">' +
+            '<span class="tc-gold" title="Championships">🏆<b>' + s.titles + '</b></span>' +
+            '<span title="Runner-up finishes">🥈<b>' + s.ru + '</b></span>' +
+          '</div></div></div>';
+    }).join('');
+    document.getElementById('trophy-case').hidden = false;
+  }
+
+  /* ---- badges ---- */
+  var lastWinner = {}, streak = {}, meetings = {};
+  var badges = new Map();   // card -> [{cls, text, title}]
+  function add(card, b) {
+    var arr = badges.get(card) || [];
+    if (!arr.some(function (x) { return x.text === b.text; })) arr.push(b);
+    badges.set(card, arr);
+  }
+  results.forEach(function (x) {
+    // Streak: won this event the last time it was played too.
+    streak[x.event] = lastWinner[x.event] === x.w ? streak[x.event] + 1 : 1;
+    lastWinner[x.event] = x.w;
+    var n = streak[x.event];
+    if (n === 2) add(x.card, { cls: 'streak', text: '🔥 Back-to-back', title: x.w + ' won the ' + x.eventName + ' title two seasons running' });
+    if (n === 3) add(x.card, { cls: 'dynasty', text: '👑 Three-peat', title: x.w + ' won the ' + x.eventName + ' title three seasons running' });
+    if (n >= 4) add(x.card, { cls: 'dynasty', text: '👑 Dynasty · ' + n + ' straight', title: x.w + ' has won the ' + x.eventName + ' title ' + n + ' seasons running' });
+
+    // Rivalry: these two schools met in this event's final before.
+    if (x.r) {
+      var key = x.event + '|' + [x.w, x.r].sort().join('|');
+      var before = meetings[key];
+      if (before) {
+        if (before.w === x.r) add(x.card, { cls: 'revenge', text: '⚔️ Revenge', title: 'Lost the ' + before.season + ' ' + x.eventName + ' final to ' + x.r + ', then beat them for this title' });
+        else add(x.card, { cls: 'rematch', text: '🔁 Rematch', title: 'Beat ' + x.r + ' in the ' + before.season + ' ' + x.eventName + ' final too' });
+      }
+      meetings[key] = { w: x.w, season: x.season };
+    }
+  });
+  badges.forEach(function (arr, card) {
+    var box = document.createElement('div');
+    box.className = 'card-badges';
+    box.innerHTML = arr.map(function (b) {
+      return '<span class="feat ' + b.cls + '" title="' + b.title + '">' + b.text + '</span>';
+    }).join('');
+    var school = card.querySelector('.card-school');
+    school.parentNode.insertBefore(box, school.nextSibling);
+  });
+})();
 
 function initParticles() {
   const c = document.getElementById('heroParticles'); if (!c) return;
