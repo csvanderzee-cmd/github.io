@@ -590,6 +590,14 @@ function splitCsvLine(line) {
   return out;
 }
 
+// The sheet says "Win" / "Lose"; everything below works in 'W' / 'L'.
+function normalizeResult(v) {
+  const r = (v || '').trim().toUpperCase();
+  if (/^(W|WIN|WINS|WON)$/.test(r)) return 'W';
+  if (/^(L|LOSE|LOSS|LOST)$/.test(r)) return 'L';
+  return (v || '').trim();
+}
+
 function parseCSV(text) {
   const allRows = text.split(/\r?\n/);
   if (allRows.length < 2) return [];
@@ -607,6 +615,7 @@ function parseCSV(text) {
     .map(rowArr => {
       const obj = {};
       headers.forEach((header, i) => { obj[header] = rowArr[i] ? rowArr[i].trim() : ''; });
+      obj['Win/Lose'] = normalizeResult(obj['Win/Lose']);
       obj['Week'] = sheetWeek;
       return obj;
     });
