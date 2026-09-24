@@ -1228,11 +1228,17 @@
                (s === 'blue' ? 'BLUE' : 'ORANGE') + '</span>';
       }
 
-      function nameLine(school, main, right, side) {
+      function nameLine(school, main, right, side, unit) {
         return '<div class="flex items-center gap-3">' + logoHtml(school) +
           '<div class="min-w-0"><div class="font-display font-black text-xl uppercase text-white leading-tight">' + main + '</div>' +
           '<div class="text-[11px] uppercase tracking-widest text-gray-500 font-bold">' + esc(school || '') + sideChip(side) + '</div></div>' +
-          (right ? '<div class="ml-auto text-right font-display font-black text-2xl text-white">' + right + '</div>' : '') +
+          (right
+            ? '<div class="ml-auto text-right">' +
+                '<div class="font-display font-black text-2xl text-white leading-none">' + right + '</div>' +
+                // The big number means nothing on its own: say what it counts.
+                (unit ? '<div class="text-[9px] uppercase tracking-widest text-gray-500 font-bold mt-1">' + esc(unit) + '</div>' : '') +
+              '</div>'
+            : '') +
         '</div>';
       }
 
@@ -1248,7 +1254,7 @@
         var star = players.slice().sort(function (a, b) { return b.score - a.score; })[0];
         if (star) {
           cards.push(card('Star of the Week', '#FFD166', '⭐',
-            nameLine(star.school, esc(star.name), star.score.toLocaleString(), star.side),
+            nameLine(star.school, esc(star.name), star.score.toLocaleString(), star.side, 'Points'),
             star.goals + ' goals &bull; ' + star.assists + ' assists &bull; ' + star.saves + ' saves',
             foot('Highest single-game score')));
         }
@@ -1264,7 +1270,7 @@
         var scorer = totals.slice().sort(function (a, b) { return b.goals - a.goals; })[0];
         if (scorer && scorer.goals > 0) {
           cards.push(card('Top Scorer', '#FF6B6B', '🥅',
-            nameLine(scorer.school, esc(scorer.name), scorer.goals, scorer.side),
+            nameLine(scorer.school, esc(scorer.name), scorer.goals, scorer.side, 'Goals'),
             scorer.goals + ' goals in ' + scorer.games + (scorer.games === 1 ? ' game' : ' games'),
             foot('Most goals this week')));
         }
@@ -1272,7 +1278,7 @@
         var keeper = totals.slice().sort(function (a, b) { return b.saves - a.saves; })[0];
         if (keeper && keeper.saves > 0) {
           cards.push(card('Brick Wall', '#4ADE80', '🧱',
-            nameLine(keeper.school, esc(keeper.name), keeper.saves, keeper.side),
+            nameLine(keeper.school, esc(keeper.name), keeper.saves, keeper.side, 'Saves'),
             keeper.saves + ' saves &bull; ' + keeper.assists + ' assists',
             foot('Most saves this week')));
         }
