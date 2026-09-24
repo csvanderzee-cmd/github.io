@@ -304,6 +304,14 @@
                             </div>
                         </div>
 
+                        <!-- Live rail: cycles through the division leaders and the
+                             next match day once the season has results. Hidden
+                             until then, so the card never shows an empty row. -->
+                        <div id="glance-live" class="mb-4 h-[52px] relative" hidden>
+                            <div id="glance-live-slide" class="absolute inset-0 flex items-center gap-3 bg-white/[0.03] border border-white/10 rounded-lg px-4 transition-opacity duration-500">
+                            </div>
+                        </div>
+
                         <div class="pt-3 border-t border-white/20">
                             <div class="flex items-center justify-center gap-2 text-xs text-gray-500 uppercase tracking-wider font-bold">
                                 <i data-lucide="map-pin" class="w-3 h-3" aria-hidden="true"></i>
@@ -1142,12 +1150,19 @@
             if (xn > yn) aWins++; else if (yn > xn) bWins++;
           });
           if (forfeit || !games.length || (aWins < 2 && bWins < 2)) continue;
+          var aGoals = 0, bGoals = 0;
+          games.forEach(function (g) {
+            var p = g.split('-');
+            aGoals += parseInt(p[0], 10) || 0;
+            bGoals += parseInt(p[1], 10) || 0;
+          });
           out.push({
             winner: aWins > bWins ? one : two,
             loser:  aWins > bWins ? two : one,
             wins:   Math.max(aWins, bWins),
             losses: Math.min(aWins, bWins),
-            games: games, goals: goals
+            games: games, goals: goals,
+            a: one, b: two, aGoals: aGoals, bGoals: bGoals
           });
         }
         return out;
@@ -1242,26 +1257,115 @@
         document.getElementById('spotlight').hidden = false;
       }
 
-      var players = [], series = [], weekShown = 0;
-      Promise.all(LEAGUES.map(function (meta) {
+      /* ---- the floating card's live rail ----
+         Division leaders, worked out from every week played so far, plus the
+         next match day. It cycles so the card has something to say all season
+         instead of repeating the fixtures printed above it. */
+      function leaderOf(allSeries) {
+        var t = {};
+        var row = function (s) { return t[s] || (t[s] = { name: s, w: 0, l: 0, gf: 0, ga: 0 }); };
+        allSeries.forEach(function (s) {
+          row(s.winner).w++; row(s.loser).l++;
+          row(s.a).gf += s.aGoals; row(s.a).ga += s.bGoals;
+          row(s.b).gf += s.bGoals; row(s.b).ga += s.aGoals;
+        });
+        return Object.keys(t).map(function (k) { return t[k]; }).sort(function (x, y) {
+          var px = x.w + x.l ? x.w / (x.w + x.l) : 0, py = y.w + y.l ? y.w / (y.w + y.l) : 0;
+          return py - px || (y.gf - y.ga) - (x.gf - x.ga) || y.w - x.w;
+        })[0];
+      }
+
+      function nextMatchDay() {
+        var now = new Date(); now.setHours(0, 0, 0, 0);
+        var best = null;
+        LEAGUES.forEach(function (meta) {
+          var lg = PSD.config.league(meta.id);
+          lg.weeks.forEach(function (w) {
+            var d = PSD.localDate(w.startDate);
+            if (d >= now && (!best || d < best.date)) {
+              best = { date: d, week: w.week, label: meta.label, time: lg.matchTimeLabel, color: meta.color };
+            }
+          });
+        });
+        return best;
+      }
+
+      function startRail(slides) {
+        if (!slides.length) return;
+        var wrap = document.getElementById('glance-live'),
+            slide = document.getElementById('glance-live-slide');
+        if (!wrap || !slide) return;
+        wrap.hidden = false;
+        var i = 0;
+        var paint = function () {
+          var s = slides[i % slides.length];
+          slide.innerHTML =
+            '<span class="text-lg" aria-hidden="true">' + s.icon + '</span>' +
+            '<div class="min-w-0">' +
+              '<div class="text-[9px] uppercase tracking-[0.2em] font-bold" style="color:' + esc(s.color) + '">' + esc(s.tag) + '</div>' +
+              '<div class="font-display font-black uppercase text-white text-base leading-tight truncate">' + s.text + '</div>' +
+            '</div>' +
+            (s.right ? '<div class="ml-auto font-display font-black text-white text-lg whitespace-nowrap">' + esc(s.right) + '</div>' : '');
+        };
+        paint();
+        if (slides.length < 2) return;
+        setInterval(function () {
+          slide.style.opacity = '0';
+          setTimeout(function () { i++; paint(); slide.style.opacity = '1'; }, 500);
+        }, 6000);
+      }
+
+      var players = [], series = [], weekShown = 0, leaderSlide = [];
+      Promise.all(LEAGUES.map(function (meta, order) {
         var lg = PSD.config.league(meta.id);
+        var played = lg.weeks.filter(function (w) { return PSD.localDate(w.startDate) <= new Date(); });
+
         return Promise.all([
           newestWeek(lg, function (w) { return PSD.fetchCSV(lg.statsSheet, w.statsGid); },
                      function (csv) { return statRows(csv, meta.id); }),
-          newestWeek(lg, function (w) { return PSD.fetchCSV(lg.matchSheet, w.gid); },
-                     function (csv) { return seriesRows(csv, meta.id); })
+          Promise.all(played.map(function (w) {
+            return PSD.fetchCSV(lg.matchSheet, w.gid)
+              .then(function (csv) { return { week: w.week, rows: seriesRows(csv, meta.id) }; })
+              .catch(function () { return { week: w.week, rows: [] }; });
+          }))
         ]).then(function (res) {
           if (res[0]) {
             weekShown = Math.max(weekShown, res[0].week);
             res[0].rows.forEach(function (p) { p.division = meta.label; players.push(p); });
           }
-          if (res[1]) {
-            weekShown = Math.max(weekShown, res[1].week);
-            res[1].rows.forEach(function (s) { s.division = meta.label; series.push(s); });
+
+          var weeks = res[1].filter(function (x) { return x.rows.length; });
+          if (!weeks.length) return;
+
+          var latest = weeks[weeks.length - 1];
+          weekShown = Math.max(weekShown, latest.week);
+          latest.rows.forEach(function (s) { s.division = meta.label; series.push(s); });
+
+          var all = weeks.reduce(function (acc, x) { return acc.concat(x.rows); }, []);
+          var lead = leaderOf(all);
+          if (lead) {
+            // Keyed by position so the rail always reads in division order,
+            // whichever sheet answers first.
+            leaderSlide[order] = {
+              tag: meta.label + ' Leader', color: meta.color, icon: '🏆',
+              text: esc(lead.name), right: lead.w + '–' + lead.l
+            };
           }
         }).catch(function () {});
       })).then(function () {
         if (weekShown) render(players, series, weekShown);
+
+        var slides = leaderSlide.filter(Boolean);
+        var next = nextMatchDay();
+        if (next) {
+          slides.push({
+            tag: 'Next Match Day', color: '#FFD166', icon: '📅',
+            text: esc(next.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })) +
+                  ' · ' + esc(next.label),
+            right: next.time
+          });
+        }
+        startRail(slides);
       });
     })();
 
