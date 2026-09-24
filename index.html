@@ -1328,7 +1328,12 @@
               '<div class="text-[9px] uppercase tracking-[0.2em] font-bold" style="color:' + esc(s.color) + '">' + esc(s.tag) + '</div>' +
               '<div class="font-display font-black uppercase text-white text-base leading-tight truncate">' + s.text + '</div>' +
             '</div>' +
-            (s.right ? '<div class="ml-auto font-display font-black text-white text-lg whitespace-nowrap">' + esc(s.right) + '</div>' : '');
+            (s.right
+              ? '<div class="ml-auto text-right whitespace-nowrap">' +
+                  '<div class="font-display font-black text-white text-lg leading-none">' + esc(s.right) + '</div>' +
+                  (s.rightSub ? '<div class="text-[9px] uppercase tracking-widest text-gray-500 font-bold mt-0.5">' + esc(s.rightSub) + '</div>' : '') +
+                '</div>'
+              : '');
         };
         paint();
         if (slides.length < 2) return;
@@ -1384,7 +1389,7 @@
             tag: 'Next Match Day', color: '#FFD166', icon: '📅',
             text: esc(next.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })) +
                   ' · ' + esc(next.label),
-            right: next.time
+            right: next.time, rightSub: 'First kickoff'
           });
         }
 
@@ -1392,7 +1397,8 @@
         if (star) {
           slides.push({
             tag: 'Star of Week ' + weekShown, color: '#FFD166', icon: '⭐',
-            text: esc(star.name) + sideChip(star.side), right: star.score.toLocaleString()
+            text: esc(star.name) + sideChip(star.side),
+            right: star.score.toLocaleString(), rightSub: 'Best single game'
           });
         }
 
@@ -1407,7 +1413,8 @@
         if (scorer && scorer.goals) {
           slides.push({
             tag: 'Top Scorer · Week ' + weekShown, color: '#FF6B6B', icon: '🥅',
-            text: esc(scorer.name) + sideChip(scorer.side), right: scorer.goals + ' goals'
+            text: esc(scorer.name) + sideChip(scorer.side),
+            right: String(scorer.goals), rightSub: 'Goals this week'
           });
         }
 
@@ -1418,7 +1425,7 @@
           slides.push({
             tag: 'Match of Week ' + weekShown, color: '#4DABF7', icon: '🎮',
             text: esc(match.winner) + ' def. ' + esc(match.loser) + sideChip(match.side),
-            right: match.wins + '–' + match.losses
+            right: match.wins + '–' + match.losses, rightSub: 'Series'
           });
         }
 
