@@ -103,6 +103,24 @@
         @media (min-width: 640px)  { .week-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
         @media (min-width: 1024px) { .week-strip { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
 
+        /* ── Week spotlight ticker ──
+           The track holds the tiles twice over and slides exactly half its
+           width, so the loop restarts on an identical frame with no jump.
+           Hover or touch pauses it; reduced motion stops it and hands the
+           strip back to the reader as a normal sideways scroll. */
+        .spot-ticker { overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+                       mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent); }
+        .spot-track { display: flex; gap: 1.25rem; width: max-content; animation: spot-scroll 60s linear infinite; }
+        .spot-ticker:hover .spot-track, .spot-track:focus-within { animation-play-state: paused; }
+        .spot-card { width: 320px; flex: 0 0 320px; }
+        /* The shift is set in pixels by the script: one copy of the tiles plus
+           the gap that follows it, which is a hair wider than half the track. */
+        @keyframes spot-scroll { from { transform: translateX(0); } to { transform: translateX(calc(-1 * var(--spot-shift, 50%))); } }
+        @media (prefers-reduced-motion: reduce) {
+            .spot-ticker { overflow-x: auto; }
+            .spot-track { animation: none; }
+        }
+
         .week-chip { position: relative; background: #151B26; border: 1px solid rgba(255,255,255,.08); border-radius: .85rem; padding: 1rem; overflow: hidden; transition: border-color .2s, transform .2s, background .2s; }
         .week-chip::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; background: rgba(255,255,255,.12); }
         .week-chip:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.18); }
@@ -647,7 +665,15 @@
                         The standout performances from the latest week of play, across both divisions.
                     </p>
                 </div>
-                <div id="spotlight-cards" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+                <!-- A ticker rather than a grid: both divisions get their own
+                     tiles, and the strip carries more of them than would fit
+                     across the page. Hover (or a tap) stops it. -->
+                <div id="spotlight-ticker" class="spot-ticker">
+                    <div id="spotlight-track" class="spot-track"></div>
+                </div>
+                <p class="text-center text-[11px] uppercase tracking-widest text-gray-600 font-bold mt-5">
+                    Late Release &middot; Early Release
+                </p>
             </div>
         </section>
 
@@ -1139,6 +1165,10 @@
             aGoals += parseInt(p[0], 10) || 0;
             bGoals += parseInt(p[1], 10) || 0;
           });
+          // Game scores read winner-first, to match the name order shown.
+          if (bWins > aWins) {
+            games = games.map(function (g) { return g.split('-').reverse().join('-'); });
+          }
           out.push({
             winner: aWins > bWins ? one : two,
             loser:  aWins > bWins ? two : one,
@@ -1206,30 +1236,41 @@
         '</div>';
       }
 
-      function render(players, series, week) {
+      /** The tiles for one division: best game, top scorer, best keeper, closest series. */
+      function divisionCards(label, color, players, series) {
         var cards = [];
+        var foot = function (text) { return text + ' &middot; <span style="color:' + esc(color) + '">' + esc(label) + '</span>'; };
 
         var star = players.slice().sort(function (a, b) { return b.score - a.score; })[0];
         if (star) {
           cards.push(card('Star of the Week', '#FFD166', '⭐',
             nameLine(star.school, esc(star.name), star.score.toLocaleString(), star.side),
             star.goals + ' goals &bull; ' + star.assists + ' assists &bull; ' + star.saves + ' saves',
-            'Highest single-game score &middot; ' + esc(star.division)));
+            foot('Highest single-game score')));
         }
 
         var byPlayer = {};
         players.forEach(function (p) {
           var k = p.name + '|' + p.school;
-          var e = byPlayer[k] || (byPlayer[k] = { name: p.name, school: p.school, side: p.side, division: p.division, goals: 0, games: 0 });
-          e.goals += p.goals; e.games++;
+          var e = byPlayer[k] || (byPlayer[k] = { name: p.name, school: p.school, side: p.side, goals: 0, saves: 0, assists: 0, games: 0 });
+          e.goals += p.goals; e.saves += p.saves; e.assists += p.assists; e.games++;
         });
-        var scorer = Object.keys(byPlayer).map(function (k) { return byPlayer[k]; })
-                       .sort(function (a, b) { return b.goals - a.goals; })[0];
+        var totals = Object.keys(byPlayer).map(function (k) { return byPlayer[k]; });
+
+        var scorer = totals.slice().sort(function (a, b) { return b.goals - a.goals; })[0];
         if (scorer && scorer.goals > 0) {
           cards.push(card('Top Scorer', '#FF6B6B', '🥅',
             nameLine(scorer.school, esc(scorer.name), scorer.goals, scorer.side),
             scorer.goals + ' goals in ' + scorer.games + (scorer.games === 1 ? ' game' : ' games'),
-            'Most goals this week &middot; ' + esc(scorer.division)));
+            foot('Most goals this week')));
+        }
+
+        var keeper = totals.slice().sort(function (a, b) { return b.saves - a.saves; })[0];
+        if (keeper && keeper.saves > 0) {
+          cards.push(card('Brick Wall', '#4ADE80', '🧱',
+            nameLine(keeper.school, esc(keeper.name), keeper.saves, keeper.side),
+            keeper.saves + ' saves &bull; ' + keeper.assists + ' assists',
+            foot('Most saves this week')));
         }
 
         // The closest series wins; among 2-1s, the one with the most goals.
@@ -1246,13 +1287,39 @@
               '</div>' +
             '</div>',
             'Games: ' + esc(match.games.join(' · ')) + ' &bull; ' + match.goals + ' goals',
-            (match.wins - match.losses === 1 ? 'Went the distance' : 'Series win') + ' &middot; ' + esc(match.division)));
+            foot(match.wins - match.losses === 1 ? 'Went the distance' : 'Series win')));
         }
+        return cards;
+      }
 
+      function render(players, series, week) {
+        // Divisions alternate through the strip, so whichever tile is on
+        // screen, the other division is never far behind it.
+        var byDivision = LEAGUES.map(function (meta) {
+          return divisionCards(meta.label, meta.color,
+            players.filter(function (p) { return p.division === meta.label; }),
+            series.filter(function (s) { return s.division === meta.label; }));
+        });
+
+        var cards = [];
+        for (var i = 0; i < 4; i++) {
+          byDivision.forEach(function (set) { if (set[i]) cards.push(set[i]); });
+        }
         if (!cards.length) return;
-        document.getElementById('spotlight-cards').innerHTML = cards.join('');
+
+        var track = document.getElementById('spotlight-track');
+        // Two copies: the animation slides exactly one copy's width, so the
+        // strip loops without a visible seam.
+        track.innerHTML = (cards.join('') + cards.join(''))
+          .replace(/<article class="/g, '<article class="spot-card ');
+        track.style.animationDuration = Math.max(40, cards.length * 11) + 's';
         document.getElementById('spotlight-week').textContent = 'Week ' + week + ' · Both divisions';
         document.getElementById('spotlight').hidden = false;
+
+        // Measured after the section is visible: a hidden element has no layout,
+        // so the track would measure zero wide.
+        var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+        track.style.setProperty('--spot-shift', ((track.scrollWidth + gap) / 2) + 'px');
       }
 
       /* ---- the floating card's live rail ----
