@@ -1239,7 +1239,11 @@
       /** The tiles for one division: best game, top scorer, best keeper, closest series. */
       function divisionCards(label, color, players, series) {
         var cards = [];
-        var foot = function (text) { return text + ' &middot; <span style="color:' + esc(color) + '">' + esc(label) + '</span>'; };
+        // The division always gets its own line, so a long name like "Early
+        // Release" can never be split across two of them.
+        var foot = function (text) {
+          return text + '<br><span class="whitespace-nowrap" style="color:' + esc(color) + '">' + esc(label) + '</span>';
+        };
 
         var star = players.slice().sort(function (a, b) { return b.score - a.score; })[0];
         if (star) {
