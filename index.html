@@ -1077,7 +1077,8 @@
         var cols = splitCsvLine(lines[head]).map(function (h) { return h.trim(); });
         var at = function (name) { return cols.indexOf(name); };
         var iName = at('Student Name'), iSchool = at('School'), iScore = at('Score'),
-            iGoals = at('Goals'), iAssists = at('Assists'), iSaves = at('Saves');
+            iGoals = at('Goals'), iAssists = at('Assists'), iSaves = at('Saves'),
+            iColor = at('Color');
         if (iName === -1 || iScore === -1) return [];
         return lines.slice(head + 1).map(splitCsvLine).map(function (r) {
           var name = playerName(r[iName]);
@@ -1086,6 +1087,7 @@
           return {
             name: name,
             school: PSD.config.canonicalSchool(leagueId, (r[iSchool] || '').trim()),
+            side: iColor === -1 ? '' : (r[iColor] || '').trim(),
             score: score,
             goals:   parseInt((r[iGoals]   || '').trim(), 10) || 0,
             assists: parseInt((r[iAssists] || '').trim(), 10) || 0,
@@ -1099,11 +1101,12 @@
         var rows = csv.split(/\r?\n/).map(splitCsvLine);
         var headIdx = rows.findIndex(function (r) { return (r[0] || '').trim().toLowerCase() === 'team'; });
         var header = headIdx === -1 ? [] : rows[headIdx];
-        var scoreCols = [], locCol = -1;
+        var scoreCols = [], locCol = -1, sideCol = -1;
         header.forEach(function (cell, i) {
           var h = (cell || '').trim().toLowerCase();
           if (h === 'points' || /^game\s*\d+$/.test(h)) scoreCols.push(i);
           else if (h === 'location') locCol = i;
+          else if (h === 'team' && i > 0) sideCol = i;   // Blue or Orange
         });
         if (!scoreCols.length) scoreCols = [3, 4, 5];
 
@@ -1142,6 +1145,7 @@
             wins:   Math.max(aWins, bWins),
             losses: Math.min(aWins, bWins),
             games: games, goals: goals,
+            side: sideCol >= 0 ? cell(a, sideCol) : '',
             a: one, b: two, aGoals: aGoals, bGoals: bGoals
           });
         }
@@ -1183,10 +1187,21 @@
         '</article>';
       }
 
-      function nameLine(school, main, right) {
+      /* Every school fields a BLUE and an ORANGE team, so a name on its own is
+         only half an answer. */
+      function sideChip(side) {
+        var s = String(side || '').trim().toLowerCase();
+        if (s !== 'blue' && s !== 'orange') return '';
+        var c = s === 'blue' ? '#4DABF7' : '#FB923C';
+        return '<span class="ml-1.5 px-1.5 py-[1px] rounded text-[9px] font-bold tracking-widest align-middle" ' +
+               'style="color:' + c + ';background:' + c + '22;border:1px solid ' + c + '55">' +
+               (s === 'blue' ? 'BLUE' : 'ORANGE') + '</span>';
+      }
+
+      function nameLine(school, main, right, side) {
         return '<div class="flex items-center gap-3">' + logoHtml(school) +
           '<div class="min-w-0"><div class="font-display font-black text-xl uppercase text-white leading-tight">' + main + '</div>' +
-          '<div class="text-[11px] uppercase tracking-widest text-gray-500 font-bold">' + esc(school || '') + '</div></div>' +
+          '<div class="text-[11px] uppercase tracking-widest text-gray-500 font-bold">' + esc(school || '') + sideChip(side) + '</div></div>' +
           (right ? '<div class="ml-auto text-right font-display font-black text-2xl text-white">' + right + '</div>' : '') +
         '</div>';
       }
@@ -1197,7 +1212,7 @@
         var star = players.slice().sort(function (a, b) { return b.score - a.score; })[0];
         if (star) {
           cards.push(card('Star of the Week', '#FFD166', '⭐',
-            nameLine(star.school, esc(star.name), star.score.toLocaleString()),
+            nameLine(star.school, esc(star.name), star.score.toLocaleString(), star.side),
             star.goals + ' goals &bull; ' + star.assists + ' assists &bull; ' + star.saves + ' saves',
             'Highest single-game score &middot; ' + esc(star.division)));
         }
@@ -1205,14 +1220,14 @@
         var byPlayer = {};
         players.forEach(function (p) {
           var k = p.name + '|' + p.school;
-          var e = byPlayer[k] || (byPlayer[k] = { name: p.name, school: p.school, division: p.division, goals: 0, games: 0 });
+          var e = byPlayer[k] || (byPlayer[k] = { name: p.name, school: p.school, side: p.side, division: p.division, goals: 0, games: 0 });
           e.goals += p.goals; e.games++;
         });
         var scorer = Object.keys(byPlayer).map(function (k) { return byPlayer[k]; })
                        .sort(function (a, b) { return b.goals - a.goals; })[0];
         if (scorer && scorer.goals > 0) {
           cards.push(card('Top Scorer', '#FF6B6B', '🥅',
-            nameLine(scorer.school, esc(scorer.name), scorer.goals),
+            nameLine(scorer.school, esc(scorer.name), scorer.goals, scorer.side),
             scorer.goals + ' goals in ' + scorer.games + (scorer.games === 1 ? ' game' : ' games'),
             'Most goals this week &middot; ' + esc(scorer.division)));
         }
@@ -1224,8 +1239,11 @@
         if (match) {
           cards.push(card('Match of the Week', '#4DABF7', '🎮',
             '<div class="flex items-center gap-3">' + logoHtml(match.winner) +
-              '<div class="font-display font-black text-lg uppercase text-white leading-tight">' + esc(match.winner) +
-                ' <span class="text-esports-yellow-text">' + match.wins + '&ndash;' + match.losses + '</span> ' + esc(match.loser) + '</div>' +
+              '<div class="min-w-0">' +
+                '<div class="font-display font-black text-lg uppercase text-white leading-tight">' + esc(match.winner) +
+                  ' <span class="text-esports-yellow-text">' + match.wins + '&ndash;' + match.losses + '</span> ' + esc(match.loser) + '</div>' +
+                '<div class="text-[11px] uppercase tracking-widest text-gray-500 font-bold">' + sideChip(match.side) + '</div>' +
+              '</div>' +
             '</div>',
             'Games: ' + esc(match.games.join(' · ')) + ' &bull; ' + match.goals + ' goals',
             (match.wins - match.losses === 1 ? 'Went the distance' : 'Series win') + ' &middot; ' + esc(match.division)));
@@ -1374,14 +1392,14 @@
         if (star) {
           slides.push({
             tag: 'Star of Week ' + weekShown, color: '#FFD166', icon: '⭐',
-            text: esc(star.name), right: star.score.toLocaleString()
+            text: esc(star.name) + sideChip(star.side), right: star.score.toLocaleString()
           });
         }
 
         var totals = {};
         players.forEach(function (p) {
           var k = p.name + '|' + p.school;
-          var e = totals[k] || (totals[k] = { name: p.name, goals: 0 });
+          var e = totals[k] || (totals[k] = { name: p.name, side: p.side, goals: 0 });
           e.goals += p.goals;
         });
         var scorer = Object.keys(totals).map(function (k) { return totals[k]; })
@@ -1389,7 +1407,7 @@
         if (scorer && scorer.goals) {
           slides.push({
             tag: 'Top Scorer · Week ' + weekShown, color: '#FF6B6B', icon: '🥅',
-            text: esc(scorer.name), right: scorer.goals + ' goals'
+            text: esc(scorer.name) + sideChip(scorer.side), right: scorer.goals + ' goals'
           });
         }
 
@@ -1399,7 +1417,7 @@
         if (match) {
           slides.push({
             tag: 'Match of Week ' + weekShown, color: '#4DABF7', icon: '🎮',
-            text: esc(match.winner) + ' def. ' + esc(match.loser),
+            text: esc(match.winner) + ' def. ' + esc(match.loser) + sideChip(match.side),
             right: match.wins + '–' + match.losses
           });
         }
