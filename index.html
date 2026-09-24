@@ -277,18 +277,18 @@
                         <div class="flex items-center gap-2 mb-5 pb-3 border-b border-white/20">
                             <i data-lucide="calendar-days" class="w-5 h-5 text-esports-yellow-text" aria-hidden="true"></i>
                             <span class="text-white font-display font-bold uppercase tracking-widest text-sm">Season at a Glance</span>
-                            <span class="ml-auto text-esports-blue-text text-xs uppercase tracking-widest font-bold px-2 py-1 rounded border border-esports-blue/40 bg-esports-blue/10">9 Weeks</span>
+                            <span id="glance-weeks" class="ml-auto text-esports-blue-text text-xs uppercase tracking-widest font-bold px-2 py-1 rounded border border-esports-blue/40 bg-esports-blue/10">9 Weeks</span>
                         </div>
 
                         <div class="mb-4">
                             <div class="flex items-center gap-2 mb-2">
                                 <i data-lucide="star" class="w-3 h-3 text-esports-red-text" aria-hidden="true"></i>
                                 <span class="text-esports-red-text text-[10px] uppercase tracking-widest font-bold">Early Release</span>
-                                <span class="ml-auto text-gray-500 text-[10px] uppercase tracking-widest font-bold">9 Schools</span>
+                                <span id="glance-jrpl-schools" class="ml-auto text-gray-500 text-[10px] uppercase tracking-widest font-bold">9 Schools</span>
                             </div>
                             <div class="flex items-center gap-3 bg-gradient-to-r from-esports-red/10 to-transparent border border-esports-red/20 rounded-lg px-4 py-3">
                                 <i data-lucide="clock" class="w-5 h-5 text-esports-red-text flex-shrink-0" aria-hidden="true"></i>
-                                <span class="font-display font-black text-lg uppercase text-white">Tuesdays · 2:00 PM</span>
+                                <span id="glance-jrpl-when" class="font-display font-black text-lg uppercase text-white">Tuesdays · 2:00 PM</span>
                             </div>
                         </div>
 
@@ -296,18 +296,18 @@
                             <div class="flex items-center gap-2 mb-2">
                                 <i data-lucide="trophy" class="w-3 h-3 text-esports-blue-text" aria-hidden="true"></i>
                                 <span class="text-esports-blue-text text-[10px] uppercase tracking-widest font-bold">Late Release</span>
-                                <span class="ml-auto text-gray-500 text-[10px] uppercase tracking-widest font-bold">4 Schools</span>
+                                <span id="glance-pl-schools" class="ml-auto text-gray-500 text-[10px] uppercase tracking-widest font-bold">4 Schools</span>
                             </div>
                             <div class="flex items-center gap-3 bg-gradient-to-r from-esports-blue/10 to-transparent border border-esports-blue/20 rounded-lg px-4 py-3">
                                 <i data-lucide="clock" class="w-5 h-5 text-esports-blue-text flex-shrink-0" aria-hidden="true"></i>
-                                <span class="font-display font-black text-lg uppercase text-white">Mondays · 4:00 PM</span>
+                                <span id="glance-pl-when" class="font-display font-black text-lg uppercase text-white">Mondays · 4:00 PM</span>
                             </div>
                         </div>
 
                         <div class="pt-3 border-t border-white/20">
                             <div class="flex items-center justify-center gap-2 text-xs text-gray-500 uppercase tracking-wider font-bold">
                                 <i data-lucide="map-pin" class="w-3 h-3" aria-hidden="true"></i>
-                                <span>Finals · Sat Jan 16 · Quail Valley Arena</span>
+                                <span id="glance-finals">Finals · Sat Jan 16 · Quail Valley Arena</span>
                             </div>
                         </div>
                     </div>
@@ -1027,6 +1027,41 @@
     <script>
     lucide.createIcons();
 
+    /* ── Season at a glance ─────────────────────────────────────────────────
+       Every figure on the card comes from data/leagues.js, so a school added
+       to a division or a time moved shows up here without touching this page.
+       The badge counts the weeks down as the season runs.
+       ---------------------------------------------------------------------- */
+    function renderGlance() {
+      var set = function (id, text) {
+        var el = document.getElementById(id);
+        if (el && text) el.textContent = text;
+      };
+      var phase = PSD.seasonPhase();
+      var weeks = PSD.config.league('pl').weeks.length;
+
+      if (phase === 'preseason')        set('glance-weeks', weeks + ' Weeks');
+      else if (phase === 'postseason')  set('glance-weeks', 'Season Complete');
+      else if (phase === 'finals-day')  set('glance-weeks', 'Finals Today');
+      else {
+        var wk = PSD.currentWeek('pl');
+        set('glance-weeks', wk >= weeks ? 'Finals Ahead' : 'Week ' + wk + ' of ' + weeks);
+      }
+
+      ['pl', 'jrpl'].forEach(function (id) {
+        var lg = PSD.config.league(id);
+        set('glance-' + id + '-schools', lg.schools.length + ' Schools');
+        set('glance-' + id + '-when', lg.matchDay + 's · ' + lg.matchTimeLabel);
+      });
+
+      var finals = PSD.localDate(PSD.config.finalsDate);
+      if (finals) {
+        set('glance-finals', 'Finals · ' +
+          finals.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) +
+          ' · Quail Valley Arena');
+      }
+    }
+
     /* ── Season timeline ────────────────────────────────────────────────────
        Both divisions run the same nine weeks, one day apart, so the strip
        shows a week at a time with both match days on it. Built from config so
@@ -1167,6 +1202,7 @@
       }
     }
 
+    renderGlance();
     renderWeekStrip();
     renderHero();
     setInterval(renderHero, 1000);
