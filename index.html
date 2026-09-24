@@ -280,34 +280,14 @@
                             <span id="glance-weeks" class="ml-auto text-esports-blue-text text-xs uppercase tracking-widest font-bold px-2 py-1 rounded border border-esports-blue/40 bg-esports-blue/10">9 Weeks</span>
                         </div>
 
-                        <div class="mb-4">
-                            <div class="flex items-center gap-2 mb-2">
-                                <i data-lucide="star" class="w-3 h-3 text-esports-red-text" aria-hidden="true"></i>
-                                <span class="text-esports-red-text text-[10px] uppercase tracking-widest font-bold">Early Release</span>
-                                <span id="glance-jrpl-schools" class="ml-auto text-gray-500 text-[10px] uppercase tracking-widest font-bold">9 Schools</span>
-                            </div>
-                            <div class="flex items-center gap-3 bg-gradient-to-r from-esports-red/10 to-transparent border border-esports-red/20 rounded-lg px-4 py-3">
-                                <i data-lucide="clock" class="w-5 h-5 text-esports-red-text flex-shrink-0" aria-hidden="true"></i>
-                                <span id="glance-jrpl-when" class="font-display font-black text-lg uppercase text-white">Tuesdays · 2:00 PM</span>
-                            </div>
-                        </div>
+                        <!-- Standings at the top of each division, filled in from
+                             the match sheets. Hidden until a week has results. -->
+                        <div id="glance-leaders" class="space-y-2 mb-3" hidden></div>
 
-                        <div class="mb-5">
-                            <div class="flex items-center gap-2 mb-2">
-                                <i data-lucide="trophy" class="w-3 h-3 text-esports-blue-text" aria-hidden="true"></i>
-                                <span class="text-esports-blue-text text-[10px] uppercase tracking-widest font-bold">Late Release</span>
-                                <span id="glance-pl-schools" class="ml-auto text-gray-500 text-[10px] uppercase tracking-widest font-bold">4 Schools</span>
-                            </div>
-                            <div class="flex items-center gap-3 bg-gradient-to-r from-esports-blue/10 to-transparent border border-esports-blue/20 rounded-lg px-4 py-3">
-                                <i data-lucide="clock" class="w-5 h-5 text-esports-blue-text flex-shrink-0" aria-hidden="true"></i>
-                                <span id="glance-pl-when" class="font-display font-black text-lg uppercase text-white">Mondays · 4:00 PM</span>
-                            </div>
-                        </div>
-
-                        <!-- Live rail: cycles through the division leaders and the
-                             next match day once the season has results. Hidden
-                             until then, so the card never shows an empty row. -->
-                        <div id="glance-live" class="mb-4 h-[52px] relative" hidden>
+                        <!-- Live rail: cycles through the week's standouts and the
+                             next match day. Hidden until there is something to
+                             put in it, so the card never shows an empty row. -->
+                        <div id="glance-live" class="mb-4 h-[58px] relative" hidden>
                             <div id="glance-live-slide" class="absolute inset-0 flex items-center gap-3 bg-white/[0.03] border border-white/10 rounded-lg px-4 transition-opacity duration-500">
                             </div>
                         </div>
@@ -1290,6 +1270,31 @@
         return best;
       }
 
+      function renderLeaders(rows) {
+        var box = document.getElementById('glance-leaders');
+        if (!box || !rows.length) return;
+        box.innerHTML = rows.map(function (r) {
+          var pct = r.lead.w + r.lead.l ? Math.round(r.lead.w / (r.lead.w + r.lead.l) * 100) : 0;
+          var gd = r.lead.gf - r.lead.ga;
+          return '<div class="flex items-center gap-3 bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2">' +
+            (PSD.config.schoolLogo(r.lead.name)
+              ? '<img src="' + esc(PSD.config.schoolLogo(r.lead.name)) + '" alt="" class="w-9 h-9 rounded-md object-contain bg-white/5 p-1 flex-shrink-0" onerror="this.remove()">'
+              : '') +
+            '<div class="min-w-0">' +
+              '<div class="text-[9px] uppercase tracking-[0.2em] font-bold" style="color:' + esc(r.meta.color) + '">' +
+                esc(r.meta.label) + ' Leader</div>' +
+              '<div class="font-display font-black uppercase text-white text-base leading-tight truncate">' + esc(r.lead.name) + '</div>' +
+            '</div>' +
+            '<div class="ml-auto text-right">' +
+              '<div class="font-display font-black text-white text-lg leading-none">' + r.lead.w + '–' + r.lead.l + '</div>' +
+              '<div class="text-[9px] uppercase tracking-widest text-gray-500 font-bold">' + pct + '% · ' +
+                (gd >= 0 ? '+' : '') + gd + ' GD</div>' +
+            '</div>' +
+          '</div>';
+        }).join('');
+        box.hidden = false;
+      }
+
       function startRail(slides) {
         if (!slides.length) return;
         var wrap = document.getElementById('glance-live'),
@@ -1343,19 +1348,18 @@
 
           var all = weeks.reduce(function (acc, x) { return acc.concat(x.rows); }, []);
           var lead = leaderOf(all);
-          if (lead) {
-            // Keyed by position so the rail always reads in division order,
-            // whichever sheet answers first.
-            leaderSlide[order] = {
-              tag: meta.label + ' Leader', color: meta.color, icon: '🏆',
-              text: esc(lead.name), right: lead.w + '–' + lead.l
-            };
-          }
+          // Keyed by position so the card always reads in division order,
+          // whichever sheet answers first.
+          if (lead) leaderSlide[order] = { meta: meta, lead: lead };
         }).catch(function () {});
       })).then(function () {
         if (weekShown) render(players, series, weekShown);
 
-        var slides = leaderSlide.filter(Boolean);
+        renderLeaders(leaderSlide.filter(Boolean));
+
+        // The rail carries the things that change week to week; the leaders
+        // above it carry the season-long picture.
+        var slides = [];
         var next = nextMatchDay();
         if (next) {
           slides.push({
@@ -1365,6 +1369,41 @@
             right: next.time
           });
         }
+
+        var star = players.slice().sort(function (a, b) { return b.score - a.score; })[0];
+        if (star) {
+          slides.push({
+            tag: 'Star of Week ' + weekShown, color: '#FFD166', icon: '⭐',
+            text: esc(star.name), right: star.score.toLocaleString()
+          });
+        }
+
+        var totals = {};
+        players.forEach(function (p) {
+          var k = p.name + '|' + p.school;
+          var e = totals[k] || (totals[k] = { name: p.name, goals: 0 });
+          e.goals += p.goals;
+        });
+        var scorer = Object.keys(totals).map(function (k) { return totals[k]; })
+                       .sort(function (a, b) { return b.goals - a.goals; })[0];
+        if (scorer && scorer.goals) {
+          slides.push({
+            tag: 'Top Scorer · Week ' + weekShown, color: '#FF6B6B', icon: '🥅',
+            text: esc(scorer.name), right: scorer.goals + ' goals'
+          });
+        }
+
+        var match = series.slice().sort(function (a, b) {
+          return (a.wins - a.losses) - (b.wins - b.losses) || b.goals - a.goals;
+        })[0];
+        if (match) {
+          slides.push({
+            tag: 'Match of Week ' + weekShown, color: '#4DABF7', icon: '🎮',
+            text: esc(match.winner) + ' def. ' + esc(match.loser),
+            right: match.wins + '–' + match.losses
+          });
+        }
+
         startRail(slides);
       });
     })();
@@ -1389,12 +1428,6 @@
         var wk = PSD.currentWeek('pl');
         set('glance-weeks', wk >= weeks ? 'Finals Ahead' : 'Week ' + wk + ' of ' + weeks);
       }
-
-      ['pl', 'jrpl'].forEach(function (id) {
-        var lg = PSD.config.league(id);
-        set('glance-' + id + '-schools', lg.schools.length + ' Schools');
-        set('glance-' + id + '-when', lg.matchDay + 's · ' + lg.matchTimeLabel);
-      });
 
       var finals = PSD.localDate(PSD.config.finalsDate);
       if (finals) {
