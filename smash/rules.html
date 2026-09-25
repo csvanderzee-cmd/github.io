@@ -180,6 +180,20 @@
         .rule-card li::before { content:'▸'; position:absolute; left:0; top:-.02em;
                                 color:var(--accent,#FDB913); font-size:.85rem; }
         .rule-card li strong { color:#fff; }
+
+        /* The ruleset as the console shows it. A referee setting up a station
+           is looking at this screen, so the screen is worth printing next to
+           the words. */
+        .setup-shot { margin:1.4rem 0 0; }
+        .setup-shot figcaption { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:.68rem;
+                                 letter-spacing:.18em; text-transform:uppercase; color:#9ca3af;
+                                 margin-bottom:.7rem; }
+        .setup-shot img { display:block; width:100%; max-width:340px; height:auto; border-radius:.6rem;
+                          border:1px solid rgba(255,255,255,.12); background:#fff; }
+        @media print {
+            .setup-shot img { max-width:250px; border-color:#999; }
+            .setup-shot { break-inside:avoid; page-break-inside:avoid; }
+        }
     </style>
 
     <header role="banner" class="relative py-14 overflow-hidden border-b border-white/10">
@@ -238,6 +252,21 @@
     document.getElementById('rules-stamp').textContent =
         'Version ' + R.version + ' · Updated ' + R.updated;
 
+    /* The console's own settings screen, shown inside Game Settings so a ref
+       can match the board in front of them against the picture. The alt text
+       lists every value, for anyone who cannot see the image. */
+    var SETUP_SHOT =
+        '<figure class="setup-shot">' +
+          '<figcaption>The ruleset as it appears on the console</figcaption>' +
+          '<img src="/smash/ruleset.png" width="373" height="751" loading="lazy" decoding="async" ' +
+               'alt="Super Smash Bros. Ultimate rule settings. Style: Stock. Stock: 3. ' +
+                    'Time Limit: 6:00. FS Meter: Off. Spirits: Off. CPU Level: 3. ' +
+                    'Damage Handicap: Off. Stage Selection: Battlefield Only. Items: all off. ' +
+                    'Random Stage Selection on. First to: 1 win. Stage Morph: Off. ' +
+                    'Stage Hazards: Off. Team Attack: On. Launch Rate: 1.0x. ' +
+                    'Underdog Boost: Off. Pausing: Off. Score Display: Off. Show Damage: Yes.">' +
+        '</figure>';
+
     document.getElementById('rules-content').innerHTML = (R.sections || []).map(function (s, i) {
         return '<section class="rule-card">' +
                  '<div class="rule-head">' +
@@ -245,7 +274,9 @@
                    '<h2>' + esc(s.title) + '</h2>' +
                  '</div><ul>' +
                  s.items.map(function (it) { return '<li>' + esc(it) + '</li>'; }).join('') +
-                 '</ul></section>';
+                 '</ul>' +
+                 (s.title === 'Game Settings' ? SETUP_SHOT : '') +
+               '</section>';
     }).join('');
 
     document.getElementById('print-rules').addEventListener('click', function () { window.print(); });
