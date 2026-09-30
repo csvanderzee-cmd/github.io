@@ -44,8 +44,8 @@
     <style>
         .clip-slant { clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); }
 
-        /* Grade filter: a segmented control rather than a dropdown — two real
-           choices plus "all" are quicker to read as buttons. */
+        /* Grade and platform filters: segmented controls rather than dropdowns —
+           two real choices plus "all" are quicker to read as buttons. */
         .seg { display: inline-flex; padding: 4px; gap: 4px; border-radius: 9999px; background: #151B26; border: 1px solid rgba(255,255,255,.08); }
         .seg button {
             font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: .8rem; letter-spacing: .1em; text-transform: uppercase;
@@ -111,11 +111,18 @@
 
 <main class="max-w-5xl mx-auto px-4 py-12">
 
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div class="seg" role="group" aria-label="Filter by grade level">
-            <button type="button" data-grade="all" aria-pressed="true">All Games</button>
-            <button type="button" data-grade="k5" aria-pressed="false">5th &amp; Under</button>
-            <button type="button" data-grade="68" aria-pressed="false">Grades 6–8</button>
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+        <div class="flex flex-col sm:flex-row gap-3">
+            <div class="seg" role="group" aria-label="Filter by grade level" data-filter="grade">
+                <button type="button" data-value="all" aria-pressed="true">All Games</button>
+                <button type="button" data-value="k5" aria-pressed="false">5th &amp; Under</button>
+                <button type="button" data-value="68" aria-pressed="false">Grades 6–8</button>
+            </div>
+            <div class="seg" role="group" aria-label="Filter by platform" data-filter="platform">
+                <button type="button" data-value="all" aria-pressed="true">All Platforms</button>
+                <button type="button" data-value="pc" aria-pressed="false">PC</button>
+                <button type="button" data-value="switch" aria-pressed="false">Switch</button>
+            </div>
         </div>
         <p id="games-count" class="text-sm text-gray-500" role="status" aria-live="polite">Loading approved games…</p>
     </div>
@@ -259,19 +266,36 @@
         </article>`;
     }
 
-    function render(grade) {
-        const shown = games.filter(g => grade === 'all' || (grade === 'k5' ? g.k5 : g.g68));
+    /* Platform is free text in the sheet ("PC (Epic Games)", "PC (Browser) or
+       App", "Switch"), so it is matched by keyword. A browser game counts as PC. */
+    const PLATFORMS = {
+        pc:     p => /\bpc\b|browser/i.test(p),
+        switch: p => /switch/i.test(p)
+    };
+
+    const filters = { grade: 'all', platform: 'all' };
+
+    function render() {
+        const { grade, platform } = filters;
+        const shown = games.filter(g =>
+            (grade === 'all' || (grade === 'k5' ? g.k5 : g.g68)) &&
+            (platform === 'all' || PLATFORMS[platform](g.platform)));
         grid.innerHTML = shown.length
             ? shown.map(cardHtml).join('')
-            : `<p class="md:col-span-2 text-center text-gray-500 py-12">No approved games for this grade level yet.</p>`;
+            : `<p class="md:col-span-2 text-center text-gray-500 py-12">No approved games match these filters yet.</p>`;
+        const plat  = platform === 'pc' ? ' on PC' : platform === 'switch' ? ' on Switch' : '';
         const label = grade === 'k5' ? ' for 5th grade and under' : grade === '68' ? ' for grades 6–8' : '';
-        count.textContent = `${shown.length} approved game${shown.length === 1 ? '' : 's'}${label}`;
+        count.textContent = `${shown.length} approved game${shown.length === 1 ? '' : 's'}${plat}${label}`;
     }
 
-    document.querySelectorAll('.seg button').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
-            render(btn.dataset.grade);
+    document.querySelectorAll('.seg[data-filter]').forEach(group => {
+        const buttons = group.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+                filters[group.dataset.filter] = btn.dataset.value;
+                render();
+            });
         });
     });
 
@@ -279,7 +303,7 @@
     PSD.fetchCSV(src.sheet, src.gid)
         .then(text => {
             games = toGames(parseCsv(text));
-            render('all');
+            render();
         })
         .catch(err => {
             console.error('Approved games failed to load:', err);
