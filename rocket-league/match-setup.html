@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicons. SVG is primary and stays crisp at any size; the .ico covers
+         older browsers and the bare /favicon.ico that browsers request anyway. -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#0B0E14">
+    <!-- Link preview. Pasted into Gmail, Google Classroom or a newsletter,
+         a page without these renders as a bare URL with no title or image. -->
+    <link rel="canonical" href="https://psdesports.com/rocket-league/match-setup.html">
+    <meta name="description" content="Step-by-step guide for coaches: creating or joining a private Rocket League match for the Palmdale Promise Esports League, with the league settings and what to do when the match ends.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="PSD Esports">
+    <meta property="og:title" content="Set Up a Rocket League Match">
+    <meta property="og:description" content="Step-by-step guide for coaches: creating or joining a private Rocket League match, with the league settings and what to do when the match ends.">
+    <meta property="og:url" content="https://psdesports.com/rocket-league/match-setup.html">
+    <meta property="og:image" content="https://psdesports.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="PSD Esports, Palmdale School District">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>Match Setup | PSD Esports</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: { esports: {
+                    dark: '#0B0E14', card: '#151B26',
+                    yellow: '#FDB913', 'yellow-text': '#FFD166',
+                    red: '#C8102E', 'red-text': '#FF6B6B',
+                    blue: '#005696', 'blue-text': '#4DABF7'
+                } },
+                fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Rajdhani', 'sans-serif'] }
+            } }
+        }
+    </script>
+    <style>
+        .clip-slant { clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); }
+        .step { scroll-margin-top: 2rem; }
+
+        /* The step number sits in a fixed-width column on wide screens so the
+           text and screenshots of every step line up down the page. */
+        .step-num {
+            flex-shrink: 0; width: 3rem; height: 3rem; border-radius: .75rem;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 1.5rem;
+            background: #FDB913; color: #0B0E14;
+        }
+
+        /* Screenshots come from the in-game menus, so they keep their own
+           proportions rather than being cropped to a common shape. */
+        .shot { margin: 0; }
+        .shot img { display: block; width: 100%; height: auto; border-radius: .75rem; border: 1px solid rgba(255,255,255,.1); background: #000; }
+        .shot figcaption { margin-top: .5rem; font-size: .75rem; color: #9ca3af; }
+
+        .role-tag { display: inline-block; padding: .15rem .55rem; border-radius: 9999px; font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+        .role-home { background: rgba(253,185,19,.15); color: #FFD166; }
+        .role-away { background: rgba(77,171,247,.15); color: #4DABF7; }
+        .role-both { background: rgba(255,255,255,.08); color: #e5e7eb; }
+
+        .settings td { padding: .4rem .75rem; border-top: 1px solid rgba(255,255,255,.06); }
+        .settings td:first-child { color: #9ca3af; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; }
+        .settings td:last-child { color: #fff; font-weight: 600; }
+
+        .print-only { display: none; }
+        @media print {
+            *, *::before, *::after { background: transparent !important; color: #111 !important; box-shadow: none !important; }
+            html, body { background: #fff !important; font-size: 10.5pt; }
+            .text-transparent, .bg-clip-text { -webkit-text-fill-color: #111 !important; }
+            #psd-nav, #psd-nav-drawer, .print-actions, .absolute, .toc { display: none !important; }
+            .print-only { display: block !important; font-size: 8.5pt !important; color: #555 !important; margin-bottom: 12pt; }
+            header { padding: 0 0 8pt !important; border-bottom: 2pt solid #111 !important; }
+            header h1 { font-size: 24pt !important; font-style: normal !important; }
+            .step { break-inside: avoid; border: .75pt solid #bbb !important; padding: 9pt !important; margin-bottom: 9pt !important; }
+            .step-num { border: 1pt solid #111 !important; }
+            .shot img { max-height: 2.6in; width: auto; max-width: 100%; }
+            a { text-decoration: underline !important; }
+            a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 8pt; word-break: break-all; }
+        }
+    </style>
+</head>
+
+<body class="bg-esports-dark text-gray-100 font-sans antialiased">
+
+<script src="/data/psd-nav.js"></script>
+<script>PSD_NAV.init('rocket-league');</script>
+
+<header role="banner" class="relative py-16 border-b border-white/10 overflow-hidden">
+    <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-esports-blue/15 via-transparent to-esports-yellow/10"></div>
+    <div class="relative max-w-5xl mx-auto px-4 z-10">
+        <div class="inline-block px-4 py-1 bg-esports-yellow text-black font-display font-black uppercase tracking-widest text-xs clip-slant mb-5">
+            Coach's Guide
+        </div>
+        <h1 class="font-display font-black text-5xl md:text-7xl uppercase leading-[0.85] mb-4 italic">
+            Set Up a <span class="text-transparent bg-clip-text bg-gradient-to-r from-esports-blue-text via-esports-yellow-text to-esports-red-text">Match</span>
+        </h1>
+        <p class="text-gray-400 max-w-2xl leading-relaxed">
+            How to create or join a private Rocket League match on match day, with the settings every league match uses.
+            The <span class="role-tag role-home">Home</span> team creates the match; the
+            <span class="role-tag role-away">Away</span> team joins it.
+        </p>
+    </div>
+</header>
+
+<p class="print-only">psdesports.com/rocket-league/match-setup.html</p>
+
+<main class="max-w-5xl mx-auto px-4 py-12">
+
+    <!-- Who does what, before anyone reads seven steps. -->
+    <div class="grid sm:grid-cols-2 gap-4 mb-12">
+        <div class="bg-esports-card rounded-2xl border border-white/10 p-6">
+            <span class="role-tag role-home mb-3">Home team</span>
+            <p class="text-sm text-gray-300 leading-relaxed">Creates the match and sends the name and password to the opposing coach. <span class="text-white font-semibold">Steps 1–7.</span></p>
+        </div>
+        <div class="bg-esports-card rounded-2xl border border-white/10 p-6">
+            <span class="role-tag role-away mb-3">Away team</span>
+            <p class="text-sm text-gray-300 leading-relaxed">Joins with the name and password from the home coach. <span class="text-white font-semibold">Steps 1–2, then 6–7.</span></p>
+        </div>
+    </div>
+
+    <ol class="space-y-8">
+
+        <!-- 1 -->
+        <li id="step-1" class="step bg-esports-card rounded-2xl border border-white/10 p-6 md:p-8">
+            <div class="flex items-start gap-4 mb-6">
+                <span class="step-num" aria-hidden="true">1</span>
+                <div>
+                    <span class="role-tag role-both">Both teams</span>
+                    <h2 class="font-display font-black text-2xl md:text-3xl uppercase text-white mt-1">Open Private Match</h2>
+                    <p class="text-gray-300 mt-2">From the main screen, select <strong class="text-white">Play</strong>, then <strong class="text-white">Private Match</strong>.</p>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-[2fr_3fr] gap-4 items-start">
+                <figure class="shot"><img src="match-setup/play-menu.jpg" alt="Rocket League main menu with Play highlighted at the top" width="784" height="920" loading="lazy"></figure>
+                <figure class="shot"><img src="match-setup/private-match.jpg" alt="Play screen with the Private Match tile highlighted, bottom right" width="1030" height="446" loading="lazy"></figure>
+            </div>
+        </li>
+
+        <!-- 2 -->
+        <li id="step-2" class="step bg-esports-card rounded-2xl border border-white/10 p-6 md:p-8">
+            <div class="flex items-start gap-4 mb-6">
+                <span class="step-num" aria-hidden="true">2</span>
+                <div>
+                    <span class="role-tag role-both">Both teams</span>
+                    <h2 class="font-display font-black text-2xl md:text-3xl uppercase text-white mt-1">Create or Join</h2>
+                    <p class="text-gray-300 mt-2">
+                        <span class="role-tag role-home">Home</span> Choose <strong class="text-white">Create Private Match</strong>. You can do this on your own account or have a student on your team set it up.
+                    </p>
+                    <p class="text-gray-300 mt-2">
+                        <span class="role-tag role-away">Away</span> Choose <strong class="text-white">Join Private Match</strong> and enter the name and password the home coach sent you, then skip to <a href="#step-6" class="text-esports-blue-text hover:text-esports-yellow-text underline">step 6</a>.
+                    </p>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-4 items-start">
+                <figure class="shot"><img src="match-setup/create-private.jpg" alt="Private match menu with Create Private Match highlighted" width="840" height="556" loading="lazy"><figcaption>Home team: Create Private Match</figcaption></figure>
+                <figure class="shot"><img src="match-setup/join-private.jpg" alt="Private match menu with Join Private Match highlighted" width="914" height="604" loading="lazy"><figcaption>Away team: Join Private Match</figcaption></figure>
+            </div>
+        </li>
+
+        <!-- 3 -->
+        <li id="step-3" class="step bg-esports-card rounded-2xl border border-white/10 p-6 md:p-8">
+            <div class="flex items-start gap-4 mb-6">
+                <span class="step-num" aria-hidden="true">3</span>
+                <div>
+                    <span class="role-tag role-home">Home team</span>
+                    <h2 class="font-display font-black text-2xl md:text-3xl uppercase text-white mt-1">Use the League Settings</h2>
+                    <p class="text-gray-300 mt-2">Set the match up exactly like this. Then open <strong class="text-white">Team Settings</strong>, type in both schools' names and, if you like, pick colors.</p>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6 items-start">
+                <table class="settings w-full text-sm">
+                    <caption class="sr-only">Private match settings for league matches</caption>
+                    <tbody>
+                        <tr><td>Game Mode</td><td>Soccar</td></tr>
+                        <tr><td>Arena</td><td>DFH Stadium</td></tr>
+                        <tr><td>Team Size</td><td>3v3</td></tr>
+                        <tr><td>Bot Difficulty</td><td>No Bots</td></tr>
+                        <tr><td>Region</td><td>Recommended</td></tr>
+                        <tr><td>Joinable By</td><td>Name/Password</td></tr>
+                        <tr><td>Match Admin</td><td>Disabled</td></tr>
+                    </tbody>
+                </table>
+                <figure class="shot"><img src="match-setup/match-settings.jpg" alt="Private Match settings screen showing Soccar, DFH Stadium, 3v3, No Bots, Recommended, Name/Password and Match Admin Disabled" width="760" height="760" loading="lazy"></figure>
+            </div>
+            <figure class="shot mt-4 md:w-1/2"><img src="match-setup/team-settings.jpg" alt="Team Settings screen with Team 1 named Shadow Hills and Team 2 named Millen, each with a primary and accent color" width="828" height="664" loading="lazy"><figcaption>Team Settings: school names in, colors optional</figcaption></figure>
+        </li>
+
+        <!-- 4 -->
+        <li id="step-4" class="step bg-esports-card rounded-2xl border border-white/10 p-6 md:p-8">
+            <div class="flex items-start gap-4 mb-6">
+                <span class="step-num" aria-hidden="true">4</span>
+                <div>
+                    <span class="role-tag role-home">Home team</span>
+                    <h2 class="font-display font-black text-2xl md:text-3xl uppercase text-white mt-1">Reset the Mutators</h2>
+                    <p class="text-gray-300 mt-2">Open <strong class="text-white">Mutator Settings</strong> and press <strong class="text-white">Restore Defaults</strong>, so nothing left over from a previous game carries into the match.</p>
+                </div>
+            </div>
+            <figure class="shot max-w-xs"><img src="match-setup/mutators.jpg" alt="Mutator settings screen with the Restore Defaults button highlighted at the bottom" width="572" height="1000" loading="lazy"></figure>
+        </li>
+
+        <!-- 5 -->
+        <li id="step-5" class="step bg-esports-card rounded-2xl border border-white/10 p-6 md:p-8">
+            <div class="flex items-start gap-4 mb-6">
+                <span class="step-num" aria-hidden="true">5</span>
+                <div>
+                    <span class="role-tag role-home">Home team</span>
+                    <h2 class="font-display font-black text-2xl md:text-3xl uppercase text-white mt-1">Create the Match &amp; Share It</h2>
+                    <p class="text-gray-300 mt-2">Click <strong class="text-white">Create Match</strong> and choose a fairly easy name and password. Give them to everyone on your team, then send them to the opposing coach on <strong class="text-white">Google Chat</strong>.</p>
+                    <p class="text-sm text-gray-400 mt-2">Need to find the other coach? Use the <a href="https://docs.google.com/spreadsheets/u/0/d/1MMFoaAT96JlsFzFY4W_C_YXEHuwR7VlkpvYTOf2Wjm0/edit" target="_blank" rel="noopener noreferrer" class="text-esports-blue-text hover:text-esports-yellow-text underline">PSD eSports Coaches contact list</a><span class="sr-only"> (opens in a new tab)</span>.</p>
+                </div>
+            </div>
+            <figure class="shot max-w-md"><img src="match-setup/create-dialog.jpg" alt="Create Private Match dialog with a name and a hidden password filled in" width="634" height="354" loading="lazy"></figure>
+        </li>
+
+        <!-- 6 -->
+        <li id="step-6" class="step bg-esports-card rounded-2xl border border-esports-red/40 p-6 md:p-8">
+            <div class="flex items-start gap-4 mb-6">
+                <span class="step-num" aria-hidden="true">6</span>
+                <div>
+                    <span class="role-tag role-both">Both teams</span>
+                    <h2 class="font-display font-black text-2xl md:text-3xl uppercase text-white mt-1">Wait for All 6 Players</h2>
+                    <p class="text-gray-300 mt-2">On the <strong class="text-white">Choose Team</strong> screen, <strong class="text-esports-red-text">don't join a team until all 6 players are in the match.</strong> If anyone joins a team early, the game starts before everyone is in.</p>
+                    <p class="text-gray-300 mt-2">Once all six are in, everyone joins their own school's team and the match begins.</p>
+                </div>
+            </div>
+            <figure class="shot"><img src="match-setup/choose-team.jpg" alt="Choose Team screen with options to join Shadow Hills, Auto, join Millen, Spectate or Leave Match" width="1744" height="644" loading="lazy"></figure>
+        </li>
+
+        <!-- 7 -->
+        <li id="step-7" class="step bg-esports-card rounded-2xl border border-white/10 p-6 md:p-8">
+            <div class="flex items-start gap-4 mb-6">
+                <span class="step-num" aria-hidden="true">7</span>
+                <div>
+                    <span class="role-tag role-both">Both teams</span>
+                    <h2 class="font-display font-black text-2xl md:text-3xl uppercase text-white mt-1">Photograph the Results</h2>
+                    <p class="text-gray-300 mt-2">When the match ends, keep every student in the game until you've taken a picture of the results screen.</p>
+                    <p class="text-sm text-gray-400 mt-2">Both coaches then report each game's final stats to the League Administrators on Google Classroom (<a href="/rocket-league/rules.html#section4" class="text-esports-blue-text hover:text-esports-yellow-text underline">rule 4.4</a>).</p>
+                </div>
+            </div>
+            <figure class="shot max-w-xl"><img src="match-setup/results.jpg" alt="Photo of a Rocket League end-of-match scoreboard showing each player's score, goals, assists, saves and shots" width="984" height="734" loading="lazy"></figure>
+        </li>
+    </ol>
+
+    <div class="print-actions mt-12 bg-esports-card p-6 md:p-8 rounded-2xl border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div>
+            <h3 class="font-display font-bold text-white uppercase tracking-widest mb-2">Keep a Copy by the Computer</h3>
+            <p class="text-sm text-gray-400 max-w-xl">Prints as black on white with the screenshots. Choose <span class="text-gray-200 font-semibold">Save as PDF</span> in the print dialog to keep a digital copy.</p>
+        </div>
+        <button type="button" id="print-guide" class="px-6 py-3 rounded-xl bg-esports-yellow text-black font-display font-black uppercase tracking-widest text-sm whitespace-nowrap hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-esports-yellow transition-colors">
+            Print Guide
+        </button>
+    </div>
+
+</main>
+
+<footer class="border-t border-white/10 py-8 text-center text-xs text-gray-600">
+    PSD Esports &middot; Palmdale School District
+</footer>
+
+<script>
+    /* Screenshots load lazily, and a lazy image that has never scrolled into
+       view prints as an empty box. Load them all before the dialog opens. */
+    document.getElementById('print-guide').addEventListener('click', () => {
+        document.querySelectorAll('img[loading="lazy"]').forEach(img => { img.loading = 'eager'; });
+        Promise.all([...document.images].map(img => img.complete ? null : new Promise(r => { img.onload = img.onerror = r; })))
+            .then(() => window.print());
+    });
+</script>
+</body>
+</html>

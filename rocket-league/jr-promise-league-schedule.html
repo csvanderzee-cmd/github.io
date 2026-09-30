@@ -71,6 +71,10 @@
 
         /* ── WEEK BUTTONS ── */
         .controls-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 2.5rem; }
+        /* Match-day shortcut for coaches: this is the page they open before a match. */
+        .coach-link { margin-top: 14px; font-size: .85rem; color: #9ca3af; }
+        .coach-link a { color: #4DABF7; font-weight: 700; text-decoration: none; }
+        .coach-link a:hover { color: #FFD166; text-decoration: underline; }
         .week-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 10px; }
         /* Forces the 9 week buttons to break 4 over 5. */
         .week-row-break { flex-basis: 100%; height: 0; margin: 0; }
@@ -272,6 +276,7 @@
         <div class="container">
             <div class="controls-container">
                 <div id="week-buttons" class="week-buttons" role="group" aria-label="Select week"></div>
+                <p class="coach-link">Coaches: <a href="/rocket-league/match-setup.html">how to set up your match &rarr;</a></p>
             </div>
             <h2 id="week-title" class="week-title">Loading…</h2>
             <div id="section-upcoming" class="matches-section">

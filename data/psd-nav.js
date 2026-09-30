@@ -116,6 +116,7 @@
           accent: '#9ca3af',
           links: [
             { text: 'Rules',       href: '/rocket-league/rules.html' },
+            { text: 'Match Setup', href: '/rocket-league/match-setup.html' },
             { text: 'Badge Guide', href: '/rocket-league/badges.html' },
             { text: 'Finals',      href: '/rocket-league/finals.html' }
           ]
