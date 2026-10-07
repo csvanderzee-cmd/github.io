@@ -186,7 +186,8 @@
         g68:     h => /6\s*[-–]\s*8/.test(h),
         cost:    h => h.includes('free') || h.includes('purchase') || h.includes('cost'),
         approved:h => h.includes('approved'),
-        notes:   h => h.includes('note')
+        notes:   h => h.includes('note'),
+        where:   h => h.includes('where') || h.includes('get it') || h.includes('link')
     };
 
     /* A ✅ in the sheet is a yes. Anything a person might type for yes counts
@@ -214,8 +215,30 @@
                 k5:       isYes(cell(r, 'k5')),
                 g68:      isYes(cell(r, 'g68')),
                 cost:     cell(r, 'cost'),
-                notes:    cell(r, 'notes')
+                notes:    cell(r, 'notes'),
+                where:    storeLink(cell(r, 'where'))
             }));
+    }
+
+    /* "Where to Get It" holds a store address. Only a real web address becomes
+       a link — the cell is typed by hand, and anything else (a note, a
+       half-pasted URL) is ignored rather than turned into a broken link. The
+       button names the store, so coaches can see where it goes before
+       clicking. */
+    const STORES = [
+        { match: /(^|\.)epicgames\.com$/i, text: 'Get it on the Epic Games Store' },
+        { match: /(^|\.)cdw\.com$/i,       text: 'Order through CDW' },
+        { match: /(^|\.)nintendo\.com$/i,  text: 'View on Nintendo' },
+        { match: /(^|\.)minecraft\.net$/i, text: 'Get it from Minecraft.net' }
+    ];
+
+    function storeLink(v) {
+        const m = String(v || '').match(/https?:\/\/[^\s,]+/i);
+        if (!m) return null;
+        let url;
+        try { url = new URL(m[0]); } catch (e) { return null; }
+        const store = STORES.find(s => s.match.test(url.hostname));
+        return { href: url.href, text: store ? store.text : 'Where to get it' };
     }
 
     /* Games the district competes in link through to their own section.
@@ -262,6 +285,7 @@
 
                 ${g.notes ? `<p class="mt-5 text-sm text-gray-300 bg-white/5 border border-white/10 rounded-lg px-3 py-2">${esc(g.notes)}</p>` : ''}
             </div>
+            ${g.where ? `<a href="${esc(g.where.href)}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-6 py-3 border-t border-white/10 text-sm font-bold text-esports-yellow-text hover:text-white hover:bg-white/5 transition-colors no-underline"><span aria-hidden="true">🛒</span>${esc(g.where.text)} ↗<span class="sr-only"> (opens in a new tab)</span></a>` : ''}
             ${league ? `<a href="${league.href}"${league.external ? ' target="_blank" rel="noopener noreferrer"' : ''} class="block px-6 py-3 border-t border-white/10 text-sm font-bold text-esports-blue-text hover:text-esports-yellow-text hover:bg-white/5 transition-colors no-underline">${league.text} ${league.external ? '↗<span class="sr-only"> (opens in a new tab)</span>' : '→'}</a>` : ''}
         </article>`;
     }
