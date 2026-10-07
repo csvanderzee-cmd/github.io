@@ -206,14 +206,19 @@
     '#psd-nav .dd-header:first-child{border-top:none;}',
     '#psd-nav .nav-right{margin-left:auto;display:flex;align-items:center;gap:.5rem;}',
     '#psd-nav .nav-pill{padding:.3rem .9rem;font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;',
-      'border-radius:9999px;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s;}',
+      'border-radius:9999px;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s,color .15s;',
+      /* A colour of its own, always. Pages without Tailwind have nothing
+         resetting link colour, so a pill with no colour class fell back to the
+         browser's blue and visited purple — unreadable on the dark bar. */
+      'color:#fff;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.18);}',
+    '#psd-nav .nav-pill:hover,#psd-nav .nav-pill.active{color:#FF6B6B;background:rgba(200,16,46,.14);border-color:rgba(255,107,107,.5);}',
     '#psd-nav .pill-champs{background:rgba(255,215,0,.1);color:#FFD166;border:1px solid rgba(255,215,0,.22);}',
-    '#psd-nav .pill-champs:hover,#psd-nav .pill-champs.active{background:rgba(255,215,0,.22);border-color:rgba(255,215,0,.5);}',
+    '#psd-nav .pill-champs:hover,#psd-nav .pill-champs.active{color:#FFD166;background:rgba(255,215,0,.22);border-color:rgba(255,215,0,.5);}',
     /* Registration is the one thing on this site with a deadline, so it is the
        only pill that is filled rather than outlined. It reads as a button next
        to the others, which is what it is. */
     '#psd-nav .pill-register{background:#FDB913;color:#0B0E14;border:1px solid #FDB913;font-weight:800;}',
-    '#psd-nav .pill-register:hover{background:#FFD166;border-color:#FFD166;}',
+    '#psd-nav .pill-register:hover{color:#0B0E14;background:#FFD166;border-color:#FFD166;}',
     '#psd-nav-drawer a.drawer-register{color:#0B0E14;background:#FDB913;font-weight:800;border-radius:6px;margin:.35rem 0;}',
     '#psd-nav .nav-left{display:flex;align-items:center;flex:1;}',
     '#psd-nav .nav-end{display:flex;align-items:center;margin-left:auto;}',
