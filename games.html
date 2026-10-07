@@ -257,6 +257,9 @@
         const noDescriptors = !g.content || /^none$/i.test(g.content);
         const costCls = /purchase/i.test(g.cost) ? 'cost-purchase' : /free/i.test(g.cost) ? 'cost-free' : '';
         const league = LEAGUE_LINKS.find(l => l.match.test(g.title));
+        /* A browser game's "Play at" link already is where to get it, so a
+           store link from the sheet would only repeat it. */
+        const store = league && league.external ? null : g.where;
         const [ratingMain, ...ratingRest] = g.rating.split(/\s+/);
 
         return `
@@ -285,7 +288,7 @@
 
                 ${g.notes ? `<p class="mt-5 text-sm text-gray-300 bg-white/5 border border-white/10 rounded-lg px-3 py-2">${esc(g.notes)}</p>` : ''}
             </div>
-            ${g.where ? `<a href="${esc(g.where.href)}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-6 py-3 border-t border-white/10 text-sm font-bold text-esports-yellow-text hover:text-white hover:bg-white/5 transition-colors no-underline"><span aria-hidden="true">🛒</span>${esc(g.where.text)} ↗<span class="sr-only"> (opens in a new tab)</span></a>` : ''}
+            ${store ? `<a href="${esc(store.href)}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-6 py-3 border-t border-white/10 text-sm font-bold text-esports-yellow-text hover:text-white hover:bg-white/5 transition-colors no-underline"><span aria-hidden="true">🛒</span>${esc(store.text)} ↗<span class="sr-only"> (opens in a new tab)</span></a>` : ''}
             ${league ? `<a href="${league.href}"${league.external ? ' target="_blank" rel="noopener noreferrer"' : ''} class="block px-6 py-3 border-t border-white/10 text-sm font-bold text-esports-blue-text hover:text-esports-yellow-text hover:bg-white/5 transition-colors no-underline">${league.text} ${league.external ? '↗<span class="sr-only"> (opens in a new tab)</span>' : '→'}</a>` : ''}
         </article>`;
     }
