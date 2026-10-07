@@ -12,11 +12,11 @@
     <!-- Link preview. Pasted into Gmail, Google Classroom or a newsletter,
          a page without these renders as a bare URL with no title or image. -->
     <link rel="canonical" href="https://psdesports.com/rocket-league/finals.html">
-    <meta name="description" content="The PSD Esports championship at the Quail Valley Esports Arena on Saturday, January 16, 2027. Bracket, qualified schools and the road to the title.">
+    <meta name="description" content="The PSD Esports championship at the Quail Valley Esports Arena on Saturday, January 16, 2027. Live brackets for both divisions, qualified schools and the road to the title.">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="PSD Esports">
     <meta property="og:title" content="Championship Finals">
-    <meta property="og:description" content="The PSD Esports championship at the Quail Valley Esports Arena on Saturday, January 16, 2027. Bracket, qualified schools and the road to the title.">
+    <meta property="og:description" content="The PSD Esports championship at the Quail Valley Esports Arena on Saturday, January 16, 2027. Live brackets for both divisions, qualified schools and the road to the title.">
     <meta property="og:url" content="https://psdesports.com/rocket-league/finals.html">
     <meta property="og:image" content="https://psdesports.com/og-image.png">
     <meta property="og:image:width" content="1200">
@@ -35,8 +35,7 @@
     --blue:#005696; --blue-t:#4DABF7;
     --text:#e5e7eb; --muted:#9ca3af;
     --bdr:rgba(255,255,255,0.08); --bdr2:rgba(255,255,255,0.12);
-    --gold:#FFD700; --gold-d:#a88a00; --silver:#C0C0C0; --bronze:#CD7F32;
-    --orange:#f97316; --orange-bg:rgba(249,115,22,0.10);
+    --gold:#FFD700;
   }
   *,*::before,*::after{box-sizing:border-box;}
   body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0;overflow-x:hidden;}
@@ -48,8 +47,6 @@
   .hero-side{position:absolute;inset:0;background:linear-gradient(to right,rgba(11,14,20,.85),transparent,rgba(11,14,20,.85));}
   canvas{position:absolute;inset:0;opacity:.5;pointer-events:none;}
   .hero-content{position:relative;z-index:10;text-align:center;padding:2rem 1rem 2.5rem;width:100%;}
-
-  /* FIX: hero-badge overflow on small screens */
   .hero-badge{display:inline-flex;align-items:center;gap:.5rem;padding:.25rem 1.1rem;border-left:4px solid var(--yellow-t);background:rgba(253,185,19,.12);color:var(--yellow-t);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem;max-width:90%;}
   .hero h1{font-family:'Rajdhani',sans-serif;font-size:clamp(2.4rem,6vw,4.5rem);font-weight:900;line-height:.9;text-transform:uppercase;letter-spacing:.08em;margin:0 0 .6rem;background:linear-gradient(90deg,var(--red-t),var(--yellow-t),var(--blue-t));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 12px rgba(0,0,0,.7));}
   .hero-sub{font-size:.95rem;color:#d1d5db;letter-spacing:.04em;}
@@ -62,219 +59,37 @@
   .cd-done{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.3rem;color:var(--yellow-t);margin-top:1rem;animation:pulse 1s ease-in-out infinite alternate;}
   @keyframes pulse{from{opacity:.7}to{opacity:1}}
 
-  /* ── UPDATE BAR ── */
-  /* FIX: bumped font-size and reduced letter-spacing for legibility on mobile */
-  .update-bar{background:rgba(0,86,150,.12);border-bottom:1px solid rgba(77,171,247,.15);padding:.4rem 1.25rem;display:flex;align-items:center;gap:.6rem;font-family:'Rajdhani',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);}
-  .live-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:livepulse 2s ease-in-out infinite;flex-shrink:0;}
-  @keyframes livepulse{0%,100%{opacity:.6}50%{opacity:1}}
+  /* ── LAYOUT ── */
+  .container{max-width:1100px;margin:0 auto;padding:2.5rem 1.25rem 4rem;}
+
+  /* ── DIVISION BRACKETS ── */
+  .brackets{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem;margin-bottom:3rem;}
+  .div-card{display:block;position:relative;overflow:hidden;background:var(--card);border:1px solid var(--bdr2);border-radius:16px;padding:1.75rem 1.5rem;text-decoration:none;color:inherit;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;}
+  .div-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;}
+  .div-card.pl::before{background:linear-gradient(90deg,var(--blue),var(--blue-t));}
+  .div-card.jrpl::before{background:linear-gradient(90deg,var(--red),var(--red-t));}
+  .div-card:hover{transform:translateY(-3px);border-color:rgba(255,215,0,.4);box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 40px rgba(255,215,0,.08);}
+  .div-card:focus-visible{outline:2px solid var(--yellow-t);outline-offset:3px;}
+  .div-eyebrow{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;}
+  .div-card.pl .div-eyebrow{color:var(--blue-t);}
+  .div-card.jrpl .div-eyebrow{color:var(--red-t);}
+  .div-title{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.9rem;text-transform:uppercase;letter-spacing:.06em;color:#fff;margin:.25rem 0 .5rem;line-height:1;}
+  .div-meta{font-size:.85rem;color:var(--muted);line-height:1.5;}
+  .div-go{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.1rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;color:var(--yellow-t);}
 
   /* ── SCHEDULE SECTION ── */
-  .schedule-section{border-top:1px solid var(--bdr);padding-top:2rem;margin-bottom:3.5rem;}
-  .sched-hdr{display:flex;align-items:center;gap:.9rem;margin-bottom:1.75rem;}
+  .schedule-section{border-top:1px solid var(--bdr);padding-top:2rem;}
+  .sched-hdr{display:flex;align-items:center;gap:.9rem;margin-bottom:1.75rem;flex-wrap:wrap;}
   .sched-hdr h2{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:clamp(1.1rem,2.5vw,1.5rem);text-transform:uppercase;letter-spacing:.12em;margin:0;color:#fff;}
   .sched-date-pill{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;padding:3px 11px;border-radius:9999px;background:rgba(255,215,0,.12);color:var(--gold);border:1px solid rgba(255,215,0,.25);}
-
   .sched-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.75rem;}
   .ss-item{background:rgba(255,255,255,.03);border:1px solid var(--bdr);border-radius:10px;padding:.85rem 1rem;}
   .ss-label{font-family:'Rajdhani',sans-serif;font-weight:800;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem;}
   .ss-value{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:#fff;line-height:1.3;}
   .sched-note{margin:1rem 0 0;font-size:.82rem;color:var(--muted);line-height:1.5;}
 
-
-  .st-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:.65rem;position:relative;z-index:2;}
-
-  .st-time{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.6rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;text-align:center;white-space:nowrap;line-height:1.3;}
-  .st-dot{width:10px;height:10px;border-radius:50%;margin:.25rem 0;flex-shrink:0;}
-  .st-dot.tc{background:var(--muted);box-shadow:0 0 0 2px rgba(156,163,175,.25);}
-  .st-dot.ts{background:var(--blue-t);box-shadow:0 0 6px rgba(77,171,247,.6);}
-  .st-dot.tf{background:var(--gold);animation:dotglow 1.5s ease-in-out infinite alternate;}
-  .st-dot.ta{background:#4ade80;box-shadow:0 0 6px rgba(74,222,128,.6);}
-  @keyframes dotglow{from{box-shadow:0 0 4px rgba(255,215,0,.5)}to{box-shadow:0 0 14px rgba(255,215,0,1)}}
-
-  /* FIX: hover scale only on devices that support hover */
-  @media(hover:hover){
-  }
-
-  @media(max-width:680px){
-  }
-
-  /* ── LAYOUT ── */
-  .container{max-width:1280px;margin:0 auto;padding:2rem 1.25rem 4rem;}
-  .league-section{margin-bottom:4rem;}
-  .league-section+.league-section{border-top:1px solid var(--bdr);padding-top:3.5rem;}
-  .league-hdr{display:flex;align-items:center;justify-content:center;gap:.9rem;margin-bottom:1.75rem;}
-  .league-hdr h2{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:clamp(1.3rem,3vw,1.9rem);text-transform:uppercase;letter-spacing:.1em;margin:0;}
-  .lpill{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;padding:3px 11px;border-radius:9999px;}
-  .lpill.pl{background:rgba(0,86,150,.3);color:var(--blue-t);border:1px solid rgba(77,171,247,.3);}
-  .lpill.jrpl{background:rgba(200,16,46,.2);color:var(--red-t);border:1px solid rgba(255,107,107,.3);}
-  .gline{width:50px;height:3px;background:linear-gradient(90deg,var(--red),var(--yellow),var(--blue));border-radius:2px;flex-shrink:0;}
-
-  /* ── BRACKET GRID ── */
-  .bracket{display:grid;grid-template-columns:1fr 1.8fr 1fr;align-items:center;gap:0;width:100%;}
-  .semi-col{display:flex;flex-direction:column;gap:.75rem;position:relative;}
-  .semi-col .matchup-card{width:100%;}
-
-  /* connector arrows pointing inward from each semi column */
-  .semi-col.left-semi::after,
-  .semi-col.right-semi::after{
-    content:'';position:absolute;top:50%;width:22px;height:2px;
-    background:linear-gradient(90deg,rgba(255,215,0,.5),rgba(255,215,0,.15));
-  }
-  .semi-col.left-semi::after{right:-22px;transform:translateY(-50%);}
-  .semi-col.right-semi::after{left:-22px;transform:translateY(-50%);background:linear-gradient(270deg,rgba(255,215,0,.5),rgba(255,215,0,.15));}
-
-  /* arrow chevrons on the semi cards facing inward */
-  .semi-arrow{display:flex;align-items:center;justify-content:center;height:20px;font-size:.7rem;color:rgba(255,215,0,.45);letter-spacing:-.1em;pointer-events:none;user-select:none;margin-top:.15rem;}
-
-  .champ-col{display:flex;flex-direction:column;align-items:center;gap:1rem;padding:1.5rem .75rem;position:relative;width:100%;}
-
-  /* radial spotlight glow behind the whole championship column */
-  .champ-col::before{
-    content:'';position:absolute;inset:-40px -60px;
-    background:radial-gradient(ellipse 70% 60% at 50% 45%,rgba(255,215,0,.09) 0%,transparent 70%);
-    pointer-events:none;z-index:0;animation:spotglow 4s ease-in-out infinite alternate;
-  }
-  @keyframes spotglow{from{opacity:.6}to{opacity:1}}
-
-  .champ-col > *{position:relative;z-index:1;}
-
-  .champ-trophy{font-size:4.5rem;animation:tpulse 2s ease-in-out infinite;line-height:1;}
-  @keyframes tpulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 16px rgba(255,215,0,.6))}50%{transform:scale(1.12);filter:drop-shadow(0 0 36px rgba(255,215,0,1))}}
-
-  .champ-eyebrow{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.62rem;letter-spacing:.35em;text-transform:uppercase;color:rgba(255,215,0,.55);text-align:center;}
-  .champ-lbl{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.35rem;letter-spacing:.18em;text-transform:uppercase;background:linear-gradient(90deg,var(--gold-d),var(--gold),#fff,var(--gold),var(--gold-d));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;text-align:center;animation:shimmer 3s linear infinite;}
-  @keyframes shimmer{to{background-position:200% center}}
-
-  /* Championship card overrides — everything bigger + more glow */
-  .champ-card{
-    border-color:rgba(255,215,0,.55)!important;
-    box-shadow:0 0 0 1px rgba(255,215,0,.25),0 24px 80px rgba(0,0,0,.85),0 0 80px rgba(255,215,0,.18),inset 0 0 40px rgba(255,215,0,.03)!important;
-    border-radius:18px!important;
-  }
-  .champ-card::before{background:linear-gradient(90deg,var(--gold-d),var(--gold),#fff,var(--gold),var(--gold-d))!important;height:6px!important;background-size:200% auto!important;animation:shimmer 2.5s linear infinite!important;}
-  .champ-card .matchup-hdr{padding:1.1rem 1.5rem .9rem;background:rgba(255,215,0,.07);gap:.6rem;}
-  .champ-card .matchup-hdr-title{font-size:.9rem;letter-spacing:.3em;color:var(--gold);}
-  .champ-card .matchup-start-time{font-size:.8rem;padding:3px 14px;}
-  .champ-card .matchup-school-name{font-size:1.25rem;letter-spacing:.06em;max-width:min(220px,50vw);}
-  .champ-card .matchup-vs{gap:.45rem;}
-  .champ-card .vs-sep{font-size:1rem;color:rgba(255,215,0,.5);}
-  .champ-card .matchup-team-row{gap:.7rem;}
-  .champ-card .logo-sm{width:36px;height:36px;border-radius:7px;padding:3px;}
-  .champ-card .logo-fb-sm{width:36px;height:36px;border-radius:7px;font-size:.7rem;}
-  .champ-card .sub-bar{background:rgba(0,0,0,.4);padding:.55rem 1.25rem .45rem;}
-  .champ-card .sub-bar-label{font-size:.72rem;letter-spacing:.22em;}
-  .champ-card .competitor{padding:1rem 1.4rem;gap:10px;}
-  .champ-card .comp-name{font-size:1.05rem;letter-spacing:.05em;}
-  .champ-card .score-disp{font-size:1.35rem;}
-  .champ-card .crown{font-size:.95rem;}
-  .champ-card .game-row{padding:.55rem 1.25rem;background:rgba(0,0,0,.25);}
-  .champ-card .gpill{font-size:.85rem;padding:2px 9px;}
-  .champ-card .result-bar{padding:1rem 1.5rem;font-size:.95rem;letter-spacing:.12em;}
-  /* re-assert team rank colors inside the gold-themed champ card */
-  .champ-card .matchup-school-name.t1-name{color:var(--blue-t);}
-  .champ-card .matchup-school-name.t2-name{color:var(--red-t);}
-  .champ-card .competitor.t1-team{border-left:4px solid rgba(77,171,247,.6);}
-  .champ-card .competitor.t2-team{border-left:4px solid rgba(255,107,107,.6);}
-  .champ-card .competitor.t1-team .comp-name{color:var(--blue-t);}
-  .champ-card .competitor.t2-team .comp-name{color:var(--red-t);}
-  .champ-card .competitor.win.t1-team .comp-name,
-  .champ-card .competitor.win.t2-team .comp-name{color:#4ade80;}
-
-  .matchup-card{background:var(--card);border:1px solid var(--bdr2);border-radius:14px;overflow:hidden;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.5);}
-  .matchup-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--yellow),var(--blue));}
-  /* champ-card base border/glow handled in the championship block above */ .champ-col .matchup-card{width:100%;}
-
-  .matchup-hdr{padding:.55rem 1rem .5rem;background:#070a10;border-bottom:1px solid var(--bdr);display:flex;flex-direction:column;align-items:center;gap:.4rem;}
-  .matchup-hdr-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.67rem;letter-spacing:.2em;text-transform:uppercase;color:var(--blue-t);text-align:center;}
-  .matchup-card.champ-card .matchup-hdr-title{color:var(--gold);}
-
-  /* ── MATCH START TIME ── */
-  .matchup-start-time{display:inline-flex;align-items:center;gap:.3rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--yellow-t);background:rgba(253,185,19,.1);border:1px solid rgba(253,185,19,.2);border-radius:9999px;padding:2px 10px;}
-  .matchup-start-time svg{flex-shrink:0;}
-  .matchup-card.champ-card .matchup-start-time{color:var(--gold);background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.25);}
-
-  .matchup-vs{display:flex;flex-direction:column;align-items:center;gap:.2rem;width:100%;}
-  .matchup-team-row{display:flex;align-items:center;gap:.5rem;justify-content:center;width:100%;}
-
-  /* FIX: school names clamp and allow wrapping instead of busting out */
-  .matchup-school-name{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.9rem;letter-spacing:.04em;text-transform:uppercase;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:min(160px,40vw);}
-  .vs-sep{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.72rem;color:var(--muted);letter-spacing:.1em;}
-
-  .sb{flex-shrink:0;width:22px;height:22px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.65rem;}
-  .sb.s1{background:rgba(0,86,150,.25);border:1px solid rgba(77,171,247,.5);color:var(--blue-t);}
-  .sb.s2{background:rgba(0,86,150,.2);border:1px solid rgba(77,171,247,.4);color:var(--blue-t);}
-  .sb.s3{background:rgba(200,16,46,.18);border:1px solid rgba(255,107,107,.4);color:var(--red-t);}
-  .sb.s4{background:rgba(200,16,46,.15);border:1px solid rgba(255,107,107,.35);color:var(--red-t);}
-
-  .sub-section{border-bottom:1px solid var(--bdr);}
-  .sub-section:last-of-type{border-bottom:none;}
-  .sub-bar{display:flex;align-items:center;justify-content:space-between;padding:.4rem .9rem .3rem;background:rgba(0,0,0,.25);gap:.5rem;}
-  .sub-bar-label{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);flex-shrink:0;}
-  .sub-result-pill{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:9999px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50%;}
-  .sub-result-pill.w{background:rgba(22,163,74,.25);color:#4ade80;border:1px solid rgba(74,222,128,.3);}
-  .sub-result-pill.l{background:rgba(185,28,28,.2);color:var(--red-t);border:1px solid rgba(239,68,68,.3);}
-  .sub-section.tb-section .sub-bar{background:var(--orange-bg);border-left:3px solid var(--orange);}
-  .sub-section.tb-section .sub-bar-label{color:var(--orange);}
-
-  .competitor{display:flex;align-items:center;gap:7px;padding:.65rem .9rem;border-bottom:1px solid var(--bdr);}
-  .competitor:last-of-type{border-bottom:none;}
-  .competitor.win{background:rgba(22,163,74,.1);}
-  .competitor.loss{opacity:.55;}
-  .competitor.tbd{opacity:.4;}
-  /* team rank coloring: t1 = higher seed = blue, t2 = lower seed = red */
-  .competitor.t1-team{border-left:3px solid rgba(77,171,247,.5);}
-  .competitor.t2-team{border-left:3px solid rgba(255,107,107,.5);}
-  .competitor.t1-team .comp-name{color:var(--blue-t);}
-  .competitor.t2-team .comp-name{color:var(--red-t);}
-  .competitor.win.t1-team .comp-name,.competitor.win.t2-team .comp-name{color:#4ade80;}
-  .matchup-school-name.t1-name{color:var(--blue-t);}
-  .matchup-school-name.t2-name{color:var(--red-t);}
-  .logo-sm{width:26px;height:26px;object-fit:contain;border-radius:5px;background:rgba(255,255,255,.06);padding:2px;flex-shrink:0;}
-  .logo-fb-sm{width:26px;height:26px;border-radius:5px;background:rgba(0,86,150,.3);border:1px solid rgba(77,171,247,.3);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.56rem;color:var(--blue-t);flex-shrink:0;}
-  .comp-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  .comp-name.tbd{color:var(--muted);font-style:italic;font-weight:500;}
-  .crown{font-size:.75rem;animation:cglow 1.5s ease-in-out infinite alternate;flex-shrink:0;}
-  @keyframes cglow{from{filter:drop-shadow(0 0 3px var(--gold))}to{filter:drop-shadow(0 0 8px var(--gold))}}
-  .score-disp{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1rem;min-width:20px;text-align:right;flex-shrink:0;}
-  .score-disp.win{color:#4ade80;}
-  .score-disp.loss{color:var(--red-t);}
-  .score-disp.none{color:var(--yellow-t);}
-
-  /* FIX: hide "Games" label on small screens to free up pill space */
-  .game-row{display:flex;gap:.3rem;padding:.4rem .9rem;background:rgba(0,0,0,.2);align-items:center;flex-wrap:wrap;}
-  .g-lbl{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.6rem;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;margin-right:.15rem;}
-  @media(max-width:420px){.g-lbl{display:none;}}
-  .gpill{display:inline-flex;background:rgba(255,255,255,.07);border:1px solid var(--bdr);border-radius:4px;padding:1px 6px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.74rem;color:#d1d5db;}
-  .gpill.gw{border-color:rgba(74,222,128,.3);color:#4ade80;background:rgba(22,163,74,.12);}
-  .gpill.gl{border-color:rgba(239,68,68,.3);color:var(--red-t);background:rgba(185,28,28,.12);}
-  .gsep{color:var(--muted);font-size:.65rem;margin:0 1px;}
-  .ggsep{color:var(--bdr2);margin:0 3px;font-size:.65rem;}
-
-  .result-bar{padding:.6rem 1rem;display:flex;align-items:center;gap:.5rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;}
-  .result-bar.advance{background:rgba(22,163,74,.12);color:#4ade80;border-top:1px solid rgba(74,222,128,.2);}
-  .result-bar.champ{background:rgba(255,215,0,.1);color:var(--gold);border-top:1px solid rgba(255,215,0,.2);}
-  .result-bar.tb-needed{background:var(--orange-bg);color:var(--orange);border-top:1px solid rgba(249,115,22,.25);}
-  .result-bar.waiting{background:rgba(0,0,0,.15);color:var(--muted);border-top:1px solid var(--bdr);}
-
-  .winner-banner{display:none;text-align:center;margin-top:1.5rem;padding:1.25rem;background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(0,86,150,.08));border:1px solid rgba(255,215,0,.3);border-radius:14px;}
-  .winner-banner.show{display:block;animation:bin .5s ease-out;}
-  @keyframes bin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-  .wban-title{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:clamp(1rem,2.5vw,1.5rem);text-transform:uppercase;letter-spacing:.08em;background:linear-gradient(90deg,var(--gold),#fff,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;}
-  .wban-school{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:clamp(1.3rem,4vw,2.2rem);text-transform:uppercase;letter-spacing:.06em;color:var(--yellow-t);display:block;}
-
-  .loader{padding:2.5rem;font-size:.88rem;color:var(--muted);text-align:center;font-family:'Rajdhani',sans-serif;letter-spacing:.1em;text-transform:uppercase;}
   footer{text-align:center;margin-top:2rem;font-size:.74rem;color:var(--muted);font-family:'Rajdhani',sans-serif;letter-spacing:.1em;text-transform:uppercase;}
 
-  /* bracket mobile */
-  @media(max-width:900px){
-    .bracket{grid-template-columns:1fr;width:100%;}
-    .champ-col{padding:1.5rem 0;}
-    .champ-col::before{inset:-20px -20px;}
-    .matchup-card,.semi-col .matchup-card{width:100%;max-width:500px;margin:0 auto;}
-    .semi-col{gap:1rem;}
-    .semi-col.left-semi::after,.semi-col.right-semi::after{display:none;}
-    .semi-arrow{display:none;}
-  }
   @media(prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}
     canvas{display:none;}
@@ -299,24 +114,34 @@
   </div>
 </header>
 
-<div class="update-bar">
-  <span class="live-dot"></span>
-  <span id="update-msg">Loading…</span>
-</div>
-
 <div class="container">
+
+  <!-- Each division has its own bracket page, sized to fit one screen so it
+       can be shown on the livestream without scrolling. -->
+  <section class="brackets" aria-label="Championship brackets">
+    <a class="div-card pl" href="/rocket-league/finals-late-release.html">
+      <div class="div-eyebrow">Promise: Late Release</div>
+      <div class="div-title">Late Release Bracket</div>
+      <div class="div-meta">Top 4 schools · Semifinals and the Championship Final, updated live.</div>
+      <span class="div-go">View bracket →</span>
+    </a>
+    <a class="div-card jrpl" href="/rocket-league/finals-early-release.html">
+      <div class="div-eyebrow">Promise: Early Release</div>
+      <div class="div-title">Early Release Bracket</div>
+      <div class="div-meta">Top 4 schools · Semifinals and the Championship Final, updated live.</div>
+      <span class="div-go">View bracket →</span>
+    </a>
+  </section>
 
   <section id="day-of-schedule" class="schedule-section" aria-label="Championship Day">
     <div class="sched-hdr">
-      <span style="font-size:1.1rem">📅</span>
+      <span style="font-size:1.1rem" aria-hidden="true">📅</span>
       <h2>Championship Day</h2>
       <span class="sched-date-pill" id="finals-date-pill">—</span>
     </div>
 
-    <!-- The per-match run of play is not published yet. It used to be a
-         hardcoded timeline carried over from last season, which contradicted
-         this season's 8:00 AM start, so it now states only what is confirmed
-         and fills the times in from data/leagues.js once they are set. -->
+    <!-- The per-match run of play is not published yet. It states only what
+         is confirmed and fills the times in from data/leagues.js once set. -->
     <div class="sched-summary">
       <div class="ss-item">
         <div class="ss-label">Date</div>
@@ -338,348 +163,12 @@
     <p class="sched-note">The full run of play — check-in, semifinals and finals times for each division — will be posted here and shared through Google Classroom.</p>
   </section>
 
-  <section class="league-section">
-    <div class="league-hdr">
-      <span class="lpill pl">Late Release</span>
-      <h2>Championship Bracket</h2>
-      <div class="gline"></div>
-    </div>
-    <div id="pl-bracket"><div class="loader">Loading bracket…</div></div>
-    <div id="pl-banner" class="winner-banner" aria-live="polite"></div>
-  </section>
-
-  <section class="league-section">
-    <div class="league-hdr">
-      <span class="lpill jrpl">Early Release</span>
-      <h2>Championship Bracket</h2>
-      <div class="gline"></div>
-    </div>
-    <div id="jrpl-bracket"><div class="loader">Loading bracket…</div></div>
-    <div id="jrpl-banner" class="winner-banner" aria-live="polite"></div>
-  </section>
-
-  <footer><p>PSD Esports · Finals Day · Auto-refreshes every 30 seconds</p></footer>
+  <footer><p>PSD Esports · Championship Finals</p></footer>
 </div>
 
 <script src="/data/leagues.js"></script>
 <script src="/data/psd-data.js"></script>
 <script>
-// Logic to move the schedule based on the date
-function adjustSchedulePosition() {
-  const TOURNAMENT_DATE = PSD.config.finalsDate;
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  const todayStr = `${year}-${month}-${day}`;
-
-  const container = document.querySelector('.container');
-  const schedule = document.getElementById('day-of-schedule');
-
-  if (todayStr === TOURNAMENT_DATE) {
-    container.appendChild(schedule);
-  } else {
-    container.prepend(schedule);
-  }
-}
-
-// Logos live in data/leagues.js so one school edit reaches every page.
-
-const LEAGUES = PSD.config.leagues.map(lg => ({
-  id:      lg.id,
-  label:   lg.name,
-
-  times:   lg.finalsTimes,
-  sheetId: lg.matchSheet,
-  gid:     lg.finalsGid,
-}));
-
-// Strips the side off "Shadow Hills ORANGE". A/B is last season's naming and
-// stays recognised so an archived bracket still reads.
-function schoolOf(n) { return (n||'').replace(/\s+(ORANGE|BLUE|[AB])$/i,'').trim(); }
-function toNum(v)    { const n=parseInt(v); return Number.isFinite(n)?n:null; }
-function cleanTB(v)  { const s=(v||'').trim(); return (s.toLowerCase()==='tiebreaker'||s==='')?'':s; }
-
-function getLogo(name) {
-  return PSD.config.schoolLogo(name);
-}
-function logoHtml(name) {
-  const url = getLogo(name);
-  const init = name.replace(/\s+[AB]$/i,'').split(/\s+/).map(w=>w[0]).join('').substring(0,3).toUpperCase();
-  return url
-    ? `<img src="${url}" alt="${name} logo" class="logo-sm" loading="lazy" onerror="this.style.display='none'">`
-    : `<div class="logo-fb-sm">${init}</div>`;
-}
-
-async function fetchCSV(sheetId, gid) {
-  const text = await PSD.fetchCSV(sheetId, gid);
-  return text.trim().split('\n')
-    .map(row => row.split(',').map(c => c.replace(/^"|"$/g,'').trim()));
-}
-
-function parseSheet(rows) {
-  const g = (r,c) => rows[r]?.[c] || '';
-  return {
-    s1: {
-      school1: schoolOf(g(3,1)),
-      school2: schoolOf(g(4,1)),
-      a: { t1:{name:g(3,1),sc:[g(3,2),g(3,3),g(3,4)]}, t2:{name:g(4,1),sc:[g(4,2),g(4,3),g(4,4)]} },
-      b: { t1:{name:g(5,1),sc:[g(5,2),g(5,3),g(5,4)]}, t2:{name:g(6,1),sc:[g(6,2),g(6,3),g(6,4)]} },
-      tb1: cleanTB(g(3,5)), tb2: cleanTB(g(4,5)),
-    },
-    s2: {
-      school1: schoolOf(g(7,1)),
-      school2: schoolOf(g(8,1)),
-      a: { t1:{name:g(7,1), sc:[g(7,2), g(7,3), g(7,4)]}, t2:{name:g(8,1), sc:[g(8,2), g(8,3), g(8,4)]} },
-      b: { t1:{name:g(9,1), sc:[g(9,2), g(9,3), g(9,4)]}, t2:{name:g(10,1),sc:[g(10,2),g(10,3),g(10,4)]} },
-      tb1: cleanTB(g(7,5)), tb2: cleanTB(g(8,5)),
-    },
-    fin: {
-      school1: schoolOf(g(3,8)),
-      school2: schoolOf(g(4,8)),
-      a: { t1:{name:g(3,8),sc:[g(3,9),g(3,10),g(3,11)]}, t2:{name:g(4,8),sc:[g(4,9),g(4,10),g(4,11)]} },
-      b: { t1:{name:g(5,8),sc:[g(5,9),g(5,10),g(5,11)]}, t2:{name:g(6,8),sc:[g(6,9),g(6,10),g(6,11)]} },
-      tb1: cleanTB(g(3,12)), tb2: cleanTB(g(4,12)),
-    },
-  };
-}
-
-function calcMatch(t1, t2) {
-  let w1=0, w2=0, gp=0;
-  const games = t1.sc.map((v1,i) => {
-    const n1=toNum(v1), n2=toNum(t2.sc[i]);
-    if (n1===null||n2===null) return null;
-    gp++;
-    if (n1>n2) { w1++; return {n1,n2,gw:1}; }
-    if (n2>n1) { w2++; return {n1,n2,gw:2}; }
-    return {n1,n2,gw:0};
-  });
-  const winner = w1>=2?1 : w2>=2?2 : 0;
-  return {w1, w2, gp, games, winner};
-}
-
-function solveMatchup(s1, s2, aRes, bRes, tb1, tb2) {
-  const aWin = aRes.winner===1?s1 : aRes.winner===2?s2 : null;
-  const bWin = bRes.winner===1?s1 : bRes.winner===2?s2 : null;
-  if (!aWin || !bWin) return {winner:null, isSplit:false, needsTB:false, aWin, bWin, tbN1:null, tbN2:null};
-  if (aWin===bWin) return {winner:aWin, isSplit:false, needsTB:false, aWin, bWin, tbN1:null, tbN2:null};
-
-  let tbWinner = null, tbN1 = null, tbN2 = null;
-  const n1 = toNum(tb1), n2 = toNum(tb2);
-  if (n1 !== null && n2 !== null) {
-    tbN1 = n1; tbN2 = n2;
-    if (n1 !== n2) tbWinner = n1 > n2 ? s1 : s2;
-  } else if (tb1 && !tb2) {
-    const parts = tb1.split('-').map(p => p.trim());
-    if (parts.length === 2) {
-      const p1 = toNum(parts[0]), p2 = toNum(parts[1]);
-      if (p1 !== null && p2 !== null) {
-        tbN1 = p1; tbN2 = p2;
-        if (p1 !== p2) tbWinner = p1 > p2 ? s1 : s2;
-      }
-    }
-    if (!tbWinner) {
-      const t = tb1.toLowerCase();
-      if (s1 && t.includes(s1.toLowerCase())) tbWinner = s1;
-      else if (s2 && t.includes(s2.toLowerCase())) tbWinner = s2;
-    }
-  }
-
-  return {winner:tbWinner, isSplit:true, needsTB:!tbWinner, aWin, bWin, tbN1, tbN2};
-}
-
-function seedCls(s) { return ['','s1','s2','s3','s4'][s]||''; }
-
-function subSectionHtml(t1, t2, aRes, label, isTB, higherCls, lowerCls) {
-  higherCls = higherCls || 't1-team';
-  lowerCls  = lowerCls  || 't2-team';
-  const {w1, w2, gp, games, winner} = aRes;
-  const any = gp > 0;
-  const t1w = winner===1, t2w = winner===2;
-  const s1 = schoolOf(t1.name), s2 = schoolOf(t2.name);
-
-  const pill = winner===1
-    ? `<span class="sub-result-pill w">${s1}</span>`
-    : winner===2
-    ? `<span class="sub-result-pill l">${s2}</span>`
-    : '';
-
-  const row = (team, gw, isWin, isLoss, rankCls) => {
-    const isTbd = !team.name;
-    return `<div class="competitor ${isWin?'win':isLoss?'loss':isTbd?'tbd':''} ${rankCls}">
-      ${isTbd?'':logoHtml(team.name)}
-      <span class="comp-name${isTbd?' tbd':''}">${team.name||'TBD'}</span>
-      ${isWin?'<span class="crown">👑</span>':''}
-      <span class="score-disp ${isWin?'win':isLoss?'loss':any?'none':''}">${any?gw:''}</span>
-    </div>`;
-  };
-
-  const playedGames = games.filter(g=>g!==null);
-  const gamePills = playedGames.length ? `
-    <div class="game-row"><span class="g-lbl">Games</span>${
-      games.map(g => {
-        if (!g) return '';
-        return `<span class="gpill ${g.gw===1?'gw':g.gw===2?'gl':''}">${g.n1}</span><span class="gsep">–</span><span class="gpill ${g.gw===2?'gw':g.gw===1?'gl':''}">${g.n2}</span>`;
-      }).filter(Boolean).join('<span class="ggsep">|</span>')
-    }</div>` : '';
-
-  return `<div class="sub-section${isTB?' tb-section':''}">
-    <div class="sub-bar">
-      <span class="sub-bar-label">${label}</span>
-      ${pill}
-    </div>
-    ${row(t1, w1, t1w, t2w, higherCls)}
-    ${row(t2, w2, t2w, t1w, lowerCls)}
-    ${gamePills}
-  </div>`;
-}
-
-const CLOCK_ICON = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
-
-function matchupCardHtml(matchData, label, seed1, seed2, isChamp, startTime, t1IsHigher) {
-  t1IsHigher = (t1IsHigher !== false); // default true
-  const higherCls = t1IsHigher ? 't1-team' : 't2-team';
-  const lowerCls  = t1IsHigher ? 't2-team' : 't1-team';
-  const higherNameCls = t1IsHigher ? 't1-name' : 't2-name';
-  const lowerNameCls  = t1IsHigher ? 't2-name' : 't1-name';
-  const {school1, school2, a, b, tb1, tb2} = matchData;
-  const s1 = school1 || (isChamp ? 'Winner – Semi 1' : `Seed ${seed1}`);
-  const s2 = school2 || (isChamp ? 'Winner – Semi 2' : `Seed ${seed2}`);
-
-  const aRes = calcMatch(a.t1, a.t2);
-  const bRes = calcMatch(b.t1, b.t2);
-  const {winner, isSplit, needsTB, aWin, bWin, tbN1, tbN2} = solveMatchup(s1, s2, aRes, bRes, tb1, tb2);
-
-  const hasTBData = tbN1 !== null || tbN2 !== null || tb1;
-  const tbSection = isSplit ? `
-    <div class="sub-section tb-section">
-      <div class="sub-bar">
-        <span class="sub-bar-label">🔥 School Tiebreaker</span>
-        ${winner ? `<span class="sub-result-pill w">${winner} wins</span>` : hasTBData ? `<span class="sub-result-pill" style="background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3)">Deciding…</span>` : ''}
-      </div>
-      <div class="competitor ${higherCls} ${winner===s1?'win':winner===s2?'loss':''}">
-        ${logoHtml(s1)}
-        <span class="comp-name">${s1}</span>
-        ${winner===s1?'<span class="crown">👑</span>':''}
-        ${tbN1!==null ? `<span class="score-disp ${winner===s1?'win':winner===s2?'loss':'none'}">${tbN1}</span>` : ''}
-      </div>
-      <div class="competitor ${lowerCls} ${winner===s2?'win':winner===s1?'loss':''}">
-        ${logoHtml(s2)}
-        <span class="comp-name">${s2}</span>
-        ${winner===s2?'<span class="crown">👑</span>':''}
-        ${tbN2!==null ? `<span class="score-disp ${winner===s2?'win':winner===s1?'loss':'none'}">${tbN2}</span>` : ''}
-      </div>
-    </div>` : '';
-
-  let barCls='waiting', barTxt='⏳ Awaiting results';
-  if (winner)           { barCls=isChamp?'champ':'advance'; barTxt=isChamp?`👑 ${winner} — Champions!`:`🏆 ${winner} advances`; }
-  else if (needsTB && hasTBData) { barCls='tb-needed'; barTxt='🔥 Tiebreaker — score incomplete'; }
-  else if (needsTB)     { barCls='tb-needed'; barTxt='🔥 Tiebreaker needed'; }
-  else if (aWin||bWin)  { barTxt=`⏳ Waiting for ${!aWin?'ORANGE Team':'BLUE Team'} result`; }
-  else if (aRes.gp>0||bRes.gp>0) { barTxt='⏳ In progress'; }
-
-  const s1SeedBadge = seed1 ? `<span class="sb ${seedCls(seed1)}">#${seed1}</span>` : '';
-  const s2SeedBadge = seed2 ? `<span class="sb ${seedCls(seed2)}">#${seed2}</span>` : '';
-
-  const timeHtml = startTime
-    ? `<span class="matchup-start-time">${CLOCK_ICON}${startTime}</span>`
-    : '';
-
-  return `<div class="matchup-card${isChamp?' champ-card':''}">
-    <div class="matchup-hdr">
-      <span class="matchup-hdr-title">${label}</span>
-      ${timeHtml}
-      <div class="matchup-vs">
-        <div class="matchup-team-row">
-          ${s1SeedBadge}
-          ${school1 ? logoHtml(s1) : ''}
-          <span class="matchup-school-name ${higherNameCls}" title="${s1}">${s1}</span>
-        </div>
-        <span class="vs-sep">VS</span>
-        <div class="matchup-team-row">
-          ${s2SeedBadge}
-          ${school2 ? logoHtml(s2) : ''}
-          <span class="matchup-school-name ${lowerNameCls}" title="${s2}">${s2}</span>
-        </div>
-      </div>
-    </div>
-    ${subSectionHtml(a.t1, a.t2, aRes, 'ORANGE Team', false, higherCls, lowerCls)}
-    ${subSectionHtml(b.t1, b.t2, bRes, 'BLUE Team', false, higherCls, lowerCls)}
-    ${tbSection}
-    <div class="result-bar ${barCls}">${barTxt}</div>
-  </div>`;
-}
-
-function renderLeague(lg, d) {
-  const {times} = lg;
-
-  // Determine which finalist is the higher seed by tracing back through the semis.
-  // In Semi1: school1=seed1, school2=seed4. In Semi2: school1=seed2, school2=seed3.
-  const seedOf = (school) => {
-    if (!school) return 99;
-    if (school === d.s1.school1) return 1;
-    if (school === d.s1.school2) return 4;
-    if (school === d.s2.school1) return 2;
-    if (school === d.s2.school2) return 3;
-    return 99;
-  };
-  const finT1IsHigher = seedOf(d.fin.school1) <= seedOf(d.fin.school2);
-  const bracketHtml = `
-    <div class="bracket">
-      <div class="semi-col left-semi">
-        ${matchupCardHtml(d.s1, 'Semifinal 1 · #1 vs #4', 1, 4, false, times.s1)}
-        <div class="semi-arrow">▶ ▶</div>
-      </div>
-      <div class="champ-col">
-        <div class="champ-trophy">🏆</div>
-        <div class="champ-eyebrow">Grand Final</div>
-        <div class="champ-lbl">Championship</div>
-        ${matchupCardHtml(d.fin, 'Championship Final', null, null, true, times.fin, finT1IsHigher)}
-      </div>
-      <div class="semi-col right-semi">
-        ${matchupCardHtml(d.s2, 'Semifinal 2 · #2 vs #3', 2, 3, false, times.s2)}
-        <div class="semi-arrow">◀ ◀</div>
-      </div>
-    </div>`;
-
-  document.getElementById(`${lg.id}-bracket`).innerHTML = bracketHtml;
-
-  const finARes = calcMatch(d.fin.a.t1, d.fin.a.t2);
-  const finBRes = calcMatch(d.fin.b.t1, d.fin.b.t2);
-  const {winner: champion} = solveMatchup(d.fin.school1, d.fin.school2, finARes, finBRes, d.fin.tb1, d.fin.tb2);
-  const banner = document.getElementById(`${lg.id}-banner`);
-  if (champion) {
-    banner.innerHTML = `<div class="wban-title">🏆 ${lg.label} Champions</div><span class="wban-school">${champion}</span>`;
-    banner.classList.add('show');
-  } else {
-    banner.classList.remove('show');
-    banner.innerHTML = '';
-  }
-}
-
-
-async function refresh() {
-  // Bracket tab for this season is not published yet — nothing to poll for.
-  if (!LEAGUES.some(lg => lg.sheetId && lg.gid)) {
-    document.getElementById('update-msg').textContent =
-      'Bracket opens once the regular season ends.';
-    return;
-  }
-
-  try {
-    await Promise.all(LEAGUES.map(async lg => {
-      const rows = await fetchCSV(lg.sheetId, lg.gid);
-      const d = parseSheet(rows);
-      renderLeague(lg, d);
-    }));
-    const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-    document.getElementById('update-msg').textContent = `Live scores · Updated ${t} · Auto-refreshes every 30s`;
-  } catch(e) {
-    console.error(e);
-    document.getElementById('update-msg').textContent = 'Failed to load — will retry';
-  }
-}
-
 /** Fills the Championship Day card from data/leagues.js. */
 function initChampionshipDay() {
   const d = PSD.finalsStart();
@@ -687,27 +176,24 @@ function initChampionshipDay() {
   const day  = document.getElementById('finals-day-value');
   const time = document.getElementById('finals-time-value');
   if (!d) {
-    if (pill) pill.textContent = 'Date TBA';
-    if (day)  day.textContent  = 'To be announced';
-    if (time) time.textContent = 'To be announced';
+    pill.textContent = 'Date TBA';
+    day.textContent  = 'To be announced';
+    time.textContent = 'To be announced';
     return;
   }
-  if (pill) pill.textContent = d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
-  if (day)  day.textContent  = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
-  if (time) time.textContent = d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
+  pill.textContent = d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+  day.textContent  = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+  time.textContent = d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
 }
 
 function initCountdown() {
   // Read the date from data/leagues.js rather than hardcoding it — a stale
   // literal here is why this box read "It's Finals Day!" all summer.
   const target = PSD.finalsStart(), el = document.getElementById('cd');
-
-  // 2026-27 finals day is TBA. Say so instead of counting down to nothing.
   if (!target) {
     el.innerHTML = `<div class="cd-done">Championship date to be announced</div>`;
     return;
   }
-
   function tick() {
     const d = target - new Date();
     if (d <= 0) { el.innerHTML=`<div class="cd-done">🚀 It's Finals Day!</div>`; return; }
@@ -730,78 +216,10 @@ function initParticles() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  adjustSchedulePosition();
   initChampionshipDay();
   initCountdown();
   if(!window.matchMedia('(prefers-reduced-motion:reduce)').matches) initParticles();
-  refresh();
-  /* The bracket tab is read through the fast feed, so on finals day the page
-     itself is the slowest link — hence every 30 seconds rather than 60. A tab
-     left open in the background stops asking and catches up the moment it is
-     looked at again, so a room full of phones in pockets costs nothing. */
-  setInterval(() => { if (document.visibilityState === 'visible') refresh(); }, 30000);
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') refresh();
-  });
 });
-</script>
-<style>
-.io-reveal{opacity:0;transform:translateY(28px);transition:opacity .55s cubic-bezier(.4,0,.2,1),transform .55s cubic-bezier(.4,0,.2,1);}
-.io-reveal.io-visible{opacity:1;transform:none;}
-.io-reveal-left{opacity:0;transform:translateX(-24px);transition:opacity .5s cubic-bezier(.4,0,.2,1),transform .5s cubic-bezier(.4,0,.2,1);}
-.io-reveal-left.io-visible{opacity:1;transform:none;}
-.io-stagger .io-reveal,.io-stagger .io-reveal-left{transition-delay:calc(var(--i,0)*.08s);}
-</style>
-<script>
-(function(){
-  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-  var io=new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting){e.target.classList.add('io-visible');io.unobserve(e.target);}
-    });
-  },{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
-
-  function markAndObserve(sel,cls,parent){
-    var els=(parent||document).querySelectorAll(sel);
-    els.forEach(function(el,i){
-      el.classList.add(cls);
-      el.style.setProperty('--i',i);
-      io.observe(el);
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded',function(){
-    /* season blocks */
-    markAndObserve('.season','io-reveal');
-    /* champion cards — stagger within their grid */
-    document.querySelectorAll('.champ-grid').forEach(function(g){
-      g.classList.add('io-stagger');
-      markAndObserve('.champ-card',   'io-reveal', g);
-    });
-    /* schedule rows */
-    document.querySelectorAll('.schedule-table tbody, .sched-body').forEach(function(tb){
-      tb.classList.add('io-stagger');
-      markAndObserve('tr','io-reveal',tb);
-    });
-    /* standings table rows */
-    document.querySelectorAll('.standings-table tbody, .standings-body').forEach(function(tb){
-      tb.classList.add('io-stagger');
-      markAndObserve('tr','io-reveal',tb);
-    });
-    /* stat cards / leaderboard rows */
-    markAndObserve('.stat-card','io-reveal');
-    markAndObserve('.leaderboard-row','io-reveal');
-    /* section headers */
-    markAndObserve('.season-header','io-reveal-left');
-    /* generic cards on other pages */
-    markAndObserve('.badge-card','io-reveal');
-    markAndObserve('.finals-card','io-reveal');
-  });
-})();
 </script>
 </body>
 </html>
-
-
-
-

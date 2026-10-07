@@ -1,0 +1,174 @@
+/* ==========================================================================
+   Championship bracket — one division per page, sized for the livestream.
+
+   Shared by finals-late-release.html and finals-early-release.html.
+
+   The bracket is laid out on a fixed 1280px-wide stage and then scaled, like
+   a slide, to fill whatever window it is in (see fit() in finals-bracket.js).
+   A card grows when a tiebreaker or game scores appear, so a layout that
+   merely "fits most of the time" would scroll mid-stream; scaling the whole
+   stage to the window means it never can. Below 900px — a phone — the stage
+   drops back to the normal stacked, scrolling layout instead, because a
+   bracket shrunk onto a phone screen would be unreadable.
+   ========================================================================== */
+
+:root {
+  --bg:#0B0E14; --card:#151B26;
+  --red:#C8102E; --red-t:#FF6B6B;
+  --yellow:#FDB913; --yellow-t:#FFD166;
+  --blue:#005696; --blue-t:#4DABF7;
+  --text:#e5e7eb; --muted:#9ca3af;
+  --bdr:rgba(255,255,255,0.08); --bdr2:rgba(255,255,255,0.12);
+  --gold:#FFD700; --gold-d:#a88a00;
+  --orange:#f97316; --orange-bg:rgba(249,115,22,0.10);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);margin:0;padding:0;overflow-x:hidden;}
+
+/* Arena backdrop, behind everything, so the scaled stage never shows a seam. */
+body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 55%,rgba(255,215,0,.07),transparent 70%),
+    linear-gradient(to bottom,rgba(11,14,20,.55),rgba(11,14,20,.97)),
+    url("https://cdn.cloudflare.steamstatic.com/steam/apps/252950/ss_d2042ecd8d2c63e9dc2a3c7344a4a9ab04dd360c.600x338.jpg") center/cover;}
+
+/* Stream mode (?stream): no site nav, nothing but the bracket. */
+body.stream #psd-nav, body.stream #psd-nav-drawer{display:none!important;}
+
+/* ── FIT-TO-SCREEN STAGE ── */
+.fit{position:relative;overflow:hidden;}
+.stage{position:absolute;top:0;left:50%;width:1280px;padding:18px 24px 20px;transform-origin:50% 0;}
+
+/* ── TITLE ROW ── */
+.stage-hdr{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1rem;margin-bottom:14px;}
+.stage-hdr .left{display:flex;align-items:center;gap:.7rem;}
+.stage-hdr .right{display:flex;justify-content:flex-end;}
+.stage-title{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:2.4rem;line-height:1;text-transform:uppercase;letter-spacing:.08em;margin:0;text-align:center;
+  background:linear-gradient(90deg,var(--red-t),var(--yellow-t),var(--blue-t));-webkit-background-clip:text;background-clip:text;color:transparent;}
+.stage-sub{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);text-align:center;margin-top:4px;}
+.lpill{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:.14em;text-transform:uppercase;padding:4px 14px;border-radius:9999px;white-space:nowrap;}
+.lpill.pl{background:rgba(0,86,150,.3);color:var(--blue-t);border:1px solid rgba(77,171,247,.3);}
+.lpill.jrpl{background:rgba(200,16,46,.2);color:var(--red-t);border:1px solid rgba(255,107,107,.3);}
+.date-pill{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);white-space:nowrap;}
+.live{display:inline-flex;align-items:center;gap:.5rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:livepulse 2s ease-in-out infinite;flex-shrink:0;}
+.live.stale .live-dot{background:var(--yellow);box-shadow:0 0 6px var(--yellow);}
+@keyframes livepulse{0%,100%{opacity:.6}50%{opacity:1}}
+
+/* ── BRACKET GRID ── */
+.bracket{display:grid;grid-template-columns:1fr 1.45fr 1fr;align-items:center;gap:34px;}
+.semi-col{display:flex;flex-direction:column;position:relative;}
+.semi-col::after{content:'';position:absolute;top:50%;width:34px;height:2px;}
+.semi-col.left-semi::after{right:-34px;background:linear-gradient(90deg,rgba(255,215,0,.55),rgba(255,215,0,.15));}
+.semi-col.right-semi::after{left:-34px;background:linear-gradient(270deg,rgba(255,215,0,.55),rgba(255,215,0,.15));}
+
+.champ-col{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
+.champ-head{display:flex;align-items:center;gap:.8rem;}
+.champ-trophy{font-size:2.6rem;line-height:1;animation:tpulse 2s ease-in-out infinite;}
+@keyframes tpulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 12px rgba(255,215,0,.6))}50%{transform:scale(1.1);filter:drop-shadow(0 0 28px rgba(255,215,0,1))}}
+.champ-lbl{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.6rem;letter-spacing:.18em;text-transform:uppercase;
+  background:linear-gradient(90deg,var(--gold-d),var(--gold),#fff,var(--gold),var(--gold-d));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 3s linear infinite;}
+@keyframes shimmer{to{background-position:200% center}}
+/* Once there is a champion, the heading above the final becomes the result,
+   so the moment reads on stream without a banner pushing the page longer. */
+.champ-head .champ-name{display:none;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:2rem;letter-spacing:.06em;text-transform:uppercase;color:var(--yellow-t);}
+.champ-col.crowned .champ-head .champ-name{display:block;animation:bin .5s ease-out;}
+@keyframes bin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ── MATCHUP CARD ── */
+.matchup-card{width:100%;background:var(--card);border:1px solid var(--bdr2);border-radius:14px;overflow:hidden;position:relative;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.matchup-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--yellow),var(--blue));}
+.matchup-hdr{padding:.6rem 1rem .55rem;background:#070a10;border-bottom:1px solid var(--bdr);display:flex;flex-direction:column;align-items:center;gap:.35rem;}
+.matchup-hdr-title{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--blue-t);text-align:center;}
+.matchup-start-time{display:inline-flex;align-items:center;gap:.3rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--yellow-t);background:rgba(253,185,19,.1);border:1px solid rgba(253,185,19,.2);border-radius:9999px;padding:2px 10px;}
+.matchup-vs{display:flex;flex-direction:column;align-items:center;gap:.15rem;width:100%;}
+.matchup-team-row{display:flex;align-items:center;gap:.45rem;min-width:0;}
+.matchup-school-name{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1rem;letter-spacing:.04em;text-transform:uppercase;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px;}
+.vs-sep{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.75rem;color:var(--muted);letter-spacing:.1em;}
+
+.sb{flex-shrink:0;width:24px;height:24px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.7rem;}
+.sb.s1,.sb.s2{background:rgba(0,86,150,.25);border:1px solid rgba(77,171,247,.5);color:var(--blue-t);}
+.sb.s3,.sb.s4{background:rgba(200,16,46,.18);border:1px solid rgba(255,107,107,.4);color:var(--red-t);}
+
+.sub-section{border-bottom:1px solid var(--bdr);}
+.sub-bar{display:flex;align-items:center;justify-content:space-between;padding:.35rem 1rem .3rem;background:rgba(0,0,0,.25);gap:.5rem;}
+.sub-bar-label{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);flex-shrink:0;}
+.sub-bar-label.orange{color:#FBBF24;}
+.sub-bar-label.blue{color:#60A5FA;}
+.sub-result-pill{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:9999px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%;}
+.sub-result-pill.w{background:rgba(22,163,74,.25);color:#4ade80;border:1px solid rgba(74,222,128,.3);}
+.sub-result-pill.pending{background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3);}
+.sub-section.tb-section .sub-bar{background:var(--orange-bg);border-left:3px solid var(--orange);}
+.sub-section.tb-section .sub-bar-label{color:var(--orange);}
+
+.competitor{display:flex;align-items:center;gap:8px;padding:.5rem 1rem;border-bottom:1px solid var(--bdr);}
+.competitor:last-child{border-bottom:none;}
+.competitor.win{background:rgba(22,163,74,.12);}
+.competitor.loss{opacity:.55;}
+.competitor.tbd{opacity:.45;}
+/* higher seed = blue, lower seed = red */
+.competitor.t1-team{border-left:3px solid rgba(77,171,247,.55);}
+.competitor.t2-team{border-left:3px solid rgba(255,107,107,.55);}
+.competitor.t1-team .comp-name{color:var(--blue-t);}
+.competitor.t2-team .comp-name{color:var(--red-t);}
+.competitor.win .comp-name{color:#4ade80!important;}
+.matchup-school-name.t1-name{color:var(--blue-t);}
+.matchup-school-name.t2-name{color:var(--red-t);}
+.logo-sm{width:28px;height:28px;object-fit:contain;border-radius:5px;background:rgba(255,255,255,.06);padding:2px;flex-shrink:0;}
+.logo-fb-sm{width:28px;height:28px;border-radius:5px;background:rgba(0,86,150,.3);border:1px solid rgba(77,171,247,.3);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.6rem;color:var(--blue-t);flex-shrink:0;}
+.comp-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.98rem;letter-spacing:.04em;text-transform:uppercase;color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.comp-name.tbd{color:var(--muted);font-style:italic;font-weight:500;}
+.crown{font-size:.85rem;flex-shrink:0;}
+/* Per-game scores sit on the team's own row, so a game adds no height. */
+.gscores{display:flex;gap:3px;flex-shrink:0;}
+.gpill{display:inline-flex;justify-content:center;min-width:22px;background:rgba(255,255,255,.06);border:1px solid var(--bdr);border-radius:4px;padding:0 5px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.8rem;color:#d1d5db;}
+.gpill.gw{border-color:rgba(74,222,128,.35);color:#4ade80;background:rgba(22,163,74,.14);}
+.score-disp{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.25rem;min-width:22px;text-align:right;flex-shrink:0;margin-left:4px;}
+.score-disp.win{color:#4ade80;}
+.score-disp.loss{color:var(--red-t);}
+.score-disp.none{color:var(--yellow-t);}
+
+.result-bar{padding:.55rem 1rem;display:flex;align-items:center;gap:.5rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;}
+.result-bar.advance{background:rgba(22,163,74,.12);color:#4ade80;border-top:1px solid rgba(74,222,128,.2);}
+.result-bar.champ{background:rgba(255,215,0,.1);color:var(--gold);border-top:1px solid rgba(255,215,0,.2);}
+.result-bar.tb-needed{background:var(--orange-bg);color:var(--orange);border-top:1px solid rgba(249,115,22,.25);}
+.result-bar.waiting{background:rgba(0,0,0,.15);color:var(--muted);border-top:1px solid var(--bdr);}
+
+/* ── THE FINAL: same card, bigger and gold ── */
+.champ-card{border-color:rgba(255,215,0,.55);border-radius:18px;
+  box-shadow:0 0 0 1px rgba(255,215,0,.25),0 24px 80px rgba(0,0,0,.85),0 0 80px rgba(255,215,0,.18);}
+.champ-card::before{height:5px;background:linear-gradient(90deg,var(--gold-d),var(--gold),#fff,var(--gold),var(--gold-d));background-size:200% auto;animation:shimmer 2.5s linear infinite;}
+.champ-card .matchup-hdr{padding:.8rem 1.4rem .7rem;background:rgba(255,215,0,.07);}
+.champ-card .matchup-hdr-title{font-size:.95rem;letter-spacing:.3em;color:var(--gold);}
+.champ-card .matchup-start-time{color:var(--gold);background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.25);}
+.champ-card .matchup-school-name{font-size:1.35rem;max-width:380px;}
+.champ-card .logo-sm,.champ-card .logo-fb-sm{width:36px;height:36px;border-radius:7px;}
+.champ-card .sub-bar{padding:.45rem 1.4rem .4rem;}
+.champ-card .sub-bar-label{font-size:.8rem;}
+.champ-card .competitor{padding:.7rem 1.4rem;gap:10px;}
+.champ-card .competitor.t1-team,.champ-card .competitor.t2-team{border-left-width:4px;}
+.champ-card .comp-name{font-size:1.2rem;}
+.champ-card .gpill{font-size:.95rem;min-width:26px;}
+.champ-card .score-disp{font-size:1.6rem;}
+.champ-card .crown{font-size:1.05rem;}
+.champ-card .result-bar{padding:.8rem 1.4rem;font-size:1.05rem;letter-spacing:.12em;}
+
+.loader,.notice{padding:3rem 1rem;font-size:1rem;color:var(--muted);text-align:center;font-family:'Rajdhani',sans-serif;letter-spacing:.1em;text-transform:uppercase;}
+
+/* ── PHONE: normal flow, stacked ── */
+@media(max-width:899px){
+  .fit{height:auto!important;overflow:visible;}
+  .stage{position:static;width:auto;transform:none!important;padding:16px;}
+  .stage-hdr{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;}
+  .stage-hdr .left,.stage-hdr .right{justify-content:center;flex-wrap:wrap;}
+  .date-pill,.live{white-space:normal;}
+  .stage-title{font-size:1.6rem;}
+  .bracket{grid-template-columns:minmax(0,1fr);gap:18px;}
+  .semi-col::after{display:none;}
+  .champ-col{order:3;}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;}
+}

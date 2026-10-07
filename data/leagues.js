@@ -34,7 +34,7 @@
    Both match workbooks and both stats workbooks are published, and the
    championship is set for Saturday 16 January 2027. The one thing still
    outstanding is the finals bracket tab, whose layout is expected to change —
-   until it is published, finals.html says so rather than polling for it.
+   until it is published, the bracket pages say so rather than polling for it.
    ========================================================================== */
 
 (function (root) {
@@ -233,8 +233,9 @@
 
      That is invisible for weekly standings: nobody is watching a Tuesday
      table for a number to flip within seconds. It matters on ONE day a year,
-     the championship, where finals.html refreshes every 60 seconds and people
-     are watching the bracket in the room.
+     the championship, where each division's bracket page (finals-late-release
+     and finals-early-release) refreshes every 30 seconds and people are
+     watching the bracket in the room and on the stream.
 
      Filling in a workbook's `...FastId` switches THAT workbook to the gviz
      endpoint, which reads the live sheet instead of a cached snapshot. The id
