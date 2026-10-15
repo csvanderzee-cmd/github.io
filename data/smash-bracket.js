@@ -403,12 +403,38 @@
     txt.textContent = state.loadedAt ? 'Live · updated ' + timeOf(state.loadedAt) : 'Loading scores…';
   }
 
+  /* The display screen draws its own, much plainer layout, so it hands in a
+     painter here instead of using the ones above. */
+  var paint = null;
+
   function renderAll() {
+    if (paint) { paint(snapshot()); return; }
     renderStatus();
     renderWarnings();
     renderGroups();
     renderBracket();
     if (root.lucide && root.lucide.createIcons) root.lucide.createIcons();
+  }
+
+  /** Everything a page needs to draw this division, as plain data. */
+  function snapshot() {
+    var d = div();
+    return {
+      division: DIV,
+      drawn: d.drawn,
+      wired: root.SMASH.isWired() && !!DIV.gid,
+      groups: d.groups.map(function (g, gi) {
+        return { name: g.name, rows: standings(gi), complete: groupComplete(gi) };
+      }),
+      groupsComplete: d.drawn && d.groups.length > 0 &&
+                      d.groups.every(function (g, gi) { return groupComplete(gi); }),
+      bracket: state.data ? bracket() : null,
+      advance: ADVANCE,
+      loadedAt: state.loadedAt,
+      loading: state.loading,
+      error: state.error,
+      hasData: !!state.data
+    };
   }
 
   /* ==================================================================
@@ -567,17 +593,46 @@
    * Start a bracket page for one division.
    * Paints the division's name and accent into the page, then goes live.
    */
-  function init(divisionId) {
-    if (!root.SMASH) { console.error('[smash] load data/smash.js first.'); return; }
+  /** Wires this file to a division. Shared by the bracket page and the display screen. */
+  function setup(divisionId) {
+    if (!root.SMASH) { console.error('[smash] load data/smash.js first.'); return false; }
 
     CFG = root.SMASH.config;
     ADVANCE = CFG.advance || 2;
     norm = root.SMASH.norm;
 
     DIV = CFG.divisions.filter(function (d) { return d.id === divisionId; })[0];
-    if (!DIV) { console.error('[smash] unknown division:', divisionId); return; }
+    if (!DIV) { console.error('[smash] unknown division:', divisionId); return false; }
 
     document.documentElement.style.setProperty('--accent', DIV.accent);
+    return true;
+  }
+
+  /** Starts the feed and repeats it on the usual interval. */
+  function startFeed() {
+    refresh();
+    setInterval(refresh, Math.max(10, CFG.refreshSeconds || 30) * 1000);
+
+    /* a bracket left up on a projector often sits in a background tab — catch
+       it up the moment someone brings it forward */
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) refresh();
+    });
+  }
+
+  /**
+   * Start the big-screen display for one division.
+   * `painter` is called with a snapshot after every read of the sheet.
+   */
+  function initDisplay(divisionId, painter) {
+    if (!setup(divisionId)) return null;
+    paint = painter;
+    startFeed();
+    return DIV;
+  }
+
+  function init(divisionId) {
+    if (!setup(divisionId)) return;
 
     var badge = byId('division-badge');
     if (badge) {
@@ -595,17 +650,15 @@
 
     paintWhen();
     buildRules();
-
-    refresh();
-    setInterval(refresh, Math.max(10, CFG.refreshSeconds || 30) * 1000);
-
-    /* a bracket left up on a projector often sits in a background tab — catch
-       it up the moment someone brings it forward */
-    document.addEventListener('visibilitychange', function () {
-      if (!document.hidden) refresh();
-    });
+    startFeed();
   }
 
-  root.SMASH_PAGE = { init: init, standings: standings, bracket: bracket, paintWhen: paintWhen };
+  root.SMASH_PAGE = {
+    init: init,
+    initDisplay: initDisplay,
+    standings: standings,
+    bracket: bracket,
+    paintWhen: paintWhen
+  };
 
 })(window);

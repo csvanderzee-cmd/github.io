@@ -11,5 +11,6 @@
 User-agent: *
 Allow: /
 Disallow: /smash/planner.html
+Disallow: /smash/display.html
 
 Sitemap: https://psdesports.com/sitemap.xml
