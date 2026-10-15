@@ -403,17 +403,28 @@
     txt.textContent = state.loadedAt ? 'Live · updated ' + timeOf(state.loadedAt) : 'Loading scores…';
   }
 
-  /* The display screen draws its own, much plainer layout, so it hands in a
-     painter here instead of using the ones above. */
-  var paint = null;
+  /* Anything else on the page that wants the same numbers — the full-screen
+     display mode, for one — registers here and is handed a snapshot after
+     every read of the sheet. */
+  var watchers = [];
 
   function renderAll() {
-    if (paint) { paint(snapshot()); return; }
     renderStatus();
     renderWarnings();
     renderGroups();
     renderBracket();
     if (root.lucide && root.lucide.createIcons) root.lucide.createIcons();
+
+    var snap = watchers.length ? snapshot() : null;
+    watchers.forEach(function (fn) {
+      try { fn(snap); } catch (e) { if (root.console) console.error('[smash] watcher failed:', e); }
+    });
+  }
+
+  /** Call `fn(snapshot)` after every read of the sheet, and once now if data is in hand. */
+  function onUpdate(fn) {
+    watchers.push(fn);
+    if (state.data || state.error) fn(snapshot());
   }
 
   /** Everything a page needs to draw this division, as plain data. */
@@ -620,17 +631,6 @@
     });
   }
 
-  /**
-   * Start the big-screen display for one division.
-   * `painter` is called with a snapshot after every read of the sheet.
-   */
-  function initDisplay(divisionId, painter) {
-    if (!setup(divisionId)) return null;
-    paint = painter;
-    startFeed();
-    return DIV;
-  }
-
   function init(divisionId) {
     if (!setup(divisionId)) return;
 
@@ -655,7 +655,8 @@
 
   root.SMASH_PAGE = {
     init: init,
-    initDisplay: initDisplay,
+    onUpdate: onUpdate,
+    snapshot: snapshot,
     standings: standings,
     bracket: bracket,
     paintWhen: paintWhen
