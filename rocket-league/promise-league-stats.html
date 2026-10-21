@@ -138,7 +138,7 @@
   .potw-stat-chip .val { font-family: 'Rajdhani', sans-serif; font-size: 1.25rem; font-weight: 900; line-height: 1; }
 
   @media (prefers-reduced-motion: reduce) { .potw-logo-ring { animation: none; } }
-  @media (max-width: 700px) { .potw-banner { flex-wrap: wrap; } .potw-stats { flex-wrap: wrap; } .potw-stat-chip { min-width: 50px; } }
+  @media (max-width: 700px) { .potw-banner { flex-wrap: wrap; } .potw-stats { flex-wrap: wrap; flex-shrink: 1; min-width: 0; max-width: 100%; } .potw-stat-chip { min-width: 50px; } }
 
   /* ── STATS AREA ── */
   #stats-display-area { max-width: 1000px; margin: 0 auto; }
@@ -252,6 +252,10 @@
   .badge-chip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%); background: #070a10; color: #e5e7eb; padding: 5px 10px; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 400; letter-spacing: 0; text-transform: none; white-space: normal; width: max-content; max-width: 220px; text-align: center; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 20px rgba(0,0,0,0.85); z-index: 200; pointer-events: none; opacity: 0; transition: opacity 0.15s ease; }
   .badge-chip::before { content: ''; position: absolute; bottom: calc(100% + 3px); left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: rgba(255,255,255,0.15); z-index: 201; pointer-events: none; opacity: 0; transition: opacity 0.15s ease; }
   .badge-chip:hover::after, .badge-chip:hover::before { opacity: 1; }
+  /* An unhovered tooltip is removed, not just made transparent: hidden but
+     still laid out, the ones on chips near the right edge stuck out past a
+     phone screen and made the whole page scroll sideways (WCAG 1.4.10). */
+  .badge-chip:not(:hover)::after, .badge-chip:not(:hover)::before { display: none; }
 </style>
 </head>
 <body>

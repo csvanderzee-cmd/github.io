@@ -377,7 +377,9 @@
 
     /* Each round is a section under its own heading, so a screen-reader user
        can jump round to round the way everyone else scans across the page. */
-    var html = '<div class="bracket">' + b.rounds.map(function (rd, ri) {
+    /* On a narrow screen the ladder scrolls sideways. tabindex lets a keyboard
+       user focus it and scroll with the arrow keys (WCAG 2.1.1). */
+    var html = '<div class="bracket" tabindex="0" role="region" aria-label="Elimination bracket">' + b.rounds.map(function (rd, ri) {
       var isLast = ri === b.rounds.length - 1;
       var one = rd.matches.length === 1;
       return '<section class="bk-round" aria-labelledby="bk-round-' + ri + '">' +

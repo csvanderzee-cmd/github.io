@@ -94,6 +94,11 @@
             letter-spacing: .1em; text-transform: uppercase;
         }
         .hot:hover span, .hot:focus-visible span { opacity: 1; }
+        /* On a phone the flyer is drawn too small for its link areas to meet the
+           24px minimum target size (WCAG 2.5.8), and they sit too close to grow.
+           The buttons above do the same jobs at full size, so they take over. */
+        @media (max-width: 640px) { .hot { display: none; } }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
         /* ---- text version, for screen readers, plain-text email and anyone
                whose images are switched off ---- */
@@ -144,6 +149,7 @@
         <a class="btn" href="/smash/flyer-full.jpg" download="PSD-Smash-Tournament-Flyer.jpg">
             &darr;&nbsp; Image
         </a>
+        <a class="btn" href="https://forms.gle/PHLTBQBWvUJktBgw8" target="_blank" rel="noopener">Register a team &nearr;<span class="sr-only"> (opens in a new tab)</span></a>
         <a class="btn" href="/smash/tournament.html">Tournament page</a>
         <a class="btn" href="/smash/rules.html">Full rules</a>
     </div>

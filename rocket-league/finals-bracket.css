@@ -105,8 +105,10 @@ body.stream #psd-nav, body.stream #psd-nav-drawer{display:none!important;}
 .competitor{display:flex;align-items:center;gap:8px;padding:.5rem 1rem;border-bottom:1px solid var(--bdr);}
 .competitor:last-child{border-bottom:none;}
 .competitor.win{background:rgba(22,163,74,.12);}
-.competitor.loss{opacity:.55;}
-.competitor.tbd{opacity:.45;}
+/* Losing and undecided rows recede by colour, not opacity: fading them took
+   their text under the 4.5:1 WCAG contrast minimum. */
+.competitor.loss .comp-name,.competitor.loss .gpill{color:#949cab!important;}
+.competitor.loss .logo-sm,.competitor.loss .logo-fb-sm{opacity:.55;}
 /* higher seed = blue, lower seed = red */
 .competitor.t1-team{border-left:3px solid rgba(77,171,247,.55);}
 .competitor.t2-team{border-left:3px solid rgba(255,107,107,.55);}
