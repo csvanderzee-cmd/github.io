@@ -318,11 +318,11 @@
         return '<div class="bg-esports-card border border-white/5 rounded-2xl p-5">' +
           '<div class="flex items-center justify-between mb-4">' +
             '<h3 class="font-display text-xl font-black uppercase italic">' + esc(g.name) + '</h3>' +
-            '<span class="text-[10px] font-display font-bold uppercase tracking-[0.18em] ' +
+            '<span class="text-[11px] font-display font-bold uppercase tracking-[0.18em] ' +
               (complete ? 'text-esports-yellow-text' : 'text-gray-600') + '">' +
               (complete ? 'Complete' : g.teams.length + ' teams') + '</span>' +
           '</div>' + table +
-          '<h4 class="text-[10px] font-display font-bold uppercase tracking-[0.2em] text-gray-600 mt-5 mb-2">' +
+          '<h4 class="text-[11px] font-display font-bold uppercase tracking-[0.2em] text-gray-600 mt-5 mb-2">' +
             'Matches' + sr(' in ' + g.name) + '</h4>' +
           (ms.length ? '<ul class="space-y-1.5">' + ms.map(fixtureRow).join('') + '</ul>'
                      : '<p class="text-[11px] text-gray-600">No matches listed yet.</p>') +
@@ -400,7 +400,7 @@
     var champ = lastRound && lastRound.matches.length === 1 ? lastRound.matches[0].winner : null;
     if (champ) {
       html = '<div class="glass-panel rounded-2xl p-6 mb-6 border-l-8 border-esports-yellow">' +
-             '<p class="text-[10px] font-display font-bold uppercase tracking-[0.25em] text-gray-500 mb-1">Champions</p>' +
+             '<p class="text-[11px] font-display font-bold uppercase tracking-[0.25em] text-gray-500 mb-1">Champions</p>' +
              '<p class="font-display text-3xl font-black uppercase italic text-esports-yellow-text">' +
              esc(champ) + '</p></div>' + html;
     }
@@ -724,7 +724,7 @@
       '<div id="rules-card">' +
         '<div id="rules-head">' +
           '<div>' +
-            '<p style="font-family:Rajdhani,sans-serif;font-weight:800;font-size:.62rem;letter-spacing:.22em;' +
+            '<p style="font-family:Rajdhani,sans-serif;font-weight:800;font-size:.6875rem;letter-spacing:.22em;' +
               'text-transform:uppercase;color:#949cab;margin:0 0 .25rem">Version ' + esc(R.version) +
               ' &middot; ' + esc(R.updated) + '</p>' +
             '<h2 id="rules-title" style="font-family:Rajdhani,sans-serif;font-weight:900;font-size:1.4rem;text-transform:uppercase;' +

@@ -118,7 +118,7 @@ body.stream #psd-nav, body.stream #psd-nav-drawer{display:none!important;}
 .matchup-school-name.t1-name{color:var(--blue-t);}
 .matchup-school-name.t2-name{color:var(--red-t);}
 .logo-sm{width:28px;height:28px;object-fit:contain;border-radius:5px;background:rgba(255,255,255,.06);padding:2px;flex-shrink:0;}
-.logo-fb-sm{width:28px;height:28px;border-radius:5px;background:rgba(0,86,150,.3);border:1px solid rgba(77,171,247,.3);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.6rem;color:var(--blue-t);flex-shrink:0;}
+.logo-fb-sm{width:28px;height:28px;border-radius:5px;background:rgba(0,86,150,.3);border:1px solid rgba(77,171,247,.3);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.6875rem;color:var(--blue-t);flex-shrink:0;}
 .comp-name{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.98rem;letter-spacing:.04em;text-transform:uppercase;color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .comp-name.tbd{color:var(--muted);font-style:italic;font-weight:500;}
 .crown{font-size:.85rem;flex-shrink:0;}
