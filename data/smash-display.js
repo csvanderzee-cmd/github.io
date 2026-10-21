@@ -332,7 +332,7 @@
     sd.innerHTML =
       '<div class="sd-top">' +
         '<span class="sd-badge" id="sd-badge"></span>' +
-        '<h2 class="sd-view" id="sd-view"></h2>' +
+        '<h2 class="sd-view" id="sd-view">Tournament display</h2>' +
         '<div class="sd-right">' +
           '<span id="sd-where"></span>' +
           '<span><span class="sd-dot" id="sd-dot"></span> <span id="sd-feed">Loading</span></span>' +

@@ -138,8 +138,11 @@
             { text: 'Flyer',           href: '/smash/flyer.html' },
             { text: 'Grade 5 & Under', href: '/smash/grade-5-under.html' },
             { text: 'Grades 6–8',      href: '/smash/grades-6-8.html' },
-            { text: 'Rules',           href: '/smash/rules.html' },
-            { text: 'Register a Team', href: REGISTRATION.url, external: true }
+            /* Not last: the sign-up pill comes straight after this list in the
+               page, and two links in a row to the same form is one too many
+               for anyone tabbing through. */
+            { text: 'Register a Team', href: REGISTRATION.url, external: true },
+            { text: 'Rules',           href: '/smash/rules.html' }
           ]
         }
       ]
