@@ -31,7 +31,7 @@
     <script>
         tailwind.config = {
             theme: { extend: {
-                colors: { esports: {
+                colors: { /* Lighter than Tailwind's own gray-500..700, which fall below the 4.5:1 WCAG AA text contrast on this dark theme. */ gray: { 500: '#949cab', 600: '#8f97a5', 700: '#8b93a1' }, esports: {
                     dark: '#0B0E14', card: '#151B26',
                     yellow: '#FDB913', 'yellow-text': '#FFD166',
                     red: '#C8102E', 'red-text': '#FF6B6B',
@@ -74,12 +74,12 @@
         }
         .rating small { display: block; font-size: .5rem; letter-spacing: .12em; font-weight: 700; margin-top: 2px; color: #4b5563; }
 
-        .fact dt { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: #6b7280; }
+        .fact dt { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: #949cab; }
         .fact dd { margin: .15rem 0 0; font-size: .88rem; color: #e5e7eb; }
 
         .grade-chip { display: inline-flex; align-items: center; gap: .35rem; padding: .25rem .6rem; border-radius: 9999px; font-size: .72rem; font-weight: 700; border: 1px solid; }
         .grade-yes { color: #4ade80; border-color: rgba(74,222,128,.35); background: rgba(74,222,128,.08); }
-        .grade-no  { color: #6b7280; border-color: rgba(255,255,255,.08); background: transparent; text-decoration: line-through; }
+        .grade-no  { color: #949cab; border-color: rgba(255,255,255,.08); background: transparent; text-decoration: line-through; }
 
         .cost-free     { color: #4ade80; }
         .cost-purchase { color: #FFD166; }

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex">
+<title>PSD Esports Super Smash Bros. Tournament Flyer</title>
+<!--
+    The source of smash/PSD-Smash-Tournament-Flyer.pdf. Not linked from the
+    site: it exists to be printed to PDF, because a PDF printed by a Chromium
+    browser is a TAGGED PDF — the flyer image carries its description as alt
+    text, the three links stay clickable, and page 2 is the flyer as real text
+    a screen reader can read (WCAG / ADA Title II). The old PDF was a bare
+    picture, which a screen reader cannot read at all.
+
+    To rebuild after changing the flyer, from the repo root:
+
+      "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --headless=new
+        --disable-gpu --no-pdf-header-footer --export-tagged-pdf
+        --print-to-pdf="smash\PSD-Smash-Tournament-Flyer.pdf"
+        http://localhost:8765/smash/flyer-print.html
+
+    Keep the text on page 2 in step with the "Flyer text" section of
+    smash/flyer.html; the two say the same thing.
+-->
+<style>
+    /* One page per sheet, sized to the flyer artwork (1200 x 1537), so the
+       image fills page 1 exactly and the link areas land on their printed URLs. */
+    @page { size: 8.5in 10.887in; margin: 0; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { font-family: Arial, Helvetica, sans-serif; color: #111; background: #fff; }
+
+    .art { position: relative; width: 8.5in; height: 10.887in; page-break-after: always; }
+    .art img { display: block; width: 100%; height: 100%; }
+    .art a { position: absolute; display: block; }
+    .art a span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+    .txt { padding: .55in .75in; font-size: 10pt; line-height: 1.35; }
+    .txt h1 { font-size: 18pt; margin: 0 0 .1in; }
+    .txt h2 { font-size: 11pt; margin: .12in 0 .03in; }
+    .txt p, .txt ul { margin: 0 0 .05in; }
+    /* the ten short rules sit in two columns so the text stays on one page */
+    .txt ul.rules { columns: 2; }
+    .txt a { color: #0645ad; }
+    .txt .note { margin-top: .25in; font-size: 9.5pt; color: #444; }
+</style>
+</head>
+<body>
+
+<main>
+    <div class="art">
+        <img src="/smash/flyer-full.jpg"
+             alt="PSD Esports Super Smash Bros. Tournament, Palmdale School District 2026-27. 2v2 doubles, one day, two divisions. Saturday, November 14, 8:00 AM start, Quail Valley Esports Arena. Every school brings an adult referee. Divisions: Grade 5 and Under, and Grades 6 to 8. Register by Friday, October 30 at forms.gle/PHLTBQBWvUJktBgw8. Live bracket at psdesports.com/smash. The full text of the flyer is on page 2.">
+        <!-- the same link areas as on smash/flyer.html, as percentages of the artwork -->
+        <a style="left:27.3%; top:85.3%; width:48.2%; height:3.3%" href="https://forms.gle/PHLTBQBWvUJktBgw8"><span>Register by Friday, October 30</span></a>
+        <a style="left:7.5%; top:88.6%; width:46%; height:4%" href="https://forms.gle/PHLTBQBWvUJktBgw8"><span>Open the entry form</span></a>
+        <a style="left:55%; top:88.6%; width:38%; height:4%" href="https://psdesports.com/smash/tournament.html"><span>Go to the live bracket</span></a>
+    </div>
+
+    <div class="txt">
+        <h1>Super Smash Bros. Tournament</h1>
+        <p>PSD Esports &middot; Palmdale School District 2026&ndash;27.<br>
+           2v2 Doubles &middot; One Day &middot; Two Divisions.</p>
+
+        <h2>Important: every school brings an adult referee</h2>
+        <p>Stations run simultaneously, so each school must provide at least one adult to
+           referee for their division&rsquo;s full schedule. Referees are assigned by
+           organizers and briefed on the day.</p>
+
+        <h2>When and where</h2>
+        <p>Saturday, November 14 &middot; 8:00 AM start &middot; Quail Valley Esports Arena.</p>
+
+        <h2>Divisions</h2>
+        <ul>
+            <li>Grade 5 &amp; Under</li>
+            <li>Grades 6&ndash;8</li>
+        </ul>
+
+        <h2>Who can enter</h2>
+        <p>Teams of 2 players plus an optional locked alternate. Schools may enter up to two
+           teams (e.g., Shadow Hills Red / Gold) playing only within their division.</p>
+
+        <h2>How the day runs</h2>
+        <p>Round-robin group stage (3 pts/win, top 2 advance to single-elimination bracket).
+           Matches are best of 3 with no draws.</p>
+
+        <h2>What to bring</h2>
+        <p>Nothing but players. Consoles, screens, and Joy-Con/Pro controllers are provided
+           (no personal controllers for match play; personal Switches allowed for warm-up only).</p>
+
+        <h2>Rules</h2>
+        <ul class="rules">
+            <li>2v2 Doubles</li>
+            <li>Best of 3</li>
+            <li>3 Stock</li>
+            <li>6 Minutes</li>
+            <li>Battlefield Only</li>
+            <li>Hazards Off</li>
+            <li>Items Off</li>
+            <li>Stock Sharing On</li>
+            <li>Base Roster (No Miis)</li>
+            <li>Team Damage On</li>
+        </ul>
+
+        <h2>Register by Friday, Oct 30</h2>
+        <p>Entry form: <a href="https://forms.gle/PHLTBQBWvUJktBgw8">forms.gle/PHLTBQBWvUJktBgw8</a><br>
+           Live bracket: <a href="https://psdesports.com/smash/tournament.html">psdesports.com/smash</a></p>
+
+        <h2>Questions</h2>
+        <p>Mr. Vanderzee (<a href="mailto:csvanderzee@palmdalesd.org">csvanderzee@palmdalesd.org</a>)
+           &middot; Mr. Hubler (<a href="mailto:drhubler@palmdalesd.org">drhubler@palmdalesd.org</a>)</p>
+
+        <p class="note">This page is the text of the flyer on page 1. The full rules at
+           psdesports.com/smash/rules.html are the authority on anything the flyer summarises.</p>
+    </div>
+</main>
+
+</body>
+</html>

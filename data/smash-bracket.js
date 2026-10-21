@@ -216,15 +216,48 @@
     return '';
   }
 
+  /* ---- what a screen reader hears ------------------------------------------
+
+     The winner of a match is shown by bold white text, which says nothing to
+     someone listening. So every match carries a plain sentence for screen
+     readers ("Falcons beat Hawks 2 to 1") and the visual row is hidden from
+     them, rather than leaving them to guess from a run of names and digits.
+     ------------------------------------------------------------------------ */
+
+  function sr(text) { return '<span class="sr-only">' + esc(text) + '</span>'; }
+
+  function matchSentence(a, b, s) {
+    if (!a || !b) return (a || 'To be decided') + ' versus ' + (b || 'to be decided') + ', not played yet';
+    if (!s.done) {
+      return (s.a + s.b) > 0
+        ? a + ' versus ' + b + ', in progress, ' + s.a + ' to ' + s.b
+        : a + ' versus ' + b + ', not played yet';
+    }
+    return s.a > s.b ? a + ' beat ' + b + ' ' + s.a + ' to ' + s.b
+                     : b + ' beat ' + a + ' ' + s.b + ' to ' + s.a;
+  }
+
   function fixtureRow(m) {
     var s = root.SMASH.matchScore(m);
     var aWon = s.done && s.a > s.b, bWon = s.done && s.b > s.a;
     var chip = s.done ? s.a + ' – ' + s.b : 'vs';
-    return '<div class="fix-wrap"><div class="fix-row">' +
+    return '<li class="fix-wrap">' + sr(matchSentence(m.teams[0], m.teams[1], s)) +
+           '<div class="fix-row" aria-hidden="true">' +
              '<span class="side' + (aWon ? ' won' : '') + '">' + esc(m.teams[0]) + '</span>' +
              '<span class="fix-score' + (s.done ? ' done' : '') + '">' + esc(chip) + '</span>' +
              '<span class="side right' + (bWon ? ' won' : '') + '">' + esc(m.teams[1]) + '</span>' +
-           '</div></div>';
+           '</div></li>';
+  }
+
+  /* Column headings are abbreviated to fit; each also carries its full name,
+     read aloud in place of the letters and shown on hover. */
+  var COLUMNS = [['#', 'Position'], ['Team', 'Team'], ['P', 'Played'], ['W', 'Won'], ['L', 'Lost'],
+                 ['Gm', 'Games won and lost'], ['SD', 'Stock differential'], ['Pts', 'Points']];
+
+  function columnHead(c) {
+    return c[0] === c[1]
+      ? '<th scope="col">' + esc(c[0]) + '</th>'
+      : '<th scope="col" title="' + esc(c[1]) + '"><span aria-hidden="true">' + esc(c[0]) + '</span>' + sr(c[1]) + '</th>';
   }
 
   function renderGroups() {
@@ -255,19 +288,27 @@
       return;
     }
 
-    wrap.innerHTML = '<div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">' +
+    wrap.innerHTML =
+      /* A visible key, so the abbreviations are not a puzzle for anyone. */
+      '<p class="text-[11px] text-gray-500 mb-4">' +
+        'P played · W won · L lost · Gm games won–lost · SD stock differential · Pts points. ' +
+        'The highlighted top ' + ADVANCE + ' in each group advance.</p>' +
+      '<div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">' +
       d.groups.map(function (g, gi) {
         var rows = standings(gi);
         var complete = groupComplete(gi);
         var ms = d.groupMatches.filter(function (m) { return m.group === g.name; });
 
-        var table = '<table class="grp-table"><thead><tr>' +
-          '<th>#</th><th>Team</th><th>P</th><th>W</th><th>L</th><th>Gm</th><th>SD</th><th>Pts</th>' +
-          '</tr></thead><tbody>' +
+        var table = '<table class="grp-table">' +
+          '<caption class="sr-only">' + esc(g.name) + ' standings. Top ' + ADVANCE + ' advance.</caption>' +
+          '<thead><tr>' + COLUMNS.map(columnHead).join('') + '</tr></thead><tbody>' +
           rows.map(function (r, i) {
+            /* The yellow edge marks a qualifying place; say it in words too. */
+            var place = i < ADVANCE
+              ? sr(complete ? ', qualified' : ', currently in a qualifying place') : '';
             return '<tr class="' + (i < ADVANCE ? 'qualified' : '') + '">' +
               '<td class="pos">' + (i + 1) + '</td>' +
-              '<td class="nm">' + esc(r.name) + '</td>' +
+              '<td class="nm">' + esc(r.name) + place + '</td>' +
               '<td>' + r.p + '</td><td>' + r.w + '</td><td>' + r.l + '</td>' +
               '<td>' + r.gw + '–' + r.gl + '</td>' +
               '<td>' + (r.sd > 0 ? '+' : '') + r.sd + '</td>' +
@@ -281,11 +322,11 @@
               (complete ? 'text-esports-yellow-text' : 'text-gray-600') + '">' +
               (complete ? 'Complete' : g.teams.length + ' teams') + '</span>' +
           '</div>' + table +
-          '<p class="text-[10px] font-display font-bold uppercase tracking-[0.2em] text-gray-600 mt-5 mb-2">Matches</p>' +
-          '<div class="space-y-1.5">' +
-            (ms.length ? ms.map(fixtureRow).join('')
-                       : '<p class="text-[11px] text-gray-600">No matches listed yet.</p>') +
-          '</div></div>';
+          '<h4 class="text-[10px] font-display font-bold uppercase tracking-[0.2em] text-gray-600 mt-5 mb-2">' +
+            'Matches' + sr(' in ' + g.name) + '</h4>' +
+          (ms.length ? '<ul class="space-y-1.5">' + ms.map(fixtureRow).join('') + '</ul>'
+                     : '<p class="text-[11px] text-gray-600">No matches listed yet.</p>') +
+          '</div>';
       }).join('') + '</div>';
   }
 
@@ -298,13 +339,18 @@
            '<span class="sc">' + (scoreVal === null ? '' : scoreVal) + '</span></div>';
   }
 
-  function bkMatch(m, isFinal) {
+  function bkMatch(m, isFinal, label) {
     var show = m.done || (m.scoreA + m.scoreB) > 0;
     var h = m.hints || [];
-    return '<div class="bk-match' + (isFinal ? ' final-match' : '') + '">' +
-           bkTeam(m.teams[0], h[0], show ? m.scoreA : null, m.winner) +
-           bkTeam(m.teams[1], h[1], show ? m.scoreB : null, m.winner) +
-           '</div>';
+    /* An empty slot is announced by who the tables say belongs there, when
+       that is known, the same as it reads on screen. */
+    var a = m.teams[0] || h[0] || '', b = m.teams[1] || h[1] || '';
+    return '<div class="bk-match' + (isFinal ? ' final-match' : '') + '" role="group" aria-label="' + esc(label) + '">' +
+           sr(matchSentence(a, b, { a: m.scoreA, b: m.scoreB, done: m.done })) +
+           '<div aria-hidden="true">' +
+             bkTeam(m.teams[0], h[0], show ? m.scoreA : null, m.winner) +
+             bkTeam(m.teams[1], h[1], show ? m.scoreB : null, m.winner) +
+           '</div></div>';
   }
 
   function renderBracket() {
@@ -329,18 +375,23 @@
         'tables say belongs there.'
       : 'How the knockout stage runs. Teams fill in on the day, round by round.';
 
+    /* Each round is a section under its own heading, so a screen-reader user
+       can jump round to round the way everyone else scans across the page. */
     var html = '<div class="bracket">' + b.rounds.map(function (rd, ri) {
       var isLast = ri === b.rounds.length - 1;
-      return '<div class="bk-round"><div class="bk-round-title">' + esc(rd.name) + '</div>' +
-             '<div class="bk-body">' + rd.matches.map(function (m) {
-               return '<div class="bk-slot">' + bkMatch(m, isLast) + '<span class="bk-conn"></span></div>';
-             }).join('') + '</div></div>';
+      var one = rd.matches.length === 1;
+      return '<section class="bk-round" aria-labelledby="bk-round-' + ri + '">' +
+             '<h3 class="bk-round-title" id="bk-round-' + ri + '">' + esc(rd.name) + '</h3>' +
+             '<div class="bk-body">' + rd.matches.map(function (m, mi) {
+               return '<div class="bk-slot">' + bkMatch(m, isLast, one ? rd.name : rd.name + ', match ' + (mi + 1)) +
+                      '<span class="bk-conn" aria-hidden="true"></span></div>';
+             }).join('') + '</div></section>';
     }).join('') + '</div>';
 
     if (b.third) {
-      html += '<div class="mt-4 max-w-[235px]">' +
-              '<div class="bk-round-title" style="text-align:left">Third Place</div>' +
-              bkMatch(b.third, false) + '</div>';
+      html += '<section class="mt-4 max-w-[235px]" aria-labelledby="bk-third">' +
+              '<h3 class="bk-round-title" id="bk-third" style="text-align:left">Third Place</h3>' +
+              bkMatch(b.third, false, 'Third place match') + '</section>';
     }
 
     var lastRound = b.rounds[b.rounds.length - 1];
@@ -377,6 +428,35 @@
     return d ? d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : '—';
   }
 
+  /* ---- telling screen readers what changed --------------------------------
+
+     The status line under the division tabs is rewritten on every poll
+     ("Live · updated 4:02 PM"). As a live region it would be read aloud every
+     30 seconds, so it is not one. Instead a separate, hidden region speaks only
+     when something actually happens: scores change, the feed drops or comes
+     back, or updates are paused.
+     ------------------------------------------------------------------------ */
+
+  var lastKind = null;
+
+  function announce(text) {
+    var host = byId('feed-announce');
+    if (!host) return;
+    host.textContent = '';
+    /* cleared then set on the next frame, so a repeat of the same sentence
+       is still announced */
+    setTimeout(function () { host.textContent = text; }, 50);
+  }
+
+  function noteKind(kind) {
+    if (kind === lastKind) return;
+    var was = lastKind;
+    lastKind = kind;
+    if (was === null) return;                       // first paint: nothing has changed yet
+    if (kind === 'stale' || kind === 'error') announce('Live scores have lost connection. Showing the last update.');
+    else if (kind === 'live' && (was === 'stale' || was === 'error')) announce('Live scores reconnected.');
+  }
+
   function renderStatus() {
     var dot = byId('feed-dot'), txt = byId('feed-text');
     if (!dot || !txt) return;
@@ -384,14 +464,21 @@
     if (!root.SMASH.isWired() || !DIV.gid) {
       dot.className = 'feed-dot off'; txt.textContent = 'No sheet connected'; return;
     }
+    if (paused) {
+      dot.className = 'feed-dot off';
+      txt.textContent = 'Paused · last update ' + timeOf(state.loadedAt);
+      return;
+    }
     if (state.error && !state.data) {
-      dot.className = 'feed-dot error'; txt.textContent = 'Cannot reach the sheet'; return;
+      dot.className = 'feed-dot error'; txt.textContent = 'Cannot reach the sheet'; noteKind('error'); return;
     }
     if (state.error) {
       dot.className = 'feed-dot stale';
       txt.textContent = 'Reconnecting · last update ' + timeOf(state.loadedAt);
+      noteKind('stale');
       return;
     }
+    if (!state.loading) noteKind('live');
     /* "Live · updated 4:02 PM" over a page with nothing on it reads like the
        feed is broken. Until the draw is out, say what is actually true. */
     if (state.data && !div().drawn) {
@@ -415,24 +502,95 @@
      The feed
      ================================================================== */
 
+  /* The tables and bracket are only redrawn when this division's results
+     actually change. Rebuilding them on every poll would throw a screen-reader
+     user back to the top of the page mid-sentence, and lose anyone's keyboard
+     place, twice a minute. */
+  var lastSignature = null;
+
+  function signatureOf(payload) {
+    var mine = (payload.warnings || []).filter(function (w) { return w.indexOf(DIV.name) === 0; });
+    return JSON.stringify([payload.divisions[DIV.id] || null, mine]);
+  }
+
+  var paused = false;
+
   function refresh() {
+    if (paused) return;
     if (!root.SMASH.isWired() || !DIV.gid) { renderAll(); return; }
     state.loading = true;
     renderStatus();
 
     root.SMASH.load().then(function (payload) {
+      if (paused) return;
+      var sig = signatureOf(payload);
+      var changed = sig !== lastSignature || state.error;
+      var firstLoad = lastSignature === null;
+      lastSignature = sig;
       state.data = payload;
       state.loadedAt = payload.loadedAt;
       state.error = null;
       state.loading = false;
-      renderAll();
+      if (changed) {
+        renderAll();
+        if (!firstLoad && div().drawn) announce('Scores updated at ' + timeOf(state.loadedAt) + '.');
+      } else {
+        renderStatus();
+      }
     }, function (err) {
       /* keep the last good bracket on screen rather than blanking out when
          one request times out on school wifi */
       if (root.console && console.warn) console.warn('[smash] refresh failed:', err.message);
+      if (paused) return;
+      var hadError = !!state.error;
       state.error = err.message;
       state.loading = false;
-      renderAll();
+      /* the first failure changes what is on screen; repeats only the status */
+      if (hadError) renderStatus(); else renderAll();
+    });
+  }
+
+  /* ---- pause -------------------------------------------------------------
+
+     WCAG 2.2.2: anything that updates on its own needs a way to stop it. It
+     also helps anyone reading a table that keeps moving under them. Paused,
+     the page stops polling altogether; resuming catches straight up.
+     ------------------------------------------------------------------------ */
+
+  function buildFeedControls() {
+    var status = byId('feed-status');
+    if (!status) return;
+
+    var live = document.createElement('div');
+    live.id = 'feed-announce';
+    live.className = 'sr-only';
+    live.setAttribute('role', 'status');
+    status.appendChild(live);
+
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'feed-pause';
+    btn.className = 'no-print';
+    btn.setAttribute('aria-pressed', 'false');
+    btn.textContent = 'Pause live updates';
+    status.appendChild(btn);
+
+    var style = document.createElement('style');
+    style.textContent =
+      '#feed-pause{margin-left:.5rem;font-family:Rajdhani,sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.12em;' +
+        'text-transform:uppercase;color:#e5e7eb;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18);' +
+        'border-radius:9999px;padding:.3rem .8rem;cursor:pointer;}' +
+      '#feed-pause:hover{background:rgba(255,255,255,.1);color:#fff;}' +
+      '#feed-pause[aria-pressed="true"]{color:#0B0E14;background:#FDB913;border-color:#FDB913;}';
+    document.head.appendChild(style);
+
+    btn.addEventListener('click', function () {
+      paused = !paused;
+      btn.setAttribute('aria-pressed', String(paused));
+      btn.textContent = paused ? 'Resume live updates' : 'Pause live updates';
+      announce(paused ? 'Live updates paused.' : 'Live updates resumed.');
+      if (paused) { state.loading = false; renderStatus(); }
+      else refresh();
     });
   }
 
@@ -461,9 +619,9 @@
     '#rules-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding:1.25rem 1.5rem;' +
       'border-bottom:1px solid rgba(255,255,255,.1);}' +
     '#rules-body{overflow-y:auto;padding:1.25rem 1.5rem 1.5rem;}' +
-    '#rules-body h4{font-family:Rajdhani,sans-serif;font-weight:800;font-size:.68rem;letter-spacing:.2em;' +
+    '#rules-body h3{font-family:Rajdhani,sans-serif;font-weight:800;font-size:.68rem;letter-spacing:.2em;' +
       'text-transform:uppercase;color:var(--accent,#FDB913);margin:1.25rem 0 .5rem;}' +
-    '#rules-body h4:first-child{margin-top:0;}' +
+    '#rules-body h3:first-child{margin-top:0;}' +
     '#rules-body ul{margin:0;padding-left:1.1rem;}' +
     '#rules-body li{font-size:.82rem;line-height:1.55;color:#d1d5db;margin-bottom:.4rem;}' +
     '#rules-close{background:none;border:1px solid rgba(255,255,255,.16);color:#9ca3af;border-radius:.4rem;' +
@@ -483,6 +641,7 @@
     document.head.appendChild(style);
 
     var fab = document.createElement('button');
+    fab.type = 'button';
     fab.id = 'rules-fab';
     fab.setAttribute('aria-haspopup', 'dialog');
     fab.innerHTML = 'Rules <span class="ver">v' + esc(R.version) + '</span>';
@@ -491,16 +650,16 @@
     backdrop.id = 'rules-backdrop';
     backdrop.setAttribute('role', 'dialog');
     backdrop.setAttribute('aria-modal', 'true');
-    backdrop.setAttribute('aria-label', 'Tournament rules');
+    backdrop.setAttribute('aria-labelledby', 'rules-title');
 
     var body = (R.changed ? '<p id="rules-changed"><strong>Changed in v' + esc(R.version) + ':</strong> ' +
                             esc(R.changed) + '</p>' : '') +
       (R.sections || []).map(function (s) {
-        return '<h4>' + esc(s.title) + '</h4><ul>' +
+        return '<h3>' + esc(s.title) + '</h3><ul>' +
                s.items.map(function (it) { return '<li>' + esc(it) + '</li>'; }).join('') +
                '</ul>';
       }).join('') +
-      '<p style="margin-top:1.5rem;font-size:.75rem;color:#6b7280">' +
+      '<p style="margin-top:1.5rem;font-size:.75rem;color:#949cab">' +
         'Need it on paper? The <a href="/smash/rules.html" style="color:var(--accent,#FDB913)">full rules page</a> ' +
         'has a print button.' +
       '</p>';
@@ -510,12 +669,12 @@
         '<div id="rules-head">' +
           '<div>' +
             '<p style="font-family:Rajdhani,sans-serif;font-weight:800;font-size:.62rem;letter-spacing:.22em;' +
-              'text-transform:uppercase;color:#6b7280;margin:0 0 .25rem">Version ' + esc(R.version) +
+              'text-transform:uppercase;color:#949cab;margin:0 0 .25rem">Version ' + esc(R.version) +
               ' &middot; ' + esc(R.updated) + '</p>' +
-            '<h3 style="font-family:Rajdhani,sans-serif;font-weight:900;font-size:1.4rem;text-transform:uppercase;' +
-              'font-style:italic;margin:0">Tournament Rules</h3>' +
+            '<h2 id="rules-title" style="font-family:Rajdhani,sans-serif;font-weight:900;font-size:1.4rem;text-transform:uppercase;' +
+              'font-style:italic;margin:0">Tournament Rules</h2>' +
           '</div>' +
-          '<button id="rules-close" aria-label="Close">&times;</button>' +
+          '<button type="button" id="rules-close" aria-label="Close rules">&times;</button>' +
         '</div>' +
         '<div id="rules-body">' + body + '</div>' +
       '</div>';
@@ -523,14 +682,40 @@
     document.body.appendChild(fab);
     document.body.appendChild(backdrop);
 
-    function open()  { backdrop.classList.add('open'); byId('rules-close').focus(); }
-    function close() { backdrop.classList.remove('open'); fab.focus(); }
+    /* While the rules are open, everything behind them is made inert: it
+       cannot be tabbed into, clicked, or found by a screen reader, so the
+       dialog really is the only thing on the page until it is closed. */
+    var behind = [];
+    function setBehind(off) {
+      if (off) {
+        behind = Array.prototype.filter.call(document.body.children, function (el) {
+          return el !== backdrop && !el.inert && el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE';
+        });
+      }
+      behind.forEach(function (el) {
+        el.inert = off;
+        /* inert is recent; aria-hidden covers screen readers on older browsers */
+        if (off) el.setAttribute('aria-hidden', 'true'); else el.removeAttribute('aria-hidden');
+      });
+      if (!off) behind = [];
+    }
+
+    function open()  { setBehind(true); backdrop.classList.add('open'); byId('rules-close').focus(); }
+    function close() { backdrop.classList.remove('open'); setBehind(false); fab.focus(); }
 
     fab.addEventListener('click', open);
     byId('rules-close').addEventListener('click', close);
     backdrop.addEventListener('click', function (e) { if (e.target === backdrop) close(); });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && backdrop.classList.contains('open')) close();
+      if (!backdrop.classList.contains('open')) return;
+      if (e.key === 'Escape') { close(); return; }
+      /* Keep Tab cycling inside the dialog, for browsers without inert. */
+      if (e.key === 'Tab') {
+        var items = backdrop.querySelectorAll('a[href], button');
+        var first = items[0], last = items[items.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
     });
   }
 
@@ -595,6 +780,7 @@
 
     paintWhen();
     buildRules();
+    buildFeedControls();
 
     refresh();
     setInterval(refresh, Math.max(10, CFG.refreshSeconds || 30) * 1000);

@@ -32,7 +32,7 @@
     <script>
         tailwind.config = {
             theme: { extend: {
-                colors: { esports: {
+                colors: { /* Lighter than Tailwind's own gray-500..700, which fall below the 4.5:1 WCAG AA text contrast on this dark theme. */ gray: { 500: '#949cab', 600: '#8f97a5', 700: '#8b93a1' }, esports: {
                     dark: '#0B0E14', card: '#151B26',
                     yellow: '#FDB913', 'yellow-text': '#FFD166',
                     red: '#C8102E', 'red-text': '#FF6B6B',
@@ -52,7 +52,7 @@
         }
         .result-table th {
             font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: .68rem;
-            letter-spacing: .16em; text-transform: uppercase; color: #6b7280;
+            letter-spacing: .16em; text-transform: uppercase; color: #949cab;
             text-align: left; padding: 0 .9rem .5rem 0; border-bottom: 1px solid rgba(255,255,255,.1);
         }
         .result-table td { padding: .5rem .9rem .5rem 0; font-size: .85rem; border-bottom: 1px solid rgba(255,255,255,.05); }

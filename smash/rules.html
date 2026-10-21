@@ -20,7 +20,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
+                    colors: { /* Lighter than Tailwind's own gray-500..700, which fall below the 4.5:1 WCAG AA text contrast on this dark theme. */ gray: { 500: '#949cab', 600: '#8f97a5', 700: '#8b93a1' },
                         esports: {
                             dark: '#0B0E14',
                             card: '#151B26',
@@ -59,7 +59,7 @@
         /* ---- group standings ---- */
         .grp-table { width:100%; border-collapse:collapse; font-size:.8rem; }
         .grp-table th { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:.6rem; letter-spacing:.16em;
-                        text-transform:uppercase; color:#6b7280; text-align:right; padding:.4rem .35rem; }
+                        text-transform:uppercase; color:#949cab; text-align:right; padding:.4rem .35rem; }
         /* position and team name read left; every stat column reads right */
         .grp-table th:first-child,    .grp-table td:first-child,
         .grp-table th:nth-child(2),   .grp-table td:nth-child(2) { text-align:left; }
@@ -67,7 +67,7 @@
                         color:#d1d5db; font-variant-numeric:tabular-nums; }
         .grp-table tr.qualified td { background:linear-gradient(90deg, rgba(253,185,19,.09), transparent); }
         .grp-table tr.qualified td:first-child { box-shadow:inset 3px 0 0 #FDB913; }
-        .grp-table .pos { color:#4b5563; width:1.4rem; }
+        .grp-table .pos { color:#8f97a5; width:1.4rem; }
         .grp-table .nm { color:#fff; font-weight:600; }
         .grp-table .pts { color:#fff; font-weight:800; }
 
@@ -79,7 +79,7 @@
         .fix-row .side.right { text-align:right; }
         .fix-row .side.won { color:#fff; font-weight:700; }
         .fix-score { font-family:'Rajdhani',sans-serif; font-weight:900; font-size:.85rem; letter-spacing:.05em;
-                     color:#6b7280; background:rgba(255,255,255,.05); padding:.1rem .5rem; border-radius:.3rem; white-space:nowrap; }
+                     color:#949cab; background:rgba(255,255,255,.05); padding:.1rem .5rem; border-radius:.3rem; white-space:nowrap; }
         .fix-score.done { color:#FFD166; background:rgba(253,185,19,.12); }
 
         /* ---- bracket ----
@@ -91,7 +91,7 @@
         .bk-round { flex:0 0 235px; display:flex; flex-direction:column; margin-right:3rem; }
         .bk-round:last-child { margin-right:0; }
         .bk-round-title { font-family:'Rajdhani',sans-serif; font-weight:800; font-size:.62rem; letter-spacing:.22em;
-                          text-transform:uppercase; color:#6b7280; text-align:center; padding-bottom:.75rem; }
+                          text-transform:uppercase; color:#949cab; text-align:center; padding-bottom:.75rem; }
         .bk-body { flex:1; display:flex; flex-direction:column; }
         .bk-slot { flex:1; display:flex; align-items:center; position:relative; min-height:78px; }
         .bk-round:not(:last-child) .bk-slot::after,
@@ -108,10 +108,10 @@
         .bk-team { display:flex; align-items:center; gap:.5rem; padding:.45rem .6rem; font-size:.78rem; color:#9ca3af; }
         .bk-team + .bk-team { border-top:1px solid rgba(255,255,255,.06); }
         .bk-team .nm { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .bk-team .sc { font-family:'Rajdhani',sans-serif; font-weight:900; color:#4b5563; font-variant-numeric:tabular-nums; }
+        .bk-team .sc { font-family:'Rajdhani',sans-serif; font-weight:900; color:#8f97a5; font-variant-numeric:tabular-nums; }
         .bk-team.won { color:#fff; font-weight:700; background:rgba(253,185,19,.07); }
         .bk-team.won .sc { color:#FFD166; }
-        .bk-team.tbd { color:#4b5563; font-style:italic; }
+        .bk-team.tbd { color:#8f97a5; font-style:italic; }
         .bk-match.final-match { border-color:rgba(253,185,19,.45); box-shadow:0 0 26px rgba(253,185,19,.13); }
 
         /* ---- live feed status ---- */
@@ -128,7 +128,7 @@
         }
 
         /* station / start time under a fixture, when the sheet supplies them */
-        .fix-meta { font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:#4b5563;
+        .fix-meta { font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:#8f97a5;
                     font-family:'Rajdhani',sans-serif; font-weight:700; padding:.15rem .6rem 0; }
 
         @media print {
@@ -170,7 +170,7 @@
         .rule-head { display:flex; align-items:baseline; gap:.85rem; margin-bottom:1.1rem;
                      border-bottom:1px solid rgba(255,255,255,.08); padding-bottom:.7rem; }
         .rule-num { font-family:'Rajdhani',sans-serif; font-weight:900; font-size:1.6rem; line-height:1;
-                    color:var(--accent,#FDB913); opacity:.35; font-style:italic; flex-shrink:0; }
+                    color:var(--accent,#FDB913); opacity:.6; font-style:italic; flex-shrink:0; } /* .6 keeps the 3:1 WCAG minimum for large text */
         .rule-card h2 { font-family:'Rajdhani',sans-serif; font-weight:900; font-size:1.05rem;
                         letter-spacing:.16em; text-transform:uppercase; color:#fff; margin:0; }
         .rule-card ul { margin:0; padding:0; list-style:none; }

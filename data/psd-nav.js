@@ -153,6 +153,52 @@
     { text: '🎮 Games', href: '/games.html' }
   ];
 
+  /* ---- motion -------------------------------------------------------------
+
+     WCAG 2.2.2 asks for a way to stop anything that moves on its own for more
+     than five seconds: the particle backdrops, the champions ticker, pulsing
+     live dots, countdowns. One switch in this bar covers every page, because
+     every page loads this file. It is remembered per browser, and it starts
+     on for anyone whose device already asks for reduced motion.
+
+     Set here, before the page draws, so nothing visibly starts and stops. The
+     reset mirrors the reduced-motion blocks already in the pages: every
+     animation jumps straight to its end, so nothing is left half-faded. */
+  var MOTION_KEY = 'psd-motion';
+  var MOTION_CSS =
+    'html.psd-still *,html.psd-still *::before,html.psd-still *::after{animation-duration:.01ms!important;' +
+      'animation-iteration-count:1!important;animation-delay:0s!important;scroll-behavior:auto!important;}' +
+    'html.psd-still #particleCanvas,html.psd-still #heroParticles{display:none!important;}';
+
+  function storedMotion() {
+    try { return localStorage.getItem(MOTION_KEY); } catch (e) { return null; }
+  }
+  function isStill() { return document.documentElement.classList.contains('psd-still'); }
+  function setStill(still, remember) {
+    document.documentElement.classList.toggle('psd-still', still);
+    if (remember) { try { localStorage.setItem(MOTION_KEY, still ? 'still' : 'moving'); } catch (e) {} }
+    var detail = { still: still };
+    try { document.dispatchEvent(new CustomEvent('psd:motion', { detail: detail })); } catch (e) {}
+  }
+  (function () {
+    var style = document.createElement('style');
+    style.textContent = MOTION_CSS;
+    document.head.appendChild(style);
+    var saved = storedMotion();
+    var reduce = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setStill(saved ? saved === 'still' : !!reduce, false);
+  })();
+
+  /* Emoji in a label are decoration. Screen readers otherwise read them out
+     ("sports medal Champions"), so a leading one is hidden from them. */
+  function withIcon(text) {
+    var m = /^(\S+)\s+(.*)$/.exec(text);
+    if (m && /[☀-➿\uD83C-\uDBFF]/.test(m[1])) {
+      return '<span aria-hidden="true">' + esc(m[1]) + '</span> ' + esc(m[2]);
+    }
+    return esc(text);
+  }
+
   /* Open registration gets the centre of the bar to itself, apart from the
      sitewide pills, so it reads as the one call to action rather than one more
      link. There is only ever one sign-up open at a time, so one slot is all it
@@ -187,22 +233,29 @@
     '#psd-nav .nav-item{position:relative;}',
     '#psd-nav .nav-link{display:flex;align-items:center;gap:.4rem;padding:.4rem .85rem;font-weight:700;font-size:.8rem;',
       'letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;border-radius:6px 6px 0 0;',
-      'transition:color .15s,background .15s;white-space:nowrap;cursor:pointer;background:none;border:none;height:52px;}',
+      'transition:color .15s,background .15s;white-space:nowrap;cursor:pointer;background:none;border:none;height:52px;font-family:inherit;}',
     '#psd-nav .nav-link:hover{color:#fff;background:rgba(255,255,255,.06);}',
+    /* one visible keyboard focus ring for everything in the bar */
+    '#psd-nav a:focus-visible,#psd-nav button:focus-visible,#psd-nav-drawer a:focus-visible,#psd-nav-drawer button:focus-visible,',
+      '#psd-nav-drawer summary:focus-visible,.psd-skip:focus-visible{outline:2px solid #FFD166;outline-offset:2px;}',
     /* the section this page belongs to */
     '#psd-nav .nav-item.current .nav-link{color:#fff;background:rgba(255,255,255,.06);border-bottom:2px solid var(--sect,#FDB913);}',
     '#psd-nav .nav-chevron{font-size:.5rem;opacity:.55;transition:transform .2s;}',
-    '#psd-nav .nav-item:hover .nav-chevron{transform:rotate(180deg);}',
+    '#psd-nav .nav-item:hover .nav-chevron,#psd-nav .nav-item.open .nav-chevron{transform:rotate(180deg);}',
     '#psd-nav .nav-dropdown{display:none;position:absolute;top:100%;left:0;min-width:225px;background:#151B26;',
       'border:1px solid rgba(255,255,255,.1);border-radius:0 8px 8px 8px;overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.8);}',
-    '#psd-nav .nav-item:hover .nav-dropdown,#psd-nav .nav-item:focus-within .nav-dropdown{display:block;}',
+    /* Hover opens a menu for the mouse; .open is set by keyboard focus, a tap
+       or a click. Escape adds .dismissed, which wins until the pointer or focus
+       moves on (WCAG 1.4.13: content shown on hover can be dismissed). */
+    '#psd-nav .nav-item:hover .nav-dropdown,#psd-nav .nav-item.open .nav-dropdown{display:block;}',
+    '#psd-nav .nav-item.dismissed .nav-dropdown{display:none;}',
     '#psd-nav .nav-dropdown a{display:flex;align-items:center;gap:.5rem;padding:.55rem 1rem;font-weight:700;font-size:.76rem;',
       'letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;transition:color .15s,background .15s;}',
     '#psd-nav .nav-dropdown a:hover{color:#fff;background:rgba(255,255,255,.07);}',
     '#psd-nav .nav-dropdown a.active{color:#fff;background:rgba(255,255,255,.07);border-left:3px solid var(--grp,#4DABF7);padding-left:calc(1rem - 3px);}',
     '#psd-nav .dd-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}',
     "#psd-nav .dd-header{padding:.5rem 1rem .25rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.58rem;",
-      'letter-spacing:.2em;text-transform:uppercase;color:#4b5563;border-top:1px solid rgba(255,255,255,.06);}',
+      'letter-spacing:.2em;text-transform:uppercase;color:#8f97a5;border-top:1px solid rgba(255,255,255,.06);}',
     '#psd-nav .dd-header:first-child{border-top:none;}',
     '#psd-nav .nav-right{margin-left:auto;display:flex;align-items:center;gap:.5rem;}',
     '#psd-nav .nav-pill{padding:.3rem .9rem;font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;',
@@ -242,7 +295,7 @@
     "#psd-nav-drawer a{display:block;padding:.5rem .75rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;",
       'letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;text-decoration:none;border-radius:6px;}',
     '#psd-nav-drawer a:hover,#psd-nav-drawer a.active{color:#fff;background:rgba(255,255,255,.06);}',
-    "#psd-nav-drawer .drawer-section{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#4b5563;",
+    "#psd-nav-drawer .drawer-section{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#8f97a5;",
       "font-family:'Rajdhani',sans-serif;font-weight:700;padding:.5rem .75rem .2rem;margin-top:.4rem;}",
     '#psd-nav-drawer .drawer-title{font-size:.72rem;letter-spacing:.16em;color:#e5e7eb;padding:.6rem .75rem .2rem;margin-top:.6rem;',
       'border-top:1px solid rgba(255,255,255,.07);}',
@@ -263,13 +316,26 @@
       'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);line-height:1.15;}',
     '#psd-nav-drawer .drawer-chips a.active{border-color:var(--grp,#fff);color:#fff;}',
     '#psd-nav-drawer .drawer-more{border-top:1px solid rgba(255,255,255,.07);margin-top:.4rem;padding-top:.4rem;}',
-    /* The full bar fits down to 1065px with the registration pill and the three
-       sitewide pills (Champions, In the News, Games) in it — measured by
-       narrowing the bar until the last pill ran past the edge. The drawer takes
-       over below 1100, which leaves room for a Windows scrollbar. Re-measure if
-       a pill or a section is added: the bar only gets wider, and this number is
-       the one that has to move with it. */
-    '@media(max-width:1100px){#psd-nav .nav-links,#psd-nav .nav-right,#psd-nav .nav-promo{display:none;}#psd-nav .nav-hamburger{display:flex;}}',
+    /* pause-animations switch: an icon in the bar, a labelled row in the drawer */
+    '#psd-nav .nav-motion{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9999px;',
+      'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.18);color:#e5e7eb;cursor:pointer;font-size:.7rem;line-height:1;padding:0;}',
+    '#psd-nav .nav-motion:hover{color:#fff;background:rgba(255,255,255,.1);}',
+    '#psd-nav .nav-motion[aria-pressed="true"]{color:#0B0E14;background:#FFD166;border-color:#FFD166;}',
+    "#psd-nav-drawer .drawer-motion{display:block;width:100%;text-align:left;padding:.5rem .75rem;margin-top:.4rem;font-family:'Rajdhani',sans-serif;",
+      'font-weight:700;font-size:.88rem;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;background:none;',
+      'border:none;border-top:1px solid rgba(255,255,255,.07);cursor:pointer;}',
+    '#psd-nav-drawer .drawer-motion:hover{color:#fff;}',
+    /* skip link: off-screen until it receives keyboard focus */
+    ".psd-skip{position:absolute;left:.75rem;top:-3rem;z-index:2000;padding:.5rem 1rem;border-radius:.5rem;background:#FDB913;",
+      "color:#0B0E14;font-family:'Rajdhani',sans-serif;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:.8rem;text-decoration:none;}",
+    '.psd-skip:focus{top:.6rem;}',
+    /* The full bar fits down to 1109px with the registration pill, the three
+       sitewide pills (Champions, In the News, Games) and the pause-animations
+       button in it — measured by narrowing the bar until the last item ran
+       past the edge. The drawer takes over below 1140, which leaves room for a
+       Windows scrollbar. Re-measure if a pill or a section is added: the bar
+       only gets wider, and this number is the one that has to move with it. */
+    '@media(max-width:1140px){#psd-nav .nav-links,#psd-nav .nav-right,#psd-nav .nav-promo{display:none;}#psd-nav .nav-hamburger{display:flex;}}',
     '@media print{#psd-nav,#psd-nav-drawer{display:none!important;}}'
   ].join('');
 
@@ -328,26 +394,33 @@
           }).join('');
       }).join('');
 
+      /* A real button that says whether its list is open. The list is plain
+         links rather than an ARIA menu: role="menu" promises arrow-key
+         behaviour that a list of links does not have. */
       return '<li class="nav-item' + (isCur ? ' current' : '') + '" style="--sect:' + esc(s.accent) + '">' +
-               '<span class="nav-link" tabindex="0" role="button" aria-haspopup="true">' +
+               '<button type="button" class="nav-link" aria-expanded="false" aria-controls="psd-dd-' + esc(s.id) + '">' +
                  '<span aria-hidden="true">' + s.icon + '</span>' + esc(s.name) +
-                 ' <span class="nav-chevron">▼</span>' +
-               '</span>' +
-               '<div class="nav-dropdown" role="menu">' + dd + '</div>' +
+                 ' <span class="nav-chevron" aria-hidden="true">▼</span>' +
+               '</button>' +
+               '<div class="nav-dropdown" id="psd-dd-' + esc(s.id) + '">' + dd + '</div>' +
              '</li>';
     }).join('');
 
     var pills = SITEWIDE.map(function (l) {
       return '<a href="' + esc(l.href) + '"' + out(l) + ' class="nav-pill ' + esc(l.cls || '') +
-             (isActive(l.href) ? ' active' : '') + '">' + esc(l.text) + '</a>';
+             (isActive(l.href) ? ' active' : '') + '"' + (isActive(l.href) ? ' aria-current="page"' : '') + '>' +
+             withIcon(l.text) + '</a>';
     }).join('');
+
+    var motionBtn = '<button type="button" class="nav-motion" id="psd-motion" aria-pressed="false">' +
+                      '<span aria-hidden="true"></span></button>';
 
     var nav = document.createElement('nav');
     nav.id = 'psd-nav';
     nav.setAttribute('aria-label', 'Site navigation');
     var promo = PROMO
       ? '<a href="' + esc(PROMO.href) + '"' + out(PROMO) + ' class="nav-pill pill-register nav-promo">' +
-          esc(PROMO.text) + '</a>'
+          withIcon(PROMO.text) + '</a>'
       : '';
 
     nav.innerHTML =
@@ -358,8 +431,8 @@
         '</div>' +
         promo +
         '<div class="nav-end">' +
-          '<div class="nav-right">' + pills + '</div>' +
-          '<button class="nav-hamburger" id="psd-hamburger" aria-label="Toggle navigation" aria-expanded="false">' +
+          '<div class="nav-right">' + pills + motionBtn + '</div>' +
+          '<button type="button" class="nav-hamburger" id="psd-hamburger" aria-label="Menu" aria-expanded="false" aria-controls="psd-nav-drawer">' +
             '<span></span><span></span><span></span>' +
           '</button>' +
         '</div>' +
@@ -371,7 +444,7 @@
        straight under Home, so on a phone it is the first real thing in the menu. */
     var drawerInner = '<a href="/index.html"' + (isActive('/index.html') ? ' class="active"' : '') + '>Home</a>' +
       (PROMO ? '<a href="' + esc(PROMO.href) + '"' + out(PROMO) + ' class="drawer-register">' +
-                 esc(PROMO.text) + '</a>' : '') +
+                 withIcon(PROMO.text) + '</a>' : '') +
       shown.map(function (s) {
         var isCur = current && s.id === current.id;
         return '<details style="--sect:' + esc(s.accent) + '"' + (isCur ? ' open' : '') + '>' +
@@ -391,9 +464,10 @@
       }).join('') +
       '<div class="drawer-more"></div>' +
       SITEWIDE.map(function (l) {
-        return '<a href="' + esc(l.href) + '"' + out(l) + (isActive(l.href) ? ' class="active"' : '') + '>' +
-               esc(l.text) + '</a>';
-      }).join('');
+        return '<a href="' + esc(l.href) + '"' + out(l) + (isActive(l.href) ? ' class="active" aria-current="page"' : '') + '>' +
+               withIcon(l.text) + '</a>';
+      }).join('') +
+      '<button type="button" class="drawer-motion" id="psd-motion-drawer" aria-pressed="false"></button>';
 
     var drawer = document.createElement('div');
     drawer.id = 'psd-nav-drawer';
@@ -411,9 +485,93 @@
       drawer.setAttribute('aria-hidden', String(!open));
     });
 
+    /* ---- game menus: hover, focus, tap and Escape ------------------------ */
+    Array.prototype.forEach.call(nav.querySelectorAll('.nav-item'), function (item) {
+      var trigger = item.querySelector('.nav-link');
+      function setOpen(open) {
+        item.classList.toggle('open', open);
+        trigger.setAttribute('aria-expanded', String(open));
+      }
+      item.addEventListener('mouseenter', function () { trigger.setAttribute('aria-expanded', 'true'); });
+      item.addEventListener('mouseleave', function () {
+        item.classList.remove('dismissed');
+        if (!item.contains(document.activeElement)) setOpen(false);
+      });
+      item.addEventListener('focusin', function (e) {
+        if (item.classList.contains('dismissed')) return;
+        /* A mouse click also focuses the button; leave that to the click
+           handler, or the menu would open on focus and shut on the click. */
+        if (e.target === trigger && !keyboardFocus(trigger)) return;
+        setOpen(true);
+      });
+      item.addEventListener('focusout', function (e) {
+        if (!item.contains(e.relatedTarget)) { item.classList.remove('dismissed'); setOpen(false); }
+      });
+      trigger.addEventListener('click', function () {
+        var open = !item.classList.contains('open') || item.classList.contains('dismissed');
+        item.classList.remove('dismissed');
+        setOpen(open);
+        if (!open) item.classList.add('dismissed');
+      });
+      item.addEventListener('keydown', function (e) {
+        if (e.key !== 'Escape') return;
+        setOpen(false);
+        item.classList.add('dismissed');
+        trigger.focus();
+      });
+    });
+
+    /* ---- pause animations ------------------------------------------------- */
+    var motionBar = document.getElementById('psd-motion');
+    var motionDrawer = document.getElementById('psd-motion-drawer');
+    function paintMotion() {
+      var still = isStill();
+      var label = still ? 'Play animations' : 'Pause animations';
+      motionBar.setAttribute('aria-pressed', String(still));
+      motionBar.setAttribute('aria-label', 'Pause animations');
+      motionBar.title = label;
+      motionBar.firstChild.textContent = still ? '▶' : '❚❚';
+      motionDrawer.setAttribute('aria-pressed', String(still));
+      motionDrawer.textContent = still ? 'Animations paused · tap to play' : 'Pause animations';
+    }
+    [motionBar, motionDrawer].forEach(function (b) {
+      b.addEventListener('click', function () { setStill(!isStill(), true); paintMotion(); });
+    });
+    paintMotion();
+
+    addSkipLink();
+
     var onScroll = function () { nav.classList.toggle('nav-scrolled', window.scrollY > 10); };
     window.addEventListener('scroll', onScroll, { passive: true });
     onScroll();
+  }
+
+  function keyboardFocus(el) {
+    try { return el.matches(':focus-visible'); } catch (e) { return true; }
+  }
+
+  /* ---- skip link -----------------------------------------------------------
+
+     The bar puts a dozen links in front of every page's content. A skip link,
+     first in the page and shown when tabbed to, jumps straight past them
+     (WCAG 2.4.1). Pages that already carry their own are left alone. The
+     target is the page's <main>. */
+  function addSkipLink() {
+    /* A page's own skip link sits after this bar once the bar is inserted at
+       the top, where it skips nothing; move it back in front. */
+    var own = document.querySelector('.skip-link, .psd-skip');
+    if (own) { document.body.insertBefore(own, document.body.firstChild); return; }
+    var main = document.querySelector('main');
+    if (!main) return;
+    if (!main.id) main.id = 'main-content';
+    /* focusable by script only, so the jump also moves keyboard focus */
+    if (!main.hasAttribute('tabindex')) main.setAttribute('tabindex', '-1');
+    main.style.outline = 'none';
+    var a = document.createElement('a');
+    a.className = 'psd-skip';
+    a.href = '#' + main.id;
+    a.textContent = 'Skip to main content';
+    document.body.insertBefore(a, document.body.firstChild);
   }
 
   /* Tripwire for the duplicated registration details.
@@ -437,6 +595,10 @@
     sections: SECTIONS,
     render: render,
     registration: REGISTRATION,
+    /** True while the visitor has animations paused. Pages with their own
+        timers (countdowns, rotating cards) check this before moving, and can
+        listen for the 'psd:motion' event to catch up when it changes. */
+    still: isStill,
     /** Call with a section id, or leave empty to work it out from the URL. */
     init: function (id) {
       function go() { render(id); setTimeout(checkAgainstSmash, 0); }

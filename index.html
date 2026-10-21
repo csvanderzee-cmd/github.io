@@ -36,7 +36,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
+                    colors: { /* Lighter than Tailwind's own gray-500..700, which fall below the 4.5:1 WCAG AA text contrast on this dark theme. */ gray: { 500: '#949cab', 600: '#8f97a5', 700: '#8b93a1' },
                         esports: {
                             dark: '#0B0E14',
                             card: '#151B26',
@@ -127,7 +127,9 @@
 
         .week-chip.is-next { border-color: rgba(253,185,19,.55); background: linear-gradient(135deg, rgba(253,185,19,.12), rgba(21,27,38,.9)); }
         .week-chip.is-next::before { background: linear-gradient(180deg, #FDB913, #FF6B6B); }
-        .week-chip.is-done { opacity: .4; }
+        /* Played weeks recede by colour rather than opacity: fading the whole
+           chip took its text below the 4.5:1 WCAG contrast minimum. */
+        .week-chip.is-done .wk-num, .week-chip.is-done .wk-date { color: #949cab; }
         .week-chip.is-done::before { background: rgba(74,222,128,.5); }
 
         .week-chip .wk-num { font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 1.5rem; line-height: 1; color: #fff; letter-spacing: .02em; }
@@ -893,22 +895,22 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6" role="list">
                     <div class="bg-esports-card rounded-2xl p-7 border border-white/10" role="listitem">
-                        <div class="font-display font-black text-5xl text-esports-blue-text/30 leading-none mb-3">01</div>
+                        <div class="font-display font-black text-5xl text-esports-blue-text/70 leading-none mb-3">01</div>
                         <h3 class="text-lg font-display font-black text-white uppercase mb-2">Six Players, Two Teams</h3>
                         <p class="text-gray-400 text-sm leading-relaxed">Each school fields three players on ORANGE and three on BLUE. A player sticks with one color for the whole series.</p>
                     </div>
                     <div class="bg-esports-card rounded-2xl p-7 border border-white/10" role="listitem">
-                        <div class="font-display font-black text-5xl text-esports-yellow-text/30 leading-none mb-3">02</div>
+                        <div class="font-display font-black text-5xl text-esports-yellow-text/70 leading-none mb-3">02</div>
                         <h3 class="text-lg font-display font-black text-white uppercase mb-2">Check In</h3>
                         <p class="text-gray-400 text-sm leading-relaxed">Coaches confirm readiness 15 minutes before the match over Gmail Chat. The home team creates the lobby.</p>
                     </div>
                     <div class="bg-esports-card rounded-2xl p-7 border border-white/10" role="listitem">
-                        <div class="font-display font-black text-5xl text-esports-red-text/30 leading-none mb-3">03</div>
+                        <div class="font-display font-black text-5xl text-esports-red-text/70 leading-none mb-3">03</div>
                         <h3 class="text-lg font-display font-black text-white uppercase mb-2">Best of Three</h3>
                         <p class="text-gray-400 text-sm leading-relaxed">Both series run at the same time on DFH Stadium. A third game only happens if the series is tied 1-1.</p>
                     </div>
                     <div class="bg-esports-card rounded-2xl p-7 border border-white/10" role="listitem">
-                        <div class="font-display font-black text-5xl text-purple-400/30 leading-none mb-3">04</div>
+                        <div class="font-display font-black text-5xl text-purple-400/70 leading-none mb-3">04</div>
                         <h3 class="text-lg font-display font-black text-white uppercase mb-2">Report Scores</h3>
                         <p class="text-gray-400 text-sm leading-relaxed">Both coaches post final stats to Google Classroom. Combined ORANGE and BLUE records set the standings.</p>
                     </div>
@@ -1415,6 +1417,7 @@
         paint();
         if (slides.length < 2) return;
         setInterval(function () {
+          if (window.PSD_NAV && PSD_NAV.still()) return;   // held still by the pause-animations switch
           slide.style.opacity = '0';
           setTimeout(function () { i++; paint(); slide.style.opacity = '1'; }, 500);
         }, 6000);
@@ -1682,7 +1685,8 @@
     renderGlance();
     renderWeekStrip();
     renderHero();
-    setInterval(renderHero, 1000);
+    /* Paused animations (the switch in the nav bar) also hold the countdown still. */
+    setInterval(function () { if (!(window.PSD_NAV && PSD_NAV.still())) renderHero(); }, 1000);
     lucide.createIcons();
 
     /* ── Ambient particles ── */
