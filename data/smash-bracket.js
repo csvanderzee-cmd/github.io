@@ -490,12 +490,56 @@
     txt.textContent = state.loadedAt ? 'Live · updated ' + timeOf(state.loadedAt) : 'Loading scores…';
   }
 
+  /* Anything else on the page that wants the same numbers — the full-screen
+     display mode, for one — registers here and is handed a snapshot after
+     every read of the sheet. */
+  var watchers = [];
+
   function renderAll() {
     renderStatus();
     renderWarnings();
     renderGroups();
     renderBracket();
     if (root.lucide && root.lucide.createIcons) root.lucide.createIcons();
+    notifyWatchers();
+  }
+
+  /* The display mode and anything else registered below hear about every
+     read of the sheet, changed or not, so their "updated at" and connection
+     state stay current even while this page skips an unchanged redraw. */
+  function notifyWatchers() {
+    var snap = watchers.length ? snapshot() : null;
+    watchers.forEach(function (fn) {
+      try { fn(snap); } catch (e) { if (root.console) console.error('[smash] watcher failed:', e); }
+    });
+  }
+
+  /** Call `fn(snapshot)` after every read of the sheet, and once now if data is in hand. */
+  function onUpdate(fn) {
+    watchers.push(fn);
+    if (state.data || state.error) fn(snapshot());
+  }
+
+  /** Everything a page needs to draw this division, as plain data. */
+  function snapshot() {
+    var d = div();
+    return {
+      division: DIV,
+      drawn: d.drawn,
+      wired: root.SMASH.isWired() && !!DIV.gid,
+      groups: d.groups.map(function (g, gi) {
+        return { name: g.name, rows: standings(gi), complete: groupComplete(gi) };
+      }),
+      groupsComplete: d.drawn && d.groups.length > 0 &&
+                      d.groups.every(function (g, gi) { return groupComplete(gi); }),
+      bracket: state.data ? bracket() : null,
+      advance: ADVANCE,
+      loadedAt: state.loadedAt,
+      loading: state.loading,
+      error: state.error,
+      hasData: !!state.data,
+      paused: paused
+    };
   }
 
   /* ==================================================================
@@ -536,6 +580,7 @@
         if (!firstLoad && div().drawn) announce('Scores updated at ' + timeOf(state.loadedAt) + '.');
       } else {
         renderStatus();
+        notifyWatchers();
       }
     }, function (err) {
       /* keep the last good bracket on screen rather than blanking out when
@@ -546,7 +591,7 @@
       state.error = err.message;
       state.loading = false;
       /* the first failure changes what is on screen; repeats only the status */
-      if (hadError) renderStatus(); else renderAll();
+      if (hadError) { renderStatus(); notifyWatchers(); } else renderAll();
     });
   }
 
@@ -561,11 +606,14 @@
     var status = byId('feed-status');
     if (!status) return;
 
+    /* Straight under <body>, not inside the page: the rules dialog and the
+       display screen make the page inert while they are open, and the
+       announcements have to keep coming through either way. */
     var live = document.createElement('div');
     live.id = 'feed-announce';
     live.className = 'sr-only';
     live.setAttribute('role', 'status');
-    status.appendChild(live);
+    document.body.appendChild(live);
 
     var btn = document.createElement('button');
     btn.type = 'button';
@@ -584,14 +632,20 @@
       '#feed-pause[aria-pressed="true"]{color:#0B0E14;background:#FDB913;border-color:#FDB913;}';
     document.head.appendChild(style);
 
-    btn.addEventListener('click', function () {
-      paused = !paused;
+    btn.addEventListener('click', function () { setPaused(!paused); });
+  }
+
+  /** Pause or resume the feed. The display screen has its own button for this. */
+  function setPaused(p) {
+    paused = !!p;
+    var btn = byId('feed-pause');
+    if (btn) {
       btn.setAttribute('aria-pressed', String(paused));
       btn.textContent = paused ? 'Resume live updates' : 'Pause live updates';
-      announce(paused ? 'Live updates paused.' : 'Live updates resumed.');
-      if (paused) { state.loading = false; renderStatus(); }
-      else refresh();
-    });
+    }
+    announce(paused ? 'Live updates paused.' : 'Live updates resumed.');
+    if (paused) { state.loading = false; renderStatus(); notifyWatchers(); }
+    else refresh();
   }
 
   /* ==================================================================
@@ -689,7 +743,7 @@
     function setBehind(off) {
       if (off) {
         behind = Array.prototype.filter.call(document.body.children, function (el) {
-          return el !== backdrop && !el.inert && el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE';
+          return el !== backdrop && el.id !== 'feed-announce' && !el.inert && el.tagName !== 'SCRIPT' && el.tagName !== 'STYLE';
         });
       }
       behind.forEach(function (el) {
@@ -752,17 +806,35 @@
    * Start a bracket page for one division.
    * Paints the division's name and accent into the page, then goes live.
    */
-  function init(divisionId) {
-    if (!root.SMASH) { console.error('[smash] load data/smash.js first.'); return; }
+  /** Wires this file to a division. Shared by the bracket page and the display screen. */
+  function setup(divisionId) {
+    if (!root.SMASH) { console.error('[smash] load data/smash.js first.'); return false; }
 
     CFG = root.SMASH.config;
     ADVANCE = CFG.advance || 2;
     norm = root.SMASH.norm;
 
     DIV = CFG.divisions.filter(function (d) { return d.id === divisionId; })[0];
-    if (!DIV) { console.error('[smash] unknown division:', divisionId); return; }
+    if (!DIV) { console.error('[smash] unknown division:', divisionId); return false; }
 
     document.documentElement.style.setProperty('--accent', DIV.accent);
+    return true;
+  }
+
+  /** Starts the feed and repeats it on the usual interval. */
+  function startFeed() {
+    refresh();
+    setInterval(refresh, Math.max(10, CFG.refreshSeconds || 30) * 1000);
+
+    /* a bracket left up on a projector often sits in a background tab — catch
+       it up the moment someone brings it forward */
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) refresh();
+    });
+  }
+
+  function init(divisionId) {
+    if (!setup(divisionId)) return;
 
     var badge = byId('division-badge');
     if (badge) {
@@ -781,17 +853,19 @@
     paintWhen();
     buildRules();
     buildFeedControls();
-
-    refresh();
-    setInterval(refresh, Math.max(10, CFG.refreshSeconds || 30) * 1000);
-
-    /* a bracket left up on a projector often sits in a background tab — catch
-       it up the moment someone brings it forward */
-    document.addEventListener('visibilitychange', function () {
-      if (!document.hidden) refresh();
-    });
+    startFeed();
   }
 
-  root.SMASH_PAGE = { init: init, standings: standings, bracket: bracket, paintWhen: paintWhen };
+  root.SMASH_PAGE = {
+    init: init,
+    onUpdate: onUpdate,
+    snapshot: snapshot,
+    standings: standings,
+    bracket: bracket,
+    paintWhen: paintWhen,
+    /* shared with the display screen, so both say a result the same way */
+    matchSentence: matchSentence,
+    setPaused: setPaused
+  };
 
 })(window);
