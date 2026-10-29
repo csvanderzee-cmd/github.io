@@ -93,6 +93,10 @@
         @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px rgba(253,185,19,0.3), 0 0 40px rgba(253,185,19,0.1); } 50% { box-shadow: 0 0 30px rgba(253,185,19,0.6), 0 0 60px rgba(253,185,19,0.2); } }
         .season-started-banner { animation: pulse-glow 2s ease-in-out infinite; }
         .contact-bar-link:hover .contact-email { color: #FFD166; }
+        /* On a 320px screen (WCAG 1.4.10 reflow) an address is wider than the
+           space beside its name: the pair wraps, and the address may break. */
+        .contact-bar-link { flex-wrap: wrap; justify-content: center; max-width: 100%; min-width: 0; }
+        .contact-email { overflow-wrap: anywhere; min-width: 0; }
 
         /* ── Season timeline ──
            A grid, not a scroller. Nine chips in a scrolling row only ever hid
@@ -211,7 +215,7 @@
 
                     <div class="max-w-lg mb-4">
                       <!-- Countdown to first match of the season -->
-                      <div id="countdown-wrapper" class="hidden" aria-label="Countdown to the first match of the season">
+                      <div id="countdown-wrapper" class="hidden" role="group" aria-label="Countdown to the first match of the season">
                         <div class="bg-gradient-to-r from-esports-blue via-esports-yellow to-esports-red p-[1px] rounded-lg">
                           <div class="grid grid-cols-4 gap-2 bg-esports-dark rounded-lg p-3">
                             <div class="bg-white/5 border border-white/10 p-3 text-center rounded">
@@ -238,7 +242,7 @@
 
                       <!-- Shown once the season is under way. Counts down to the
                            finals when a date is set, and otherwise says TBA. -->
-                      <div id="finals-hero-wrapper" class="hidden" aria-label="Countdown to Championship Finals">
+                      <div id="finals-hero-wrapper" class="hidden" role="group" aria-label="Countdown to Championship Finals">
                         <div class="bg-gradient-to-r from-esports-red via-esports-yellow to-esports-blue p-[1px] rounded-lg">
                           <div class="grid grid-cols-4 gap-2 bg-esports-dark rounded-lg p-3">
                             <div class="bg-white/5 border border-white/10 p-3 text-center rounded">
@@ -453,7 +457,7 @@
 
 
         <!-- ─── PHOTO TICKER ─── -->
-        <div id="photo-ticker-section" class="bg-esports-dark border-b border-white/10 py-6 overflow-hidden relative z-20" aria-label="Community Photos">
+        <div id="photo-ticker-section" class="bg-esports-dark border-b border-white/10 py-6 overflow-hidden relative z-20" role="group" aria-label="Community Photos">
             <div class="max-w-7xl mx-auto px-4">
                 <span class="text-gray-500 text-xs font-bold tracking-[0.2em] uppercase block mb-4">Community Moments</span>
                 <!-- Same container as the heading, so the strip lines up with
@@ -718,7 +722,7 @@
 
                     <!-- Early Release -->
                     <article class="group relative flex flex-col bg-esports-card border border-esports-red/30 rounded-2xl overflow-hidden shadow-2xl hover:border-esports-red/60 transition-all duration-300">
-                        <img src="https://wallpapers.com/images/featured/rocket-league-q83tcwb7har0kh5h.webp" alt="" class="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:opacity-25 group-hover:scale-105 transition-all duration-700" loading="lazy">
+                        <img src="https://wallpapers.com/images/featured/rocket-league-q83tcwb7har0kh5h.webp" alt="" class="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:scale-105 transition-all duration-700" loading="lazy">
                         <div class="absolute inset-0 bg-gradient-to-br from-esports-red/20 via-transparent to-transparent" aria-hidden="true"></div>
                         <div class="relative p-8 z-10 flex flex-col flex-1">
                             <div class="flex items-center gap-3 mb-4">
@@ -727,7 +731,7 @@
                                 </div>
                                 <div>
                                     <h3 class="font-display font-black text-2xl uppercase text-white leading-none">Early Release</h3>
-                                    <span class="text-esports-red-text text-[11px] font-bold uppercase tracking-widest">Tuesdays · 2:00 PM · 9 Schools</span>
+                                    <span class="text-red-200 text-[11px] font-bold uppercase tracking-widest">Tuesdays · 2:00 PM · 9 Schools</span>
                                 </div>
                             </div>
 
@@ -762,7 +766,7 @@
 
                     <!-- Late Release -->
                     <article class="group relative flex flex-col bg-esports-card border border-esports-blue/30 rounded-2xl overflow-hidden shadow-2xl hover:border-esports-blue/60 transition-all duration-300">
-                        <img src="https://wallpapers.com/images/hd/rocket-league-rocket-powered-car-1920x1080-xbjxok5dk6itr8eo.jpg" alt="" class="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:opacity-25 group-hover:scale-105 transition-all duration-700" loading="lazy">
+                        <img src="https://wallpapers.com/images/hd/rocket-league-rocket-powered-car-1920x1080-xbjxok5dk6itr8eo.jpg" alt="" class="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:scale-105 transition-all duration-700" loading="lazy">
                         <div class="absolute inset-0 bg-gradient-to-br from-esports-blue/20 via-transparent to-transparent" aria-hidden="true"></div>
                         <div class="relative p-8 z-10 flex flex-col flex-1">
                             <div class="flex items-center gap-3 mb-4">
@@ -771,7 +775,7 @@
                                 </div>
                                 <div>
                                     <h3 class="font-display font-black text-2xl uppercase text-white leading-none">Late Release</h3>
-                                    <span class="text-esports-blue-text text-[11px] font-bold uppercase tracking-widest">Mondays · 4:00 PM · 4 Schools</span>
+                                    <span class="text-blue-200 text-[11px] font-bold uppercase tracking-widest">Mondays · 4:00 PM · 4 Schools</span>
                                 </div>
                             </div>
 

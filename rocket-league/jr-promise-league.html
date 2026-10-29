@@ -58,7 +58,7 @@
   .hero-gradient-side { position: absolute; inset: 0; background: linear-gradient(to right, rgba(11,14,20,0.85), transparent, rgba(11,14,20,0.85)); }
   canvas#heroParticles { position: absolute; inset: 0; opacity: 0.5; pointer-events: none; }
   .hero-content { position: relative; z-index: 10; text-align: center; padding: 1.75rem 1rem 2rem; }
-  .hero-badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0.9rem; border-left: 4px solid var(--psd-red-text); background: rgba(200,16,46,0.15); color: var(--psd-red-text); font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 1rem; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0.9rem; border-left: 4px solid var(--psd-red-text); background: linear-gradient(rgba(200,16,46,0.15),rgba(200,16,46,0.15)), rgba(11,14,20,.85); color: var(--psd-red-text); font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 1rem; }
   .hero-dot { position: relative; display: flex; width: 10px; height: 10px; }
   .hero-dot-ping { position: absolute; inset: 0; border-radius: 50%; background: var(--psd-red-text); opacity: 0.75; animation: ping 1.5s cubic-bezier(0,0,0.2,1) infinite; }
   .hero-dot-solid { position: relative; width: 10px; height: 10px; border-radius: 50%; background: var(--psd-red-text); }
@@ -108,8 +108,8 @@
   .loss-cell { color: var(--psd-red-text); font-weight: 700; }
 
   .streak-w, .streak-l { display: inline-flex; align-items: center; gap: 3px; padding: 3px 10px; border-radius: 9999px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.85rem; color: #fff; letter-spacing: 0.05em; }
-  .streak-w { background: linear-gradient(135deg,#15803d,#22c55e); box-shadow: 0 0 10px rgba(34,197,94,.45), 0 0 20px rgba(34,197,94,.2); }
-  .streak-l { background: linear-gradient(135deg,#991b1b,#ef4444); box-shadow: 0 0 8px rgba(239,68,68,.3); }
+  .streak-w { background: linear-gradient(135deg,#14532d,#15803d); box-shadow: 0 0 10px rgba(34,197,94,.45), 0 0 20px rgba(34,197,94,.2); }
+  .streak-l { background: linear-gradient(135deg,#7f1d1d,#b91c1c); box-shadow: 0 0 8px rgba(239,68,68,.3); }
 
   .loader { padding: 3rem; font-size: 1rem; color: var(--text-muted); text-align: center; font-family: 'Rajdhani', sans-serif; letter-spacing: 0.1em; text-transform: uppercase; }
 
@@ -131,6 +131,7 @@
   .modal-header-text { display: flex; flex-direction: column; gap: 0.2rem; }
   .modal-badge { background: var(--modal-accent, var(--psd-red)); color: #fff; border-radius: 9999px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.08em; padding: 2px 10px; text-transform: uppercase; align-self: flex-start; }
   .modal-title { font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 1.25rem; margin: 0; color: #e5e7eb; letter-spacing: 0.05em; text-transform: uppercase; }
+  .scroll:focus-visible { outline: 2px solid #FFD166; outline-offset: 2px; }
   .modal-close { margin-left: auto; background: transparent; border: 1px solid var(--border-subtle); font-size: 1.3rem; line-height: 1; cursor: pointer; color: #9ca3af; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 8px; transition: background 0.15s, color 0.15s; }
   .modal-close:hover { color: #e5e7eb; background: rgba(255,255,255,0.08); }
   .modal-close:focus-visible { outline: 3px solid var(--psd-yellow); outline-offset: 2px; }
@@ -251,14 +252,14 @@
         <div id="modal-logo-wrap"></div>
         <div class="modal-header-text">
           <span class="modal-badge">Early Release</span>
-          <h3 id="modal-title" class="modal-title">Team details</h3>
+          <h2 id="modal-title" class="modal-title">Team details</h2>
         </div>
         <div id="modal-streak-wrap" style="margin-left:0.5rem"></div>
         <button class="modal-close" id="modal-close" aria-label="Close match details dialog">&times;</button>
       </div>
       <div id="modal-stats-bar" class="modal-stats-bar"></div>
       <div class="modal-body">
-        <div class="scroll">
+        <div class="scroll" role="region" aria-label="Game-by-game results, scrolls sideways" tabindex="0">
           <table class="match-table" aria-label="Game-by-game match results">
             <thead>
               <tr>
@@ -494,7 +495,7 @@ function openModal(school, event) {
             <td>${gamePips(m.games[2])}</td>
             <td>${m.gamesWon}-${m.gamesLost}</td>
             <td>${goalDiffBar(m.gf, m.ga)}</td>
-            <td><span class="pill ${rc}">${m.result || '-'}</span></td>
+            <td><span class="pill ${rc}" role="img" aria-label="${m.result==='W' ? 'Win' : m.result==='L' ? 'Loss' : 'Not played'}">${m.result || '-'}</span></td>
           </tr>`);
         });
       }
@@ -862,7 +863,8 @@ function renderTable(sortedSchools) {
     const streak=calculateStreak(school.results);
     const streakClass=streak.startsWith('W')?'streak-w':'streak-l';
     const fireIcon=streak!=='-'&&streak.startsWith('W')?'🔥':'';
-    const streakSpan=streak!=='-'?`<span class="${streakClass}">${fireIcon}${streak}</span>`:'<span>-</span>';
+    const streakSrText=streak!=='-'?`${streak.substring(1)} ${streak.charAt(0)==='W'?'win':'loss'} streak`:'';
+    const streakSpan=streak!=='-'?`<span class="${streakClass}" role="img" aria-label="${streakSrText}">${fireIcon}${streak}</span>`:'<span role="img" aria-label="No streak">-</span>';
     const isTied=school._tied;
     const rankDisplay=isTied?`${ranks[index]}<span class="rank-tied">T</span>`:`${ranks[index]}`;
     const tiedClass=isTied?' tied-row':'';

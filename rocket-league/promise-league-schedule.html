@@ -84,7 +84,7 @@
             display: inline-flex; align-items: center; gap: 0.4rem;
             padding: 0.2rem 0.9rem;
             border-left: 4px solid var(--psd-blue-text);
-            background: rgba(0,86,150,0.15); color: var(--psd-blue-text);
+            background: linear-gradient(rgba(0,86,150,0.15),rgba(0,86,150,0.15)), rgba(11,14,20,.85); color: var(--psd-blue-text);
             font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.75rem;
             letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 1rem;
         }
@@ -122,7 +122,7 @@
             border: 1px solid rgba(0,86,150,0.5); box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
         .week-button:hover { background: rgba(0,86,150,0.2); border-color: var(--psd-yellow); color: var(--psd-yellow-text); transform: translateY(-2px); }
-        .week-button.active { background: linear-gradient(90deg, var(--psd-red), var(--psd-yellow), var(--psd-blue)); color: #0B0E14; border-color: transparent; box-shadow: 0 8px 20px rgba(0,0,0,0.8); font-weight: 900; }
+        .week-button.active { background: var(--psd-yellow); color: #0B0E14; border-color: transparent; box-shadow: 0 8px 20px rgba(0,0,0,0.8); font-weight: 900; }
 
         /* ── SECTION HEADINGS ── */
         .week-title { font-family: 'Rajdhani', sans-serif; font-size: 1.6rem; font-weight: 900; text-align: center; margin-bottom: 0; color: var(--text-color); text-transform: uppercase; letter-spacing: 0.08em; }
@@ -192,8 +192,8 @@
         }
         .team-left  .team-label { margin-right: 12px; }
         .team-right .team-label { margin-left: 12px; }
-        .away-label { background: linear-gradient(135deg, #ef4444, #b91c1c); }
-        .home-label { background: linear-gradient(135deg, var(--psd-blue-text), var(--psd-blue)); }
+        .away-label { background: linear-gradient(135deg, #b91c1c, #991b1b); }
+        .home-label { background: linear-gradient(135deg, #1d6fb8, var(--psd-blue)); }
 
         .separator, .score {
             font-family: 'Rajdhani', sans-serif; font-size: 1.5rem; font-weight: 900;
@@ -469,9 +469,10 @@
 
     function loadWeekByIndex(index) {
         currentWeekIndex = index;
-        document.querySelectorAll('.week-button').forEach(b => b.classList.remove('active'));
+        // aria-pressed tells a screen reader which week is showing (WCAG 4.1.2).
+        document.querySelectorAll('.week-button').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
         const btn = document.querySelectorAll('.week-button')[index];
-        if (btn) btn.classList.add('active');
+        if (btn) { btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true'); }
         WEEK_TITLE_OVERRIDE = weekHeading(index);
         fetchAndDisplayData(WEEKS[index].gid);
     }
@@ -670,7 +671,7 @@
 
     function createByeCard(team) {
         return `
-        <div class="match-card bye-card" aria-label="${team} has a bye this week">
+        <div class="match-card bye-card" role="group" aria-label="${team} has a bye this week">
             <div class="team team-left">
                 <span class="bye-label-tag">Bye</span>
                 ${logoHtml(team, 'left')}

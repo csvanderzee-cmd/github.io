@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#0B0E14">
+    <link rel="canonical" href="https://psdesports.com/accessibility-report.html">
+    <meta name="description" content="Accessibility Conformance Report for psdesports.com: every WCAG 2.2 Level A and AA success criterion, how the site meets it, and how it was tested.">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="PSD Esports">
+    <meta property="og:title" content="Accessibility Conformance Report">
+    <meta property="og:description" content="Every WCAG 2.2 Level A and AA success criterion, how psdesports.com meets it, and how it was tested.">
+    <meta property="og:url" content="https://psdesports.com/accessibility-report.html">
+    <meta property="og:image" content="https://psdesports.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="PSD Esports, Palmdale School District">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>Accessibility Conformance Report | PSD Esports</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: { /* Lighter than Tailwind's own gray-500..700, which fall below the 4.5:1 WCAG AA text contrast on this dark theme. */ gray: { 500: '#949cab', 600: '#8f97a5', 700: '#8b93a1' }, esports: {
+                    dark: '#0B0E14', card: '#151B26',
+                    yellow: '#FDB913', 'yellow-text': '#FFD166',
+                    red: '#C8102E', 'red-text': '#FF6B6B',
+                    blue: '#005696', 'blue-text': '#4DABF7'
+                } },
+                fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Rajdhani', 'sans-serif'] }
+            } }
+        }
+    </script>
+    <style>
+        .clip-slant { clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); }
+        .prose-a11y h2 { font-family: 'Rajdhani', sans-serif; font-weight: 900; text-transform: uppercase; font-size: 1.6rem;
+                         letter-spacing: .04em; color: #fff; margin: 2.5rem 0 .75rem; font-style: italic; }
+        .prose-a11y h3 { font-family: 'Rajdhani', sans-serif; font-weight: 800; text-transform: uppercase; font-size: 1.15rem;
+                         letter-spacing: .06em; color: #fff; margin: 1.75rem 0 .5rem; }
+        .prose-a11y p, .prose-a11y li, .prose-a11y dd { color: #d1d5db; line-height: 1.7; }
+        .prose-a11y p + p { margin-top: .75rem; }
+        .prose-a11y ul { list-style: disc; padding-left: 1.25rem; }
+        .prose-a11y ol { list-style: decimal; padding-left: 1.4rem; }
+        .prose-a11y li + li { margin-top: .45rem; }
+        .prose-a11y ol + p, .prose-a11y ul + p { margin-top: .75rem; }
+        .prose-a11y strong, .prose-a11y dt { color: #fff; }
+        .prose-a11y a { color: #4DABF7; text-decoration: underline; }
+        .prose-a11y a:hover { color: #FFD166; }
+        .prose-a11y a:focus-visible, .table-wrap:focus-visible { outline: 2px solid #FFD166; outline-offset: 2px; }
+        .facts { display: grid; grid-template-columns: max-content 1fr; gap: .35rem 1.25rem; }
+        .facts dt { font-weight: 700; }
+        @media (max-width: 600px) { .facts { grid-template-columns: 1fr; } .facts dd { margin-bottom: .5rem; } }
+
+        /* The criteria tables. They scroll sideways inside their own box on a
+           narrow screen, which WCAG 1.4.10 allows for two-dimensional data. */
+        .table-wrap { overflow-x: auto; border: 1px solid rgba(255,255,255,.14); border-radius: .75rem; margin-top: .75rem; }
+        .acr { width: 100%; min-width: 640px; border-collapse: collapse; font-size: .9rem; }
+        .acr caption { text-align: left; padding: .8rem 1rem; color: #fff; font-weight: 700; background: #151B26;
+                       border-bottom: 1px solid rgba(255,255,255,.14); }
+        .acr th, .acr td { padding: .7rem 1rem; text-align: left; vertical-align: top; border-top: 1px solid rgba(255,255,255,.08); }
+        .acr thead th { font-family: 'Rajdhani', sans-serif; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase;
+                        color: #e5e7eb; background: #11161f; border-top: none; }
+        .acr tbody th { color: #fff; font-weight: 700; width: 15rem; }
+        .acr tbody th span { display: block; color: #a3abb9; font-weight: 600; font-size: .8rem; margin-top: .15rem; }
+        .acr td { color: #d1d5db; line-height: 1.6; }
+        /* Ratings are words first; the colour is only a second cue. */
+        .rate { display: inline-block; white-space: nowrap; font-weight: 800; font-size: .78rem; letter-spacing: .04em;
+                padding: .15rem .55rem; border-radius: .35rem; border: 1px solid; }
+        .rate.s  { color: #86efac; border-color: #86efac; }
+        .rate.ps { color: #FFD166; border-color: #FFD166; }
+        .rate.na { color: #d1d5db; border-color: #8b93a1; }
+        .tally { border-collapse: collapse; min-width: 0; }
+        .tally th, .tally td { padding: .45rem .9rem; border: 1px solid rgba(255,255,255,.14); text-align: left; }
+        .tally thead th { color: #fff; background: #151B26; }
+        .tally td { color: #d1d5db; }
+        @media print {
+            body { background: #fff !important; color: #000 !important; }
+            .prose-a11y p, .prose-a11y li, .prose-a11y dd, .acr td, .acr tbody th, .acr caption, .prose-a11y h2, .prose-a11y h3 { color: #000 !important; background: none !important; }
+            .table-wrap { overflow: visible; border-color: #999; }
+            .acr { min-width: 0; }
+        }
+    </style>
+</head>
+
+<body class="bg-esports-dark text-gray-100 font-sans antialiased">
+
+<script src="/data/psd-nav.js"></script>
+<script>PSD_NAV.init();</script>
+
+<header role="banner" class="relative py-16 border-b border-white/10 overflow-hidden">
+    <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-br from-esports-blue/15 via-transparent to-esports-yellow/10"></div>
+    <div class="relative max-w-4xl mx-auto px-4 z-10">
+        <div class="inline-block px-4 py-1 bg-esports-yellow text-black font-display font-black uppercase tracking-widest text-xs clip-slant mb-5">
+            PSD Esports
+        </div>
+        <h1 class="font-display font-black text-5xl md:text-7xl uppercase leading-[0.85] mb-4 italic">
+            Conformance <span class="text-transparent bg-clip-text bg-gradient-to-r from-esports-blue-text via-esports-yellow-text to-esports-red-text pr-3">Report</span>
+        </h1>
+        <p class="text-gray-300 max-w-2xl leading-relaxed">
+            Every WCAG 2.2 Level A and AA success criterion, how this website meets it, and the evidence behind each
+            answer. It supports the <a class="text-esports-blue-text underline" href="/accessibility.html">accessibility statement</a>.
+        </p>
+    </div>
+</header>
+
+<main class="max-w-4xl mx-auto px-4 py-12 prose-a11y">
+
+    <h2>Report details</h2>
+    <dl class="facts">
+        <dt>Website</dt>
+        <dd>psdesports.com, PSD Esports, Palmdale School District</dd>
+        <dt>Standard</dt>
+        <dd>Web Content Accessibility Guidelines (WCAG) 2.2, Levels A and AA. WCAG 2.2 AA includes every WCAG 2.1 AA
+            criterion, the level required of school districts under Title II of the Americans with Disabilities Act.</dd>
+        <dt>Evaluation date</dt>
+        <dd>October 29, 2026</dd>
+        <dt>Format</dt>
+        <dd>Modelled on the Information Technology Industry Council&rsquo;s VPAT&reg; 2.5, WCAG edition.</dd>
+        <dt>Result</dt>
+        <dd><strong>Partially conforms</strong> to WCAG 2.2 Level AA. 52 of 55 criteria are met or not applicable; the
+            remaining 3 are partially met, all for the same reason: the review of three videos is not finished (see
+            <a href="#limitations">known limitations</a>).</dd>
+        <dt>Contact</dt>
+        <dd>Christopher Vanderzee, PSD Esports &middot;
+            <a href="mailto:csvanderzee@palmdalesd.org?subject=Website%20accessibility">csvanderzee@palmdalesd.org</a></dd>
+    </dl>
+
+    <h2>Summary</h2>
+    <div class="table-wrap" style="display:inline-block;max-width:100%">
+        <table class="tally">
+            <caption class="sr-only">Number of criteria at each rating</caption>
+            <thead><tr><th scope="col">Rating</th><th scope="col">Level A</th><th scope="col">Level AA</th><th scope="col">Total</th></tr></thead>
+            <tbody>
+                <tr><th scope="row">Supports</th><td>23</td><td>16</td><td>39</td></tr>
+                <tr><th scope="row">Partially supports</th><td>2</td><td>1</td><td>3</td></tr>
+                <tr><th scope="row">Does not support</th><td>0</td><td>0</td><td>0</td></tr>
+                <tr><th scope="row">Not applicable</th><td>6</td><td>7</td><td>13</td></tr>
+                <tr><th scope="row">Total</th><td>31</td><td>24</td><td>55</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>What the ratings mean</h3>
+    <ul>
+        <li><span class="rate s">Supports</span> &nbsp;Every page and feature in scope meets the criterion.</li>
+        <li><span class="rate ps">Partially supports</span> &nbsp;Some content does not yet meet it. The remarks say
+            exactly which.</li>
+        <li><span class="rate na">Not applicable</span> &nbsp;The site has no content the criterion applies to. The
+            remarks say why.</li>
+    </ul>
+
+    <h2>Scope</h2>
+    <p>All 26 pages served from psdesports.com were evaluated:</p>
+    <ul>
+        <li><strong>Site:</strong> home, Hall of Champions, In the News, Approved Games, accessibility statement, this
+            report, and the page-not-found page.</li>
+        <li><strong>Rocket League:</strong> standings, schedule and player stats for both divisions (Early Release and
+            Late Release), rules, match setup, badge guide, the finals page, and the two full-screen finals bracket
+            displays.</li>
+        <li><strong>Smash Bros tournament:</strong> overview, both division brackets (including their full-screen display
+            view), rules, flyer, the flyer&rsquo;s print source, and the organisers&rsquo; schedule planner. The last two are
+            not linked from the site but are publicly reachable, so they were included.</li>
+        <li><strong>Documents:</strong> the tournament flyer PDF, the only document the site links to.</li>
+        <li><strong>Display settings:</strong> every page was evaluated in its default appearance, and again with high
+            contrast, 150% text and the readable font.</li>
+    </ul>
+    <p>
+        Live content (standings, results, brackets) was evaluated as it was on the evaluation date, loaded from the
+        league&rsquo;s data. Content provided by other services is listed under <a href="#third-party">third-party
+        content</a> and is outside this report.
+    </p>
+
+    <h2>How the site was tested</h2>
+    <ol>
+        <li><strong>Automated testing:</strong> axe-core 4.10.2 against every WCAG 2.0, 2.1 and 2.2 A/AA rule on every
+            page, after live data had loaded, with menus, dialogs and the display settings panel opened. Re-run after
+            every fix. Result: no violations on any page.</li>
+        <li><strong>Colour contrast by measurement:</strong> wherever text sits on a gradient, photo or translucent
+            panel (which automated tools cannot judge), the page was rendered, the text hidden, and every background
+            pixel behind it compared with the text colour. The 5th-percentile (near-worst) ratio had to meet 4.5:1, or
+            3:1 for large text.</li>
+        <li><strong>Keyboard only:</strong> every menu, filter, dialog, disclosure and the display settings panel operated
+            with Tab, Shift+Tab, Enter, Space, the arrow keys and Escape. Focus order, focus visibility, focus
+            containment in dialogs and focus return on close were each checked.</li>
+        <li><strong>Reflow and resize:</strong> every page at 320 CSS pixels wide (equivalent to 400% zoom on a
+            1280-pixel screen) and at 375 pixels with 150% text and the readable font, checked for horizontal scrolling
+            and lost content.</li>
+        <li><strong>Text spacing:</strong> every page with WCAG 1.4.12 spacing applied (line height 1.5, paragraph
+            spacing 2&times;, letter spacing 0.12em, word spacing 0.16em), checked for clipped or overlapping text.</li>
+        <li><strong>Non-text contrast:</strong> borders of every form field and option button measured against their
+            surroundings.</li>
+        <li><strong>Code inspection:</strong> names, roles, states, live regions, language, page titles, headings and
+            landmarks reviewed in the source.</li>
+        <li><strong>Document inspection:</strong> the PDF&rsquo;s tag tree, language, title and image alternative text
+            confirmed in the file.</li>
+    </ol>
+    <p>
+        <strong>Environment:</strong> Microsoft Edge (Chromium) on Windows 11, with desktop and phone-width viewports
+        emulated.
+    </p>
+    <p>
+        <strong>Not yet done:</strong> testing with screen readers (NVDA, JAWS, VoiceOver), with Safari and Firefox, and
+        on physical phones and tablets. The accessible names, roles and live regions those tools rely on were verified
+        in code and by axe, but not yet heard through a screen reader. This is planned, and the report will be updated
+        with the results.
+    </p>
+
+    <h2>Level A success criteria</h2>
+    <div class="table-wrap" role="region" aria-labelledby="cap-a" tabindex="0">
+        <table class="acr">
+            <caption id="cap-a">WCAG 2.2 Level A: 31 criteria</caption>
+            <thead><tr><th scope="col">Criterion</th><th scope="col">Rating</th><th scope="col">Remarks and evidence</th></tr></thead>
+            <tbody>
+                <tr><th scope="row">1.1.1 Non-text Content</th><td><span class="rate s">Supports</span></td>
+                    <td>Informative images (school badges beside names, video thumbnails, setup screenshots, the flyer)
+                        have text alternatives; badges next to a school&rsquo;s written name are marked decorative so
+                        the name is not read twice. Icons and emoji in labels are hidden from screen readers. The
+                        flyer image has a full text version on its page.</td></tr>
+                <tr><th scope="row">1.2.1 Audio-only and Video-only (Prerecorded)</th><td><span class="rate na">Not applicable</span></td>
+                    <td>The site has no audio-only or video-only media.</td></tr>
+                <tr><th scope="row">1.2.2 Captions (Prerecorded)</th><td><span class="rate ps">Partially supports</span></td>
+                    <td>The two championship videos on the home page (25-26 finals, embedded; 24-25 championship,
+                        linked) have reviewed captions on YouTube. The Spring Season Highlights video, also linked from
+                        the home page, has not yet been reviewed.</td></tr>
+                <tr><th scope="row">1.2.3 Audio Description or Media Alternative (Prerecorded)</th><td><span class="rate ps">Partially supports</span></td>
+                    <td>The three videos are being reviewed for information shown only on screen (scores, on-screen
+                        text) that is not spoken, which would need audio description or a text alternative.</td></tr>
+                <tr><th scope="row">1.3.1 Info and Relationships</th><td><span class="rate s">Supports</span></td>
+                    <td>Headings, lists, landmarks and data tables use native markup; every data table has a name (a
+                        caption or label) and header cells for its columns or rows; form fields have programmatic labels; groups of related controls are fieldsets or
+                        labelled groups.</td></tr>
+                <tr><th scope="row">1.3.2 Meaningful Sequence</th><td><span class="rate s">Supports</span></td>
+                    <td>Reading and focus order follow the visual order on every page, including the stacked phone
+                        layouts.</td></tr>
+                <tr><th scope="row">1.3.3 Sensory Characteristics</th><td><span class="rate s">Supports</span></td>
+                    <td>No instruction depends on shape, colour, size, position or sound alone. The stats score key
+                        names both a colour and a symbol (&#9650; / &#9660;).</td></tr>
+                <tr><th scope="row">1.4.1 Use of Color</th><td><span class="rate s">Supports</span></td>
+                    <td>Match winners are identifiable from the score; win and loss streaks are written (W3, L1);
+                        scores above or below a player&rsquo;s average carry &#9650; / &#9660; as well as colour; links
+                        in text are underlined. In high contrast, winners also get a &#10003;.</td></tr>
+                <tr><th scope="row">1.4.2 Audio Control</th><td><span class="rate na">Not applicable</span></td>
+                    <td>Nothing on the site plays sound automatically.</td></tr>
+                <tr><th scope="row">2.1.1 Keyboard</th><td><span class="rate s">Supports</span></td>
+                    <td>Every function works from the keyboard, including opening a school&rsquo;s or player&rsquo;s
+                        game log from the standings and stats (rows and cards are focusable, Enter or Space opens
+                        them), the game menus, filters, week tabs, the Smash display screen and the display settings.
+                        A scripted check found no element that responds to a pointer but cannot be focused.</td></tr>
+                <tr><th scope="row">2.1.2 No Keyboard Trap</th><td><span class="rate s">Supports</span></td>
+                    <td>Dialogs deliberately keep Tab inside while open; Escape and the Close button always release
+                        focus back to the control that opened them.</td></tr>
+                <tr><th scope="row">2.1.4 Character Key Shortcuts</th><td><span class="rate s">Supports</span></td>
+                    <td>The site has no single-character keyboard shortcuts. The Smash display screen responds to Space
+                        and the arrow keys only while it is open.</td></tr>
+                <tr><th scope="row">2.2.1 Timing Adjustable</th><td><span class="rate na">Not applicable</span></td>
+                    <td>Nothing on the site has a time limit. Countdowns are informational, and live updates do not
+                        require any action.</td></tr>
+                <tr><th scope="row">2.2.2 Pause, Stop, Hide</th><td><span class="rate s">Supports</span></td>
+                    <td>&ldquo;Pause animations&rdquo; in Display settings stops all moving content on every page
+                        (backgrounds, tickers, pulsing indicators, rotating cards) and starts on when the device asks
+                        for reduced motion. The live brackets each have a Pause updates button.</td></tr>
+                <tr><th scope="row">2.3.1 Three Flashes or Below Threshold</th><td><span class="rate s">Supports</span></td>
+                    <td>Nothing flashes. The fastest effect is a pulsing dot at under once per second.</td></tr>
+                <tr><th scope="row">2.4.1 Bypass Blocks</th><td><span class="rate s">Supports</span></td>
+                    <td>A &ldquo;Skip to main content&rdquo; link is the first focusable element on every page, and
+                        every page has a main landmark and headings.</td></tr>
+                <tr><th scope="row">2.4.2 Page Titled</th><td><span class="rate s">Supports</span></td>
+                    <td>Every page has a unique, descriptive title. (/smash/ forwards to the tournament overview and
+                        shares its title.)</td></tr>
+                <tr><th scope="row">2.4.3 Focus Order</th><td><span class="rate s">Supports</span></td>
+                    <td>Focus moves in reading order. Opening a dialog moves focus into it, Tab and Shift+Tab stay
+                        inside it, and closing returns focus to the row or card that opened it. Tested with the
+                        keyboard on the standings and player stats dialogs; the Smash rules and display dialogs use the
+                        same pattern, confirmed in code.</td></tr>
+                <tr><th scope="row">2.4.4 Link Purpose (In Context)</th><td><span class="rate s">Supports</span></td>
+                    <td>Link text, or link text with its card or sentence, says where each link goes.</td></tr>
+                <tr><th scope="row">2.5.1 Pointer Gestures</th><td><span class="rate s">Supports</span></td>
+                    <td>No function needs a multi-finger or path-based gesture.</td></tr>
+                <tr><th scope="row">2.5.2 Pointer Cancellation</th><td><span class="rate s">Supports</span></td>
+                    <td>All actions fire on release (standard click), so a press can be cancelled by moving
+                        away.</td></tr>
+                <tr><th scope="row">2.5.3 Label in Name</th><td><span class="rate s">Supports</span></td>
+                    <td>Every control&rsquo;s accessible name contains its visible label, so it can be activated by
+                        voice using the words on screen (for example the &ldquo;Aa&rdquo; button is named &ldquo;Aa,
+                        display settings&rdquo;).</td></tr>
+                <tr><th scope="row">2.5.4 Motion Actuation</th><td><span class="rate na">Not applicable</span></td>
+                    <td>Nothing responds to shaking or tilting the device.</td></tr>
+                <tr><th scope="row">3.1.1 Language of Page</th><td><span class="rate s">Supports</span></td>
+                    <td>Every page declares English (<code>lang="en"</code>), as does the PDF.</td></tr>
+                <tr><th scope="row">3.2.1 On Focus</th><td><span class="rate s">Supports</span></td>
+                    <td>Focusing an element never changes the page or moves focus. Game menus show their links on
+                        focus, which is not a change of context.</td></tr>
+                <tr><th scope="row">3.2.2 On Input</th><td><span class="rate s">Supports</span></td>
+                    <td>Changing a filter, sort or setting updates the results in place; nothing navigates or submits
+                        on its own.</td></tr>
+                <tr><th scope="row">3.2.6 Consistent Help</th><td><span class="rate s">Supports</span></td>
+                    <td>The Accessibility link, which leads to the contact for help, is in the same place at the foot of
+                        every page that scrolls. (The two full-screen finals displays, sized for a stream, have no
+                        footer.)</td></tr>
+                <tr><th scope="row">3.3.1 Error Identification</th><td><span class="rate na">Not applicable</span></td>
+                    <td>No input on the site is validated or submitted. Team registration uses Google Forms
+                        (third party).</td></tr>
+                <tr><th scope="row">3.3.2 Labels or Instructions</th><td><span class="rate s">Supports</span></td>
+                    <td>Every search box, filter, setting and planner field has a visible label.</td></tr>
+                <tr><th scope="row">3.3.7 Redundant Entry</th><td><span class="rate na">Not applicable</span></td>
+                    <td>There are no multi-step processes that ask for information.</td></tr>
+                <tr><th scope="row">4.1.2 Name, Role, Value</th><td><span class="rate s">Supports</span></td>
+                    <td>Custom controls expose their role, name and state: menu buttons report expanded or collapsed,
+                        week tabs and filters report which is selected (<code>aria-pressed</code>), dialogs are labelled and modal, clickable rows and cards
+                        are buttons with descriptive names. Every <code>aria-label</code> sits on an element whose role
+                        allows one. Verified by axe and in code; screen reader confirmation is pending.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p class="text-sm">WCAG 2.2 removed 4.1.1 Parsing, which is therefore not listed.</p>
+
+    <h2>Level AA success criteria</h2>
+    <div class="table-wrap" role="region" aria-labelledby="cap-aa" tabindex="0">
+        <table class="acr">
+            <caption id="cap-aa">WCAG 2.2 Level AA: 24 criteria</caption>
+            <thead><tr><th scope="col">Criterion</th><th scope="col">Rating</th><th scope="col">Remarks and evidence</th></tr></thead>
+            <tbody>
+                <tr><th scope="row">1.2.4 Captions (Live)</th><td><span class="rate na">Not applicable</span></td>
+                    <td>The site carries no live audio or video. Finals are streamed on YouTube, not on this
+                        site.</td></tr>
+                <tr><th scope="row">1.2.5 Audio Description (Prerecorded)</th><td><span class="rate ps">Partially supports</span></td>
+                    <td>As 1.2.3: the review of the three videos for on-screen-only information is in progress.</td></tr>
+                <tr><th scope="row">1.3.4 Orientation</th><td><span class="rate s">Supports</span></td>
+                    <td>No page locks portrait or landscape.</td></tr>
+                <tr><th scope="row">1.3.5 Identify Input Purpose</th><td><span class="rate na">Not applicable</span></td>
+                    <td>The site has no fields that collect information about the user.</td></tr>
+                <tr><th scope="row">1.4.3 Contrast (Minimum)</th><td><span class="rate s">Supports</span></td>
+                    <td>All text meets 4.5:1 (3:1 for large text), measured against the rendered background wherever it
+                        sits on a gradient or photo. The site&rsquo;s greys were set lighter than Tailwind&rsquo;s own
+                        for this purpose. Five places were below the threshold and fixed during this evaluation (see
+                        <a href="#fixed">fixed during this evaluation</a>).</td></tr>
+                <tr><th scope="row">1.4.4 Resize Text</th><td><span class="rate s">Supports</span></td>
+                    <td>Text resizes to 200% with browser zoom without loss of content, and Display settings offers
+                        125% and 150% text that reflows every page.</td></tr>
+                <tr><th scope="row">1.4.5 Images of Text</th><td><span class="rate s">Supports</span></td>
+                    <td>Text is real text. The exceptions are logos, screenshots of the game&rsquo;s own menus (where
+                        the image is the information), and the flyer image, which has a full text version.</td></tr>
+                <tr><th scope="row">1.4.10 Reflow</th><td><span class="rate s">Supports</span></td>
+                    <td>Every page was checked at 320 CSS pixels: no horizontal scrolling and no lost content. Wide data
+                        tables (standings, stats) scroll sideways inside their own box, which the criterion allows for
+                        two-dimensional data.</td></tr>
+                <tr><th scope="row">1.4.11 Non-text Contrast</th><td><span class="rate s">Supports</span></td>
+                    <td>Form field and option borders measure at least 3:1 against their surroundings (3.6&ndash;4.0:1
+                        after the fixes below); focus indicators are yellow, at least 10:1; selected states are solid
+                        fills.</td></tr>
+                <tr><th scope="row">1.4.12 Text Spacing</th><td><span class="rate s">Supports</span></td>
+                    <td>With the WCAG spacing values applied, no text on any page is clipped or overlaps.</td></tr>
+                <tr><th scope="row">1.4.13 Content on Hover or Focus</th><td><span class="rate s">Supports</span></td>
+                    <td>Game menus and badge tooltips can be dismissed with Escape, stay open while the pointer moves
+                        onto them, and stay until dismissed or focus moves away.</td></tr>
+                <tr><th scope="row">2.4.5 Multiple Ways</th><td><span class="rate s">Supports</span></td>
+                    <td>Every public page can be reached from the menu on every page, and from links on the home page
+                        and within each section. The schedule planner and flyer print source are organiser tools,
+                        deliberately not part of the public set of pages.</td></tr>
+                <tr><th scope="row">2.4.6 Headings and Labels</th><td><span class="rate s">Supports</span></td>
+                    <td>Headings describe their sections and follow a logical order; labels describe their
+                        fields.</td></tr>
+                <tr><th scope="row">2.4.7 Focus Visible</th><td><span class="rate s">Supports</span></td>
+                    <td>Every focusable element shows a visible indicator, a 2&ndash;3 pixel yellow outline in most
+                        places.</td></tr>
+                <tr><th scope="row">2.4.11 Focus Not Obscured (Minimum)</th><td><span class="rate s">Supports</span></td>
+                    <td>The menu bar is sticky, so the page reserves its height when scrolling a focused element into
+                        view; focus is never hidden behind it.</td></tr>
+                <tr><th scope="row">2.5.7 Dragging Movements</th><td><span class="rate na">Not applicable</span></td>
+                    <td>Nothing on the site is operated by dragging.</td></tr>
+                <tr><th scope="row">2.5.8 Target Size (Minimum)</th><td><span class="rate s">Supports</span></td>
+                    <td>Controls are at least 24 by 24 pixels or spaced so that a 24-pixel target does not overlap
+                        another; links within sentences are exempt. Confirmed by axe on every page.</td></tr>
+                <tr><th scope="row">3.1.2 Language of Parts</th><td><span class="rate na">Not applicable</span></td>
+                    <td>All content is in English.</td></tr>
+                <tr><th scope="row">3.2.3 Consistent Navigation</th><td><span class="rate s">Supports</span></td>
+                    <td>One menu, generated from a single source, appears in the same place and order on every
+                        page.</td></tr>
+                <tr><th scope="row">3.2.4 Consistent Identification</th><td><span class="rate s">Supports</span></td>
+                    <td>Controls with the same function have the same name throughout (for example
+                        &ldquo;Standings&rdquo;, &ldquo;Pause updates&rdquo;, &ldquo;Close&rdquo;).</td></tr>
+                <tr><th scope="row">3.3.3 Error Suggestion</th><td><span class="rate na">Not applicable</span></td>
+                    <td>No input is validated (see 3.3.1).</td></tr>
+                <tr><th scope="row">3.3.4 Error Prevention (Legal, Financial, Data)</th><td><span class="rate na">Not applicable</span></td>
+                    <td>The site has no transactions or submissions.</td></tr>
+                <tr><th scope="row">3.3.8 Accessible Authentication (Minimum)</th><td><span class="rate na">Not applicable</span></td>
+                    <td>The site has no sign-in.</td></tr>
+                <tr><th scope="row">4.1.3 Status Messages</th><td><span class="rate s">Supports</span></td>
+                    <td>Result counts after filtering, live score changes and bracket updates are in polite live regions,
+                        so they are announced without moving focus. Verified in code; screen reader confirmation is
+                        pending.</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>Document: tournament flyer PDF</h2>
+    <p>
+        <strong>/smash/PSD-Smash-Tournament-Flyer.pdf</strong> is a tagged PDF: it has a tag tree, its language set to
+        English, a document title, a heading, and alternative text on its image, and page 2 repeats the flyer as plain
+        text. This was confirmed by inspecting the file; it has not yet been run through a dedicated PDF checker such as
+        PAC 2024, which is planned.
+    </p>
+
+    <h2 id="third-party">Third-party content</h2>
+    <p>
+        These services are linked from or embedded in the site but are provided by others. They are outside this report,
+        and the site does not rely on them for any information that is not also available on its own pages:
+    </p>
+    <ul>
+        <li><strong>Google Forms:</strong> the tournament registration form.</li>
+        <li><strong>YouTube:</strong> the embedded video player and the linked videos (the captions on our videos are
+            covered above).</li>
+        <li><strong>Google Sheets:</strong> where league data is kept. Visitors never see it; the site renders the data
+            as its own pages.</li>
+        <li><strong>Cloudflare Web Analytics:</strong> visit counting, with no visible interface.</li>
+    </ul>
+
+    <h2 id="limitations">Known limitations and plan</h2>
+    <ul>
+        <li><strong>Videos (1.2.2, 1.2.3, 1.2.5):</strong> review the Spring Season Highlights captions, and check all
+            three videos for on-screen information that is not spoken. Where there is any, add audio description or a
+            text summary beside the video.</li>
+        <li><strong>Assistive technology testing:</strong> confirm the main tasks (find a school&rsquo;s standing,
+            check a schedule, follow a bracket, change display settings) with NVDA and VoiceOver, and in Safari and
+            Firefox.</li>
+        <li><strong>PDF:</strong> run the flyer through PAC 2024.</li>
+    </ul>
+    <p>
+        If you find a barrier this report does not mention, please email
+        <a href="mailto:csvanderzee@palmdalesd.org?subject=Website%20accessibility">csvanderzee@palmdalesd.org</a> with
+        the page address and what you were trying to do.
+    </p>
+
+    <h2 id="fixed">Fixed during this evaluation</h2>
+    <p>Each of these was found during the evaluation, fixed the same day, and re-tested.</p>
+    <ul>
+        <li><strong>Contrast (1.4.3):</strong> the division schedule lines on the home page&rsquo;s league cards (over a
+            photo); the win and loss streak badges on both standings pages; the Home and Away tags and the selected
+            week tab on both schedules; and the division label at the top of every Rocket League page (over the hero
+            photo).</li>
+        <li><strong>Field borders (1.4.11):</strong> the search box and filters on both player stats pages, the schedule
+            planner&rsquo;s fields, and the option buttons in Display settings.</li>
+        <li><strong>Use of colour (1.4.1):</strong> scores above or below a player&rsquo;s average now show &#9650; or
+            &#9660; as well as green or red.</li>
+        <li><strong>Focus order (2.4.3):</strong> the player game-log dialog on both stats pages now keeps Tab inside
+            it while it is open.</li>
+        <li><strong>Label in name (2.5.3):</strong> the &ldquo;Aa&rdquo; display settings button&rsquo;s name now
+            includes &ldquo;Aa&rdquo;.</li>
+        <li><strong>Name, role, value (4.1.2):</strong> several elements carried an <code>aria-label</code> that screen
+            readers may ignore without a role (home-page countdown and photo strip, game grade lists, streak badges,
+            player-of-the-week banner); each now has an appropriate role. The Early Release streak badges also gained
+            the spoken &ldquo;3 win streak&rdquo; wording the Late Release page already had. The week tabs on both
+            schedules now report which week is selected.</li>
+        <li><strong>Reflow (1.4.10):</strong> the coach email addresses on the home page now wrap on a 320-pixel
+            screen.</li>
+        <li><strong>Earlier the same day:</strong> the home page&rsquo;s school links, a skipped heading level, and the
+            standings pages&rsquo; footer landmark (from the automated audit described on the accessibility statement).</li>
+        <li><strong>Tables (1.3.1):</strong> the match settings table now marks each setting&rsquo;s name as its row
+            header, and the two division tables on In the News are named by their headings.</li>
+        <li><strong>Dialogs (1.3.1, 2.1.1):</strong> the school and player dialogs on the standings and stats pages
+            now title themselves at the right heading level, and their scrolling game logs can be reached and
+            scrolled with the keyboard.</li>
+        <li><strong>States shown only in some weeks (4.1.2):</strong> the finals bracket&rsquo;s winner crown and game
+            scores, the schedule&rsquo;s bye-week card, the dialogs&rsquo; win/loss/bye pills, and the home
+            page&rsquo;s pre-season countdown now have roles, so their spoken labels are read.</li>
+        <li><strong>Consistent identification (3.2.4):</strong> the Smash bracket pages&rsquo; &ldquo;Pause live
+            updates&rdquo; button now reads &ldquo;Pause updates&rdquo;, the same as everywhere else.</li>
+    </ul>
+
+    <p class="text-sm text-gray-500 mt-8">Report date October 29, 2026. This report is reviewed whenever the site
+        changes significantly, and at least once a year.</p>
+
+</main>
+
+</body>
+</html>

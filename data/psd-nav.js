@@ -160,8 +160,8 @@
 
      WCAG 2.2.2 asks for a way to stop anything that moves on its own for more
      than five seconds: the particle backdrops, the champions ticker, pulsing
-     live dots, countdowns. One switch in this bar covers every page, because
-     every page loads this file. It is remembered per browser, and it starts
+     live dots, countdowns. One switch, in the display settings panel, covers
+     every page, because every page loads this file. It is remembered per browser, and it starts
      on for anyone whose device already asks for reduced motion.
 
      Set here, before the page draws, so nothing visibly starts and stops. The
@@ -276,9 +276,6 @@
        it. On a phone with larger text each name sits above its value. */
     '@media (max-width:600px){html.psd-t125 table.settings :is(tr,th,td),html.psd-t150 table.settings :is(tr,th,td){display:block;}',
       'html.psd-t125 table.settings td,html.psd-t150 table.settings td{padding-top:0!important;}}',
-    /* the home page's coach contacts: name and address side by side */
-    'html.psd-t125 .contact-bar-link,html.psd-t150 .contact-bar-link{flex-wrap:wrap;justify-content:center;max-width:100%;min-width:0;}',
-    'html.psd-t125 .contact-email,html.psd-t150 .contact-email{overflow-wrap:anywhere;white-space:normal;min-width:0;}',
     /* The home page's "Fall / Season" is already 8rem. Scaled further, one
        word outgrows its half of the hero and is clipped, so at larger sizes
        it follows the window instead. It is never smaller than on a phone. */
@@ -465,19 +462,14 @@
       'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);line-height:1.15;}',
     '#psd-nav-drawer .drawer-chips a.active{border-color:var(--grp,#fff);color:#fff;}',
     '#psd-nav-drawer .drawer-more{border-top:1px solid rgba(255,255,255,.07);margin-top:.4rem;padding-top:.4rem;}',
-    /* pause-animations switch: an icon in the bar, a labelled row in the drawer */
-    '#psd-nav .nav-motion{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9999px;',
-      'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.18);color:#e5e7eb;cursor:pointer;font-size:.7rem;line-height:1;padding:0;}',
-    '#psd-nav .nav-motion:hover{color:#fff;background:rgba(255,255,255,.1);}',
-    '#psd-nav .nav-motion[aria-pressed="true"]{color:#0B0E14;background:#FFD166;border-color:#FFD166;}',
-    "#psd-nav-drawer .drawer-motion{display:block;width:100%;text-align:left;padding:.5rem .75rem;margin-top:.4rem;font-family:'Rajdhani',sans-serif;",
-      'font-weight:700;font-size:.88rem;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;background:none;',
-      'border:none;border-top:1px solid rgba(255,255,255,.07);cursor:pointer;}',
-    '#psd-nav-drawer .drawer-motion:hover{color:#fff;}',
-    /* display settings: the "Aa" button opens a panel under it; the drawer
-       carries the same controls in a collapsible block */
+    /* display settings: the round "Aa" button opens a panel under it; the
+       drawer carries the same controls in a collapsible block. Pause
+       animations lives in there too, beside the other display choices. */
     '#psd-nav .nav-display{position:relative;}',
-    "#psd-nav .nav-aa{font-family:'Rajdhani',sans-serif;font-weight:800;font-size:.8rem;letter-spacing:0;}",
+    "#psd-nav .nav-aa{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9999px;padding:0;",
+      'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.18);color:#e5e7eb;cursor:pointer;line-height:1;',
+      "font-family:'Rajdhani',sans-serif;font-weight:800;font-size:.8rem;letter-spacing:0;}",
+    '#psd-nav .nav-aa:hover{color:#fff;background:rgba(255,255,255,.1);}',
     '#psd-nav .nav-aa[aria-expanded="true"]{color:#0B0E14;background:#FFD166;border-color:#FFD166;}',
     '#psd-nav .psd-display{position:absolute;right:0;top:calc(100% + .6rem);width:17rem;background:#151B26;',
       'border:1px solid rgba(255,255,255,.14);border-radius:10px;box-shadow:0 16px 40px rgba(0,0,0,.8);padding:.9rem 1rem 1rem;z-index:1001;}',
@@ -493,8 +485,9 @@
     /* Each option is a real radio button: the browser already knows how to
        move through, announce and select those. The dot is hidden and the
        whole label is the target, drawn as a segment that fills when chosen. */
+    "/* the outline is 3.6:1 against the panel (WCAG 1.4.11) */",
     ".pd-opt{position:relative;display:inline-flex;align-items:center;min-height:2rem;padding:.25rem .7rem;border-radius:6px;",
-      "border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.04);color:#e5e7eb;cursor:pointer;",
+      "border:1px solid rgba(255,255,255,.42);background:rgba(255,255,255,.04);color:#e5e7eb;cursor:pointer;",
       "font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:.85rem;font-weight:600;}",
     '.pd-opt input{position:absolute;opacity:0;width:1px;height:1px;margin:0;}',
     '.pd-opt:hover{background:rgba(255,255,255,.1);}',
@@ -532,8 +525,8 @@
     '.psd-a11y-link:focus-visible{outline:2px solid #FFD166;outline-offset:2px;}',
     '@media print{.psd-footer{display:none;}}',
     /* The full bar fits down to about 1150px with the registration pill, the
-       three sitewide pills (Champions, In the News, Games), the pause button
-       and the "Aa" button in it. The drawer takes over below 1180, which
+       three sitewide pills (Champions, In the News, Games) and the "Aa" button
+       in it. The drawer takes over below 1180, which
        leaves room for a Windows scrollbar. Larger text or the readable font
        widen the bar past any fixed number, so fitBar() also switches to the
        drawer (.nav-compact) whenever the bar's contents would overflow it. */
@@ -616,12 +609,11 @@
              withIcon(l.text) + '</a>';
     }).join('');
 
-    var motionBtn = '<button type="button" class="nav-motion" id="psd-motion" aria-pressed="false">' +
-                      '<span aria-hidden="true"></span></button>';
-
+    /* The spoken name starts with the visible "Aa", so a voice-control user
+       can say "click Aa" (WCAG 2.5.3, label in name). */
     var displayBtn = '<div class="nav-display">' +
-                       '<button type="button" class="nav-motion nav-aa" id="psd-display-btn" aria-expanded="false" ' +
-                         'aria-controls="psd-display" aria-label="Display settings" title="Display settings">' +
+                       '<button type="button" class="nav-aa" id="psd-display-btn" aria-expanded="false" ' +
+                         'aria-controls="psd-display" aria-label="Aa, display settings" title="Display settings">' +
                          '<span aria-hidden="true">Aa</span></button>' +
                        '<div class="psd-display" id="psd-display" role="group" aria-labelledby="psd-bar-display-title" hidden>' +
                          displayControls('bar') + '</div>' +
@@ -643,7 +635,7 @@
         '</div>' +
         promo +
         '<div class="nav-end">' +
-          '<div class="nav-right">' + pills + motionBtn + displayBtn + '</div>' +
+          '<div class="nav-right">' + pills + displayBtn + '</div>' +
           '<button type="button" class="nav-hamburger" id="psd-hamburger" aria-label="Menu" aria-expanded="false" aria-controls="psd-nav-drawer">' +
             '<span></span><span></span><span></span>' +
           '</button>' +
@@ -680,7 +672,6 @@
                withIcon(l.text) + '</a>';
       }).join('') +
       '<a href="/accessibility.html"' + (isActive('/accessibility.html') ? ' class="active" aria-current="page"' : '') + '>Accessibility</a>' +
-      '<button type="button" class="drawer-motion" id="psd-motion-drawer" aria-pressed="false"></button>' +
       '<details class="drawer-display"><summary><span aria-hidden="true">Aa</span>Display settings' +
         '<span class="sum-chev" aria-hidden="true">▼</span></summary>' +
         '<div class="pd-body">' + displayControls('drawer') + '</div></details>';
@@ -737,23 +728,11 @@
       });
     });
 
-    /* ---- pause animations ------------------------------------------------- */
-    var motionBar = document.getElementById('psd-motion');
-    var motionDrawer = document.getElementById('psd-motion-drawer');
+    /* ---- pause animations: the checkbox in each copy of the panel --------- */
     function paintMotion() {
       var still = isStill();
-      var label = still ? 'Play animations' : 'Pause animations';
-      motionBar.setAttribute('aria-pressed', String(still));
-      motionBar.setAttribute('aria-label', 'Pause animations');
-      motionBar.title = label;
-      motionBar.firstChild.textContent = still ? '▶' : '❚❚';
-      motionDrawer.setAttribute('aria-pressed', String(still));
-      motionDrawer.textContent = still ? 'Animations paused · tap to play' : 'Pause animations';
       Array.prototype.forEach.call(document.querySelectorAll('[data-pref="motion"]'), function (c) { c.checked = still; });
     }
-    [motionBar, motionDrawer].forEach(function (b) {
-      b.addEventListener('click', function () { setStill(!isStill(), true); paintMotion(); });
-    });
 
     /* ---- display settings ------------------------------------------------- */
     var displayWrap = nav.querySelector('.nav-display');
@@ -761,8 +740,8 @@
     var displayPanel = document.getElementById('psd-display');
     var prefInputs = document.querySelectorAll('[data-pref]');
 
-    /* Both copies of the controls, and the pause buttons, always show the
-       same state, whichever copy was used. */
+    /* Both copies of the controls, the bar's panel and the drawer's, always
+       show the same state, whichever copy was used. */
     function paintPrefs() {
       Array.prototype.forEach.call(prefInputs, function (input) {
         var name = input.getAttribute('data-pref');

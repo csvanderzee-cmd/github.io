@@ -67,9 +67,10 @@
         .role-away { background: rgba(77,171,247,.15); color: #4DABF7; }
         .role-both { background: rgba(255,255,255,.08); color: #e5e7eb; }
 
-        .settings td { padding: .4rem .75rem; border-top: 1px solid rgba(255,255,255,.06); }
-        .settings td:first-child { color: #9ca3af; font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; }
-        .settings td:last-child { color: #fff; font-weight: 600; }
+        .settings th, .settings td { padding: .4rem .75rem; border-top: 1px solid rgba(255,255,255,.06); text-align: left; }
+        /* each setting's name is its row header, so a screen reader pairs it with the value (WCAG 1.3.1) */
+        .settings th { color: #9ca3af; font-size: .8rem; font-weight: 400; text-transform: uppercase; letter-spacing: .08em; }
+        .settings td { color: #fff; font-weight: 600; }
 
         .print-only { display: none; }
         @media print {
@@ -180,13 +181,13 @@
                 <table class="settings w-full text-sm">
                     <caption class="sr-only">Private match settings for league matches</caption>
                     <tbody>
-                        <tr><td>Game Mode</td><td>Soccar</td></tr>
-                        <tr><td>Arena</td><td>DFH Stadium</td></tr>
-                        <tr><td>Team Size</td><td>3v3</td></tr>
-                        <tr><td>Bot Difficulty</td><td>No Bots</td></tr>
-                        <tr><td>Region</td><td>Recommended</td></tr>
-                        <tr><td>Joinable By</td><td>Name/Password</td></tr>
-                        <tr><td>Match Admin</td><td>Disabled</td></tr>
+                        <tr><th scope="row">Game Mode</th><td>Soccar</td></tr>
+                        <tr><th scope="row">Arena</th><td>DFH Stadium</td></tr>
+                        <tr><th scope="row">Team Size</th><td>3v3</td></tr>
+                        <tr><th scope="row">Bot Difficulty</th><td>No Bots</td></tr>
+                        <tr><th scope="row">Region</th><td>Recommended</td></tr>
+                        <tr><th scope="row">Joinable By</th><td>Name/Password</td></tr>
+                        <tr><th scope="row">Match Admin</th><td>Disabled</td></tr>
                     </tbody>
                 </table>
                 <figure class="shot"><img src="match-setup/match-settings.jpg" alt="Private Match settings screen showing Soccar, DFH Stadium, 3v3, No Bots, Recommended, Name/Password and Match Admin Disabled" width="760" height="760" loading="lazy"></figure>

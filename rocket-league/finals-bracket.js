@@ -128,8 +128,8 @@
     return `<div class="competitor ${isWin ? 'win' : isLoss ? 'loss' : isTbd ? 'tbd' : ''} ${rankCls}">
       ${isTbd ? '' : logoHtml(team.name)}
       <span class="comp-name${isTbd ? ' tbd' : ''}">${isTbd ? 'TBD' : esc(schoolOf(team.name))}</span>
-      ${isWin ? '<span class="crown" aria-label="winner">👑</span>' : ''}
-      ${pills ? `<span class="gscores" aria-label="game scores">${pills}</span>` : ''}
+      ${isWin ? '<span class="crown" role="img" aria-label="winner">👑</span>' : ''}
+      ${pills ? `<span class="gscores" role="group" aria-label="game scores">${pills}</span>` : ''}
       <span class="score-disp ${isWin ? 'win' : isLoss ? 'loss' : gp ? 'none' : ''}">${gp ? wins : ''}</span>
     </div>`;
   }
@@ -162,7 +162,7 @@
 
     const tbRow = (name, n, cls) => `<div class="competitor ${cls} ${r.winner === name ? 'win' : r.winner ? 'loss' : ''}">
         ${logoHtml(name)}<span class="comp-name">${esc(name)}</span>
-        ${r.winner === name ? '<span class="crown" aria-label="winner">👑</span>' : ''}
+        ${r.winner === name ? '<span class="crown" role="img" aria-label="winner">👑</span>' : ''}
         ${n !== null ? `<span class="score-disp ${r.winner === name ? 'win' : r.winner ? 'loss' : 'none'}">${n}</span>` : ''}
       </div>`;
     const tb = r.isSplit ? `<div class="sub-section tb-section">

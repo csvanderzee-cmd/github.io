@@ -281,7 +281,7 @@
                     <div class="fact"><dt>Cost</dt><dd class="${costCls} font-semibold">${esc(g.cost || '—')}</dd></div>
                 </dl>
 
-                <div class="flex flex-wrap gap-2" aria-label="Approved grade levels">
+                <div class="flex flex-wrap gap-2" role="group" aria-label="Approved grade levels">
                     <span class="grade-chip ${g.k5 ? 'grade-yes' : 'grade-no'}">${g.k5 ? '✓' : '✕'} 5th &amp; Under</span>
                     <span class="grade-chip ${g.g68 ? 'grade-yes' : 'grade-no'}">${g.g68 ? '✓' : '✕'} Grades 6–8</span>
                 </div>

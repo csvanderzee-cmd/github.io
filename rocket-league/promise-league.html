@@ -88,7 +88,7 @@
     display: inline-flex; align-items: center; gap: 0.4rem;
     padding: 0.2rem 0.9rem;
     border-left: 4px solid var(--psd-blue-text);
-    background: rgba(0,86,150,0.15); color: var(--psd-blue-text);
+    background: linear-gradient(rgba(0,86,150,0.15),rgba(0,86,150,0.15)), rgba(11,14,20,.85); color: var(--psd-blue-text);
     font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.75rem;
     letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 1rem;
   }
@@ -187,8 +187,8 @@
     font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.85rem;
     color: #fff; letter-spacing: 0.05em;
   }
-  .streak-w { background: linear-gradient(135deg,#15803d,#22c55e); box-shadow: 0 0 10px rgba(34,197,94,.45), 0 0 20px rgba(34,197,94,.2); }
-  .streak-l { background: linear-gradient(135deg,#991b1b,#ef4444); box-shadow: 0 0 8px rgba(239,68,68,.3); }
+  .streak-w { background: linear-gradient(135deg,#14532d,#15803d); box-shadow: 0 0 10px rgba(34,197,94,.45), 0 0 20px rgba(34,197,94,.2); }
+  .streak-l { background: linear-gradient(135deg,#7f1d1d,#b91c1c); box-shadow: 0 0 8px rgba(239,68,68,.3); }
 
   .loader { padding: 3rem; font-size: 1rem; color: var(--text-muted); text-align: center; font-family: 'Rajdhani', sans-serif; letter-spacing: 0.1em; text-transform: uppercase; }
 
@@ -264,6 +264,7 @@
   .modal-header-text { display: flex; flex-direction: column; gap: 0.2rem; }
   .modal-badge { background: var(--modal-accent, var(--psd-blue)); color: #fff; border-radius: 9999px; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.08em; padding: 2px 10px; text-transform: uppercase; align-self: flex-start; }
   .modal-title { font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 1.25rem; margin: 0; color: #e5e7eb; letter-spacing: 0.05em; text-transform: uppercase; }
+  .scroll:focus-visible { outline: 2px solid #FFD166; outline-offset: 2px; }
   .modal-close {
     margin-left: auto; background: transparent; border: 1px solid var(--border-subtle);
     font-size: 1.3rem; line-height: 1; cursor: pointer; color: #9ca3af;
@@ -417,14 +418,14 @@
         <div id="modal-logo-wrap"></div>
         <div class="modal-header-text">
           <span class="modal-badge">Match Details</span>
-          <h3 id="modal-title" class="modal-title">Team details</h3>
+          <h2 id="modal-title" class="modal-title">Team details</h2>
         </div>
         <div id="modal-streak-wrap" style="margin-left:0.5rem"></div>
         <button class="modal-close" id="modal-close" aria-label="Close match details dialog">&times;</button>
       </div>
       <div id="modal-stats-bar" class="modal-stats-bar"></div>
       <div class="modal-body">
-        <div class="scroll">
+        <div class="scroll" role="region" aria-label="Game-by-game results, scrolls sideways" tabindex="0">
           <table class="match-table" id="modal-table" aria-label="Game-by-game match results">
             <thead>
               <tr>
@@ -681,7 +682,7 @@ function openModal(school, event){
             tbody.insertAdjacentHTML('beforeend',`<tr>
               <td>${m.week||'-'}</td>
               <td class="left" colspan="6" style="color:var(--text-muted);font-style:italic;">— Bye Week —</td>
-              <td><span class="pill bye" aria-label="Bye week">BYE</span></td>
+              <td><span class="pill bye" role="img" aria-label="Bye week">BYE</span></td>
             </tr>`);
             return;
           }
@@ -699,7 +700,7 @@ function openModal(school, event){
             <td>${gamePips(m.games[2])}</td>
             <td>${m.gamesWon}-${m.gamesLost}</td>
             <td>${goalDiffBar(m.gf, m.ga)}</td>
-            <td><span class="pill ${rc}" aria-label="${srLabel}">${m.result||'-'}</span></td>
+            <td><span class="pill ${rc}" role="img" aria-label="${srLabel}">${m.result||'-'}</span></td>
           </tr>`);
         });
       }
@@ -1073,7 +1074,7 @@ function renderTable(sortedSchools){
     let streakSrText='';
     if (streak!=='-'){ const sType=streak.charAt(0)==='W'?'win':'loss'; const sNum=streak.substring(1); streakSrText=`${sNum} ${sType} streak`; }
     const fireIcon=streak!=='-'&&streak.startsWith('W')?'🔥':'';
-    const streakSpan=streak!=='-' ? `<span class="${streakClass}" aria-label="${streakSrText}">${fireIcon}${streak}</span>` : '<span aria-label="No streak">-</span>';
+    const streakSpan=streak!=='-' ? `<span class="${streakClass}" role="img" aria-label="${streakSrText}">${fireIcon}${streak}</span>` : '<span role="img" aria-label="No streak">-</span>';
     const isTied=school._tied;
     const rankDisplay=isTied ? `${ranks[index]}<span class="rank-tied" aria-hidden="true">T</span>` : `${ranks[index]}`;
     const tiedClass=isTied?' tied-row':'';

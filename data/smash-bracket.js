@@ -622,7 +622,7 @@
     btn.id = 'feed-pause';
     btn.className = 'no-print';
     btn.setAttribute('aria-pressed', 'false');
-    btn.textContent = 'Pause live updates';
+    btn.textContent = 'Pause updates';
     status.appendChild(btn);
 
     var style = document.createElement('style');
@@ -643,7 +643,7 @@
     var btn = byId('feed-pause');
     if (btn) {
       btn.setAttribute('aria-pressed', String(paused));
-      btn.textContent = paused ? 'Resume live updates' : 'Pause live updates';
+      btn.textContent = paused ? 'Resume updates' : 'Pause updates';
     }
     announce(paused ? 'Live updates paused.' : 'Live updates resumed.');
     if (paused) { state.loading = false; renderStatus(); notifyWatchers(); }
