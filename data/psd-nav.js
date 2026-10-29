@@ -444,7 +444,7 @@
     nav.innerHTML =
       '<div class="nav-inner' + (PROMO ? ' has-promo' : '') + '">' +
         '<div class="nav-left">' +
-          '<a href="/index.html" class="nav-brand"><img src="/logos/psd-esports.png" alt="" class="nav-logo">PSD <span>Esports</span></a>' +
+          '<a href="/" class="nav-brand"><img src="/logos/psd-esports.png" alt="" class="nav-logo">PSD <span>Esports</span></a>' +
           '<ul class="nav-links" role="list">' + items + '</ul>' +
         '</div>' +
         promo +
@@ -460,7 +460,7 @@
        section this page is in starts open, so the menu opens short and the
        links you most likely want are already showing. An open sign-up goes
        straight under Home, so on a phone it is the first real thing in the menu. */
-    var drawerInner = '<a href="/index.html"' + (isActive('/index.html') ? ' class="active"' : '') + '>Home</a>' +
+    var drawerInner = '<a href="/"' + (isActive('/index.html') ? ' class="active"' : '') + '>Home</a>' +
       (PROMO ? '<a href="' + esc(PROMO.href) + '"' + out(PROMO) + ' class="drawer-register">' +
                  withIcon(PROMO.text) + '</a>' : '') +
       shown.map(function (s) {
