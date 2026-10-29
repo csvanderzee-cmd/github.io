@@ -175,12 +175,14 @@
        orange tabs in the same workbook). Add ?test to a bracket page's address
        and it reads the practice tab instead, under a TEST DATA banner, so
        scores can be tried out and referees walked through it without anything
-       showing on the public page. Remove the testGid to switch this off. */
+       showing on the public page. With no testGid set, ?test does nothing and
+       the page is the normal one. The practice tabs were deleted on Oct 29,
+       2026; to bring them back, duplicate a real tab and put its gid here. */
     divisions: [
       { id: 'jr', name: 'Grade 5 & Under', accent: '#FF6B6B',
-        page: 'grade-5-under.html', gid: '0', testGid: '900001' },
+        page: 'grade-5-under.html', gid: '0', testGid: null },
       { id: 'sr', name: 'Grades 6–8', accent: '#4DABF7',
-        page: 'grades-6-8.html', gid: '86502539', testGid: '900002' }
+        page: 'grades-6-8.html', gid: '86502539', testGid: null }
     ]
   };
 
@@ -533,8 +535,10 @@
     return CONFIG.divisions.filter(function (d) { return !isBlank(d.gid); });
   }
 
-  /* ?test in the address: read each division's practice tab (testGid). */
-  var TEST_MODE = /[?&]test(=|&|$)/.test(root.location ? root.location.search : '');
+  /* ?test in the address: read each division's practice tab (testGid). Only
+     while one is set up, so the TEST DATA banner never sits over real results. */
+  var TEST_MODE = /[?&]test(=|&|$)/.test(root.location ? root.location.search : '') &&
+    CONFIG.divisions.some(function (d) { return !isBlank(d.testGid); });
   function gidFor(d) { return TEST_MODE && !isBlank(d.testGid) ? d.testGid : d.gid; }
 
   function isWired() { return !isBlank(CONFIG.sheetId) && wiredDivisions().length > 0; }
