@@ -232,6 +232,8 @@
     '#psd-nav .nav-brand span{background:linear-gradient(90deg,#FF6B6B,#FFD166,#4DABF7,#FF6B6B);background-size:250% auto;',
       '-webkit-background-clip:text;background-clip:text;color:transparent;animation:brand-shift 5s linear infinite;}',
     '@keyframes brand-shift{to{background-position:250% center}}',
+    '#psd-nav .nav-logo{width:34px;height:34px;object-fit:contain;transition:width .3s,height .3s;}',
+    '#psd-nav.nav-scrolled .nav-logo{width:28px;height:28px;}',
     '#psd-nav .nav-links{display:flex;align-items:center;gap:.15rem;list-style:none;margin:0;padding:0;flex:1;}',
     '#psd-nav .nav-item{position:relative;}',
     '#psd-nav .nav-link{display:flex;align-items:center;gap:.4rem;padding:.4rem .85rem;font-weight:700;font-size:.8rem;',
@@ -442,7 +444,7 @@
     nav.innerHTML =
       '<div class="nav-inner' + (PROMO ? ' has-promo' : '') + '">' +
         '<div class="nav-left">' +
-          '<a href="/index.html" class="nav-brand">PSD <span>Esports</span></a>' +
+          '<a href="/index.html" class="nav-brand"><img src="/logos/psd-esports.png" alt="" class="nav-logo">PSD <span>Esports</span></a>' +
           '<ul class="nav-links" role="list">' + items + '</ul>' +
         '</div>' +
         promo +

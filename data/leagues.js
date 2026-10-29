@@ -171,10 +171,11 @@
 
   /* ---- school badges ------------------------------------------------------
 
-     Logos are hot-linked from Edlio (3.files.edl.io), the CMS behind the
-     district's school sites. The paths are opaque uploads — bucket hash,
-     upload date, UUID — so a new school's URL has to be copied from its page
-     rather than derived.
+     Logos are the official PSD Esports badges, designed in Canva and kept in
+     /logos/schools/. Canva's SVG export embeds raster images (up to 600 KB a
+     file), so each is rendered to a 256px transparent PNG instead. Every PSD
+     school has a badge there, including ones not in the league yet, so a new
+     school only needs an entry below.
 
      This used to be copy-pasted into eight files, which is why adding one
      school meant eight edits and why three schools that left the league were
@@ -187,22 +188,21 @@
 
   var SCHOOLS = {
     /* ---- Late Release ---- */
-    'Cactus':              { color: '#2e7d32', logo: 'https://3.files.edl.io/63ab/24/01/30/203120-a87c60bc-37da-483c-b392-238488c963de.png' },
-    'David G Millen':      { color: '#1565c0', logo: 'https://3.files.edl.io/8dc4/24/01/30/203122-5a3b347a-0d9f-434d-afcb-d500e246f4e3.png', also: ['DGM'] },
-    'Sage':                { color: '#00695c', logo: 'https://3.files.edl.io/e005/24/01/30/203135-3f3e9191-5b83-4ba9-a47c-124e5d54428c.png' },
-    'Shadow Hills':        { color: '#c62828', logo: 'https://3.files.edl.io/88eb/24/01/30/203136-53ac6114-93b7-46a0-8fae-f78daf6287de.png' },
+    'Cactus':              { color: '#2e7d32', logo: '/logos/schools/cactus.png' },
+    'David G Millen':      { color: '#1565c0', logo: '/logos/schools/dgm.png', also: ['DGM'] },
+    'Sage':                { color: '#00695c', logo: '/logos/schools/sage.png' },
+    'Shadow Hills':        { color: '#c62828', logo: '/logos/schools/shadow-hills.png' },
 
     /* ---- Early Release ---- */
-    'Cimarron':            { color: '#b45309', logo: 'https://3.files.edl.io/bfd5/24/01/30/203122-a5d549fc-84c8-4af4-9e2a-4ca56e0f02ee.png', also: ['Cimmaron', 'Cimmarron'] },
-    'Desert Rose':         { color: '#be185d', logo: 'https://3.files.edl.io/bbc0/24/01/30/203123-f1eb745a-e767-4d91-80a4-2923ab07654d.png' },
-    'Innovations Academy': { color: '#0369a1', logo: 'https://3.files.edl.io/5b29/24/01/30/203127-760b8684-7411-463d-84d0-38653baa5249.png', also: ['Innovations'] },
-    'Los Amigos':          { color: '#15803d', logo: 'https://3.files.edl.io/aa2d/24/01/30/203128-f79f02e7-682b-4e43-975d-d6ac2b210779.png' },
-    'Manzanita':           { color: '#7c2d12', logo: 'https://3.files.edl.io/78d0/24/11/12/173918-dbf6ddaa-bf7b-408d-aa49-db4cdecdc9bb.png' },
-    // New for 2026-27. Edlio serves this one as a .jpg, unlike the rest.
-    'Mesquite':            { color: '#5b21b6', logo: 'https://3.files.edl.io/6737/24/01/08/225238-a58895d9-74ec-4463-9225-f720109953c4.jpg' },
-    'Palm Tree':           { color: '#047857', logo: 'https://3.files.edl.io/deef/24/01/30/203132-727d82ee-15ae-4e4a-9e3b-95f7e677e038.png' },
-    'Tumbleweed':          { color: '#92400e', logo: 'https://3.files.edl.io/419d/25/10/02/220537-89da6677-8013-4232-bf2b-62aab2b64d29.png' },
-    'Yucca':               { color: '#4d7c0f', logo: 'https://3.files.edl.io/c0fd/24/01/30/203144-7cccf38b-4ea6-4ca5-ac4e-1c5cb2ecdc53.png' }
+    'Cimarron':            { color: '#b45309', logo: '/logos/schools/cimarron.png', also: ['Cimmaron', 'Cimmarron'] },
+    'Desert Rose':         { color: '#be185d', logo: '/logos/schools/desert-rose.png' },
+    'Innovations Academy': { color: '#0369a1', logo: '/logos/schools/innovations.png', also: ['Innovations'] },
+    'Los Amigos':          { color: '#15803d', logo: '/logos/schools/los-amigos.png' },
+    'Manzanita':           { color: '#7c2d12', logo: '/logos/schools/manzanita.png' },
+    'Mesquite':            { color: '#5b21b6', logo: '/logos/schools/mesquite.png' },
+    'Palm Tree':           { color: '#047857', logo: '/logos/schools/palm-tree.png' },
+    'Tumbleweed':          { color: '#92400e', logo: '/logos/schools/tumbleweed.png' },
+    'Yucca':               { color: '#4d7c0f', logo: '/logos/schools/yucca.png' }
   };
 
   CONFIG.schools_registry = SCHOOLS;
