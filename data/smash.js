@@ -416,9 +416,19 @@
           return;
         }
 
+        /* The two team rows are the two directly under the label, by
+           position. Picking "the first two rows with a name in them" moved a
+           lone bottom team up into the top slot when only the bottom had been
+           typed in, and put the hint for the empty slot on the wrong side.
+           Fall back to that search only when the rows right under the label
+           are not there (gviz drops a row that is empty in every column). */
         var rows = [];
-        for (var r = lr + 1; r < endRow; r++) {
-          if (!isBlank(at(grid, r, b.nameCol))) rows.push(r);
+        if (lr + 2 < endRow) {
+          rows = [lr + 1, lr + 2];
+        } else {
+          for (var r = lr + 1; r < endRow; r++) {
+            if (!isBlank(at(grid, r, b.nameCol))) rows.push(r);
+          }
         }
 
         var teams = [at(grid, rows[0], b.nameCol), at(grid, rows[1], b.nameCol)];
