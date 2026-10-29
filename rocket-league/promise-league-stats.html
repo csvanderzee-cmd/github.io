@@ -221,8 +221,6 @@
   .wl-pill.f { background:#374151; color:#9ca3af; font-style:italic; }
   .score-wrap { display:inline-flex; align-items:center; gap:5px; }
   .score-bar { height:3px; border-radius:2px; min-width:3px; opacity:0.6; flex-shrink:0; }
-  .score-th { cursor:help; white-space:nowrap; position:relative; }
-  #fixed-tip { position:fixed; background:#070a10; color:#e5e7eb; padding:6px 12px; border-radius:8px; font-family:'Inter',sans-serif; font-size:0.72rem; font-weight:400; letter-spacing:0; white-space:nowrap; border:1px solid rgba(255,255,255,0.15); box-shadow:0 8px 24px rgba(0,0,0,0.85); z-index:9999; pointer-events:none; display:none; }
 
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } canvas#heroParticles { display: none; } }
   /* Phones. Each card used to keep a 640px minimum and scroll sideways inside
@@ -252,6 +250,15 @@
   .badge-chip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 7px); left: 50%; transform: translateX(-50%); background: #070a10; color: #e5e7eb; padding: 5px 10px; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 0.72rem; font-weight: 400; letter-spacing: 0; text-transform: none; white-space: normal; width: max-content; max-width: 220px; text-align: center; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 8px 20px rgba(0,0,0,0.85); z-index: 200; pointer-events: none; opacity: 0; transition: opacity 0.15s ease; }
   .badge-chip::before { content: ''; position: absolute; bottom: calc(100% + 3px); left: 50%; transform: translateX(-50%); border: 4px solid transparent; border-top-color: rgba(255,255,255,0.15); z-index: 201; pointer-events: none; opacity: 0; transition: opacity 0.15s ease; }
   .badge-chip:hover::after, .badge-chip:hover::before { opacity: 1; }
+  /* WCAG 1.4.13: the pointer can move onto a tooltip without it closing (its
+     transparent bottom border bridges the gap down to the chip), and Escape
+     hides tooltips until the pointer moves to something else. */
+  .badge-chip::after { bottom: 100%; border-bottom: 7px solid transparent; background-clip: padding-box; }
+  .badge-chip:hover::after { pointer-events: auto; }
+  body.tips-off .badge-chip::after, body.tips-off .badge-chip::before { display: none; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  /* What the score colours mean, said in words rather than in a hover tip. */
+  .score-key { margin: 0; padding: 0.7rem 0.9rem; font-size: 0.75rem; color: var(--text-muted); border-top: 1px solid var(--border-mid); }
   /* An unhovered tooltip is removed, not just made transparent: hidden but
      still laid out, the ones on chips near the right edge stuck out past a
      phone screen and made the whole page scroll sideways (WCAG 1.4.10). */
@@ -260,7 +267,6 @@
 </head>
 <body>
 
-<div id="fixed-tip"></div>
 <a href="#main-content" class="skip-link">Skip to main content</a>
 
 <script src="/data/psd-nav.js"></script>
@@ -794,8 +800,8 @@ function renderPlayerCards(data, statMode) {
     const badges = getBadges(player, masterPlayerData);
     const badgeHtml = badges.length
       ? `<div class="badge-row">${badges.map(b => b.unique
-          ? `<span class="badge-chip badge-unique" data-tip="${b.tip}">${b.icon} ${b.label}</span>`
-          : `<span class="badge-chip" data-tip="${b.tip}" style="color:${b.color};border-color:${b.color}33;background:${b.color}18">${b.icon} ${b.label}</span>`
+          ? `<span class="badge-chip badge-unique" data-tip="${b.tip}"><span aria-hidden="true">${b.icon}</span> ${b.label}<span class="sr-only">: ${b.tip}</span></span>`
+          : `<span class="badge-chip" data-tip="${b.tip}" style="color:${b.color};border-color:${b.color}33;background:${b.color}18"><span aria-hidden="true">${b.icon}</span> ${b.label}<span class="sr-only">: ${b.tip}</span></span>`
         ).join('')}</div>`
       : '';
     card.innerHTML = `
@@ -867,13 +873,13 @@ function showPlayerDetails(playerName, playerSchool, event) {
   const avgScore = playerData.avgScore || 1;
   const maxScore = Math.max(...sorted.filter(g=>!g.__forfeit).map(g=>parseInt(g['Score'])||0), 1);
 
-  let html = `<table><thead><tr><th>Week</th><th>Team</th><th>Result</th><th class="score-th" data-tip="🟢 Above your avg  🟡 Near your avg  🔴 Below your avg">Score ℹ</th><th>Goals</th><th>Shots</th><th>Assists</th><th>Saves</th><th data-tip="Named MVP of this game">MVP</th></tr></thead><tbody>`;
+  let html = `<table><thead><tr><th>Week</th><th>Team</th><th>Result</th><th>Score</th><th>Goals</th><th>Shots</th><th>Assists</th><th>Saves</th><th data-tip="Named MVP of this game">MVP</th></tr></thead><tbody>`;
   sorted.forEach(game => {
     const result = (game['Win/Lose'] || 'N/A').toUpperCase();
     const isForfeit = !!game.__forfeit;
     const rowClass = result === 'W' ? 'win' : result === 'L' ? 'loss' : '';
     const pillClass = result === 'W' ? 'w' : result === 'L' ? 'l' : 'f';
-    const pillLabel = isForfeit && (result==='W'||result==='L') ? result+' <small style="opacity:.6;font-size:.65em">forfeit</small>' : result;
+    const pillLabel = isForfeit && (result==='W'||result==='L') ? result+' <small style="font-size:.85em">forfeit</small>' : result;
     const scoreVal = parseInt(game['Score']) || 0;
     let scoreHtml;
     if (isForfeit || !game['Score'] || game['Score'].toString().trim() === '') {
@@ -882,7 +888,9 @@ function showPlayerDetails(playerName, playerSchool, event) {
       const barWidth = Math.round((scoreVal / maxScore) * 48);
       const barColor = scoreVal >= avgScore * 1.15 ? '#4ade80' : scoreVal >= avgScore * 0.85 ? '#fbbf24' : '#f87171';
       const scoreColor = scoreVal >= avgScore * 1.15 ? '#4ade80' : scoreVal >= avgScore * 0.85 ? '#e5e7eb' : '#f87171';
-      scoreHtml = `<span class="score-wrap"><span style="color:${scoreColor};font-weight:700">${scoreVal}</span><span class="score-bar" style="width:${barWidth}px;background:${barColor}"></span></span>`;
+      // the colour's meaning, for anyone who can't see it (WCAG 1.4.1)
+      const vsAvg = scoreVal >= avgScore * 1.15 ? 'above your average' : scoreVal >= avgScore * 0.85 ? 'near your average' : 'below your average';
+      scoreHtml = `<span class="score-wrap"><span style="color:${scoreColor};font-weight:700">${scoreVal}</span><span class="sr-only">, ${vsAvg}</span><span class="score-bar" style="width:${barWidth}px;background:${barColor}"></span></span>`;
     }
     html += `<tr class="${rowClass} ${isForfeit?'forfeit':''}">
       <td>${game['Week']||'—'}</td>
@@ -890,10 +898,12 @@ function showPlayerDetails(playerName, playerSchool, event) {
       <td><span class="wl-pill ${pillClass}">${pillLabel}</span></td>
       <td>${scoreHtml}</td>
       <td>${d(game['Goals'])}</td><td>${d(game['Shots'])}</td><td>${d(game['Assists'])}</td><td>${d(game['Saves'])}</td>
-      <td>${!isForfeit && PSD_BADGES.isMvp(game['MVP']) ? '<span class="mvp-star" title="MVP of this game">★</span>' : '<span class="mvp-blank">–</span>'}</td>
+      <td>${!isForfeit && PSD_BADGES.isMvp(game['MVP']) ? '<span class="mvp-star" title="MVP of this game" aria-hidden="true">★</span><span class="sr-only">MVP</span>' : '<span class="mvp-blank" aria-hidden="true">–</span>'}</td>
     </tr>`;
   });
-  html += '</tbody></table>';
+  html += '</tbody></table>' +
+    '<p class="score-key">Score color: <span style="color:#4ade80;font-weight:700">green</span> is above your average, ' +
+    'white is near it, <span style="color:#f87171;font-weight:700">red</span> is below it.</p>';
   document.getElementById('modal-game-log').innerHTML = html;
 
   const backdrop = document.getElementById('modal-overlay');
@@ -993,23 +1003,11 @@ if (!mq.matches) {
   });
 })();
 
-// Fixed-position tooltip for score-th (bypasses modal overflow:hidden)
+// Escape hides badge tooltips without moving the pointer (WCAG 1.4.13);
+// they come back once the pointer moves onto something else.
 (function() {
-  const tip = document.getElementById('fixed-tip');
-  document.addEventListener('mouseover', e => {
-    const th = e.target.closest('.score-th');
-    if (!th) return;
-    tip.textContent = th.getAttribute('data-tip') || '';
-    tip.style.display = 'block';
-  });
-  document.addEventListener('mousemove', e => {
-    if (tip.style.display === 'none') return;
-    tip.style.left = (e.clientX + 12) + 'px';
-    tip.style.top  = (e.clientY - 36) + 'px';
-  });
-  document.addEventListener('mouseout', e => {
-    if (e.target.closest('.score-th')) tip.style.display = 'none';
-  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') document.body.classList.add('tips-off'); });
+  document.addEventListener('mouseover', () => document.body.classList.remove('tips-off'));
 })();
 </script>
 </body>

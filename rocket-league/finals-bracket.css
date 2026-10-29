@@ -43,7 +43,7 @@ body.stream #psd-nav, body.stream #psd-nav-drawer{display:none!important;}
 /* ── TITLE ROW ── */
 .stage-hdr{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1rem;margin-bottom:14px;}
 .stage-hdr .left{display:flex;align-items:center;gap:.7rem;}
-.stage-hdr .right{display:flex;justify-content:flex-end;}
+.stage-hdr .right{display:flex;justify-content:flex-end;align-items:center;gap:.6rem;flex-wrap:wrap;}
 .stage-title{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:2.4rem;line-height:1;text-transform:uppercase;letter-spacing:.08em;margin:0;text-align:center;
   background:linear-gradient(90deg,var(--red-t),var(--yellow-t),var(--blue-t));-webkit-background-clip:text;background-clip:text;color:transparent;}
 .stage-sub{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);text-align:center;margin-top:4px;}
@@ -54,6 +54,14 @@ body.stream #psd-nav, body.stream #psd-nav-drawer{display:none!important;}
 .live{display:inline-flex;align-items:center;gap:.5rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
 .live-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:livepulse 2s ease-in-out infinite;flex-shrink:0;}
 .live.stale .live-dot{background:var(--yellow);box-shadow:0 0 6px var(--yellow);}
+/* Pause updates (WCAG 2.2.2). Hidden on the stream view, where a paused
+   bracket would just be a stale one. */
+.live-pause{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#e5e7eb;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18);border-radius:9999px;padding:.25rem .7rem;cursor:pointer;white-space:nowrap;}
+.live-pause:hover{background:rgba(255,255,255,.1);color:#fff;}
+.live-pause[aria-pressed="true"]{color:#0B0E14;background:var(--yellow);border-color:var(--yellow);}
+.live-pause:focus-visible{outline:2px solid var(--yellow-t);outline-offset:2px;}
+body.stream .live-pause{display:none;}
 @keyframes livepulse{0%,100%{opacity:.6}50%{opacity:1}}
 
 /* ── BRACKET GRID ── */

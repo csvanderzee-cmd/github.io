@@ -328,10 +328,23 @@
       'font-weight:700;font-size:.88rem;letter-spacing:.1em;text-transform:uppercase;color:#9ca3af;background:none;',
       'border:none;border-top:1px solid rgba(255,255,255,.07);cursor:pointer;}',
     '#psd-nav-drawer .drawer-motion:hover{color:#fff;}',
+    /* The bar is sticky, so anything the browser scrolls into view (a Tab to
+       the next link, a #anchor) would land underneath it. Keep a strip the
+       height of the bar clear at the top (WCAG 2.4.11 Focus Not Obscured). */
+    'html{scroll-padding-top:4.5rem;}',
     /* skip link: off-screen until it receives keyboard focus */
     ".psd-skip{position:absolute;left:.75rem;top:-3rem;z-index:2000;padding:.5rem 1rem;border-radius:.5rem;background:#FDB913;",
       "color:#0B0E14;font-family:'Rajdhani',sans-serif;font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:.8rem;text-decoration:none;}",
     '.psd-skip:focus{top:.6rem;}',
+    /* the accessibility link at the foot of every page */
+    ".psd-footer{border-top:1px solid rgba(255,255,255,.1);padding:1.5rem 1rem 2rem;text-align:center;font-family:'Rajdhani',sans-serif;",
+      'font-weight:700;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#9ca3af;}',
+    '.psd-a11y-line{margin:.6rem 0 0;}',
+    ".psd-a11y-link{color:#FFD166!important;text-decoration:underline;font-family:'Rajdhani',sans-serif;font-weight:700;",
+      'letter-spacing:.12em;text-transform:uppercase;font-size:.75rem;}',
+    '.psd-a11y-link:hover{color:#fff!important;}',
+    '.psd-a11y-link:focus-visible{outline:2px solid #FFD166;outline-offset:2px;}',
+    '@media print{.psd-footer{display:none;}}',
     /* The full bar fits down to 1109px with the registration pill, the three
        sitewide pills (Champions, In the News, Games) and the pause-animations
        button in it — measured by narrowing the bar until the last item ran
@@ -470,6 +483,7 @@
         return '<a href="' + esc(l.href) + '"' + out(l) + (isActive(l.href) ? ' class="active" aria-current="page"' : '') + '>' +
                withIcon(l.text) + '</a>';
       }).join('') +
+      '<a href="/accessibility.html"' + (isActive('/accessibility.html') ? ' class="active" aria-current="page"' : '') + '>Accessibility</a>' +
       '<button type="button" class="drawer-motion" id="psd-motion-drawer" aria-pressed="false"></button>';
 
     var drawer = document.createElement('div');
@@ -543,6 +557,7 @@
     paintMotion();
 
     addSkipLink();
+    addAccessibilityLink();
 
     var onScroll = function () { nav.classList.toggle('nav-scrolled', window.scrollY > 10); };
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -575,6 +590,31 @@
     a.href = '#' + main.id;
     a.textContent = 'Skip to main content';
     document.body.insertBefore(a, document.body.firstChild);
+  }
+
+  /* ---- accessibility link ---------------------------------------------------
+
+     The accessibility statement, with its contact for reporting a barrier, is
+     linked at the foot of every page, in the same place each time (WCAG 3.2.6
+     consistent help). A page with its own footer gets the link added to it; a
+     page without one gets a small footer line. The finals stream pages are
+     sized to the screen exactly, so a footer there would make them scroll. */
+  function addAccessibilityLink() {
+    if (document.querySelector('.fit')) return;
+    var link = '<a class="psd-a11y-link" href="/accessibility.html">Accessibility</a>';
+    var footers = document.querySelectorAll('body footer');
+    var footer = footers[footers.length - 1];
+    if (footer && !footer.closest('#sd')) {
+      var line = document.createElement('p');
+      line.className = 'psd-a11y-line';
+      line.innerHTML = link;
+      footer.appendChild(line);
+    } else {
+      var f = document.createElement('footer');
+      f.className = 'psd-footer';
+      f.innerHTML = 'PSD Esports &middot; Palmdale School District &middot; ' + link;
+      document.body.appendChild(f);
+    }
   }
 
   /* Tripwire for the duplicated registration details.

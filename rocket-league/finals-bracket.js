@@ -255,6 +255,32 @@
 
   const live = document.getElementById('live');
   const liveMsg = document.getElementById('live-msg');
+  const liveTime = document.getElementById('live-time');
+
+  /* #live-msg is read aloud when it changes, so it carries only the state
+     (Live, Paused, Reconnecting) and is only rewritten when that changes. The
+     time of the last update sits beside it, shown but not announced, or a
+     screen reader would read it out every 30 seconds. */
+  function setState(text, time) {
+    if (liveMsg.textContent !== text) liveMsg.textContent = text;
+    if (liveTime) liveTime.textContent = time ? ' · Updated ' + time : '';
+  }
+
+  /* ---- pause (WCAG 2.2.2) --------------------------------------------------
+     Scores update on their own, so they can be held still. Not on the stream
+     view (?stream): nobody is reading it up close, and a paused stream would be
+     a stale one. */
+  let paused = false;
+  const pauseBtn = document.getElementById('live-pause');
+  if (pauseBtn) {
+    pauseBtn.addEventListener('click', () => {
+      paused = !paused;
+      pauseBtn.setAttribute('aria-pressed', String(paused));
+      pauseBtn.textContent = paused ? 'Resume updates' : 'Pause updates';
+      if (paused) { live.classList.add('stale'); setState('Paused', liveTime && liveTime.dataset.time); }
+      else refresh();
+    });
+  }
 
   function initHeader() {
     const d = PSD.finalsStart();
@@ -265,23 +291,29 @@
 
   let loadedOnce = false;
   async function refresh() {
+    if (paused) return;
     if (!lg.matchSheet || !lg.finalsGid) {
-      liveMsg.textContent = 'Bracket opens once the regular season ends';
+      setState('Bracket opens once the regular season ends');
       live.classList.add('stale');
       document.getElementById('bracket').innerHTML = '<div class="notice">The bracket will appear here once the regular season ends.</div>';
       fit();
       return;
     }
     try {
-      render(parseSheet(await fetchRows()));
+      const rows = await fetchRows();
+      if (paused) return;
+      render(parseSheet(rows));
       loadedOnce = true;
       live.classList.remove('stale');
-      liveMsg.textContent = 'Live · Updated ' + new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      const time = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      if (liveTime) liveTime.dataset.time = time;
+      setState('Live', time);
     } catch (e) {
       console.error(e);
+      if (paused) return;
       // Keep the last good bracket on screen rather than blanking it mid-stream.
       live.classList.add('stale');
-      liveMsg.textContent = loadedOnce ? 'Reconnecting…' : 'Could not load the bracket, retrying';
+      setState(loadedOnce ? 'Reconnecting…' : 'Could not load the bracket, retrying');
       if (!loadedOnce) fit();
     }
   }
