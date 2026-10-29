@@ -287,7 +287,7 @@
     if (!pinned) view = snap.groupsComplete && snap.bracket ? 'bracket' : 'groups';
     var showing = view === 'bracket' ? 'bracket' : 'groups';
 
-    el.badge.textContent = snap.division.name;
+    el.badge.textContent = (root.SMASH && root.SMASH.testMode ? 'TEST DATA · ' : '') + snap.division.name;
     el.badge.style.background = snap.division.accent;
     el.view.textContent = showing === 'bracket' ? 'Elimination Bracket' : 'Group Stage';
     el.legend.textContent = showing === 'bracket'

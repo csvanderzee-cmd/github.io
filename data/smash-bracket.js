@@ -847,15 +847,33 @@
     var link = byId('other-division');
     if (link && other) {
       link.textContent = other.name + ' →';
-      link.setAttribute('href', other.page);
+      link.setAttribute('href', other.page + (root.SMASH.testMode ? '?test' : ''));
       link.style.borderColor = other.accent;
       link.style.color = other.accent;
     }
+
+    if (root.SMASH.testMode) markTestMode();
 
     paintWhen();
     buildRules();
     buildFeedControls();
     startFeed();
+  }
+
+  /* ?test reads the practice tab (data/smash.js). Say so loudly, at the top of
+     the page and in the tab title, so a screenshot or a forgotten tab can
+     never be mistaken for real results. */
+  function markTestMode() {
+    document.title = 'TEST DATA · ' + document.title;
+    var bar = document.createElement('div');
+    bar.className = 'no-print';
+    bar.setAttribute('role', 'note');
+    bar.style.cssText = 'background:#FDB913;color:#0B0E14;text-align:center;padding:.6rem 1rem;' +
+      "font-family:Rajdhani,sans-serif;font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:.9rem;";
+    bar.innerHTML = 'Test data: practice tab, not real results. ' +
+      '<a href="' + location.pathname + '" style="color:#0B0E14;text-decoration:underline">See the live tournament</a>';
+    var main = document.querySelector('main');
+    if (main && main.parentNode) main.parentNode.insertBefore(bar, main.previousElementSibling || main);
   }
 
   root.SMASH_PAGE = {

@@ -37,10 +37,10 @@
    So four groups or ten, groups of three or four, a bracket that starts at
    the quarter finals or the semis — all read without an edit here.
 
-   One thing to know about the feed: the gviz endpoint DROPS rows that are
-   entirely empty, so the spacer rows that make the sheet readable never
-   arrive and the row numbers here do not match the ones in Sheets. That is
-   exactly why nothing below counts rows.
+   Nothing below counts rows. Everything is found by its label (the R1
+   markers, the section titles), so spacer rows can be added or removed in
+   Sheets freely. (The old gviz feed also dropped entirely empty rows; the CSV
+   export read now keeps them, and none of this depends on either.)
    ========================================================================== */
 
 (function (root) {
@@ -171,11 +171,16 @@
        different group counts, even different bracket depths are all fine,
        because each page reads its own tab and works out the shape from what
        is actually there. */
+    /* testGid: a practice copy of each tab ("TEST Under 5", "TEST 6-8", the
+       orange tabs in the same workbook). Add ?test to a bracket page's address
+       and it reads the practice tab instead, under a TEST DATA banner, so
+       scores can be tried out and referees walked through it without anything
+       showing on the public page. Remove the testGid to switch this off. */
     divisions: [
       { id: 'jr', name: 'Grade 5 & Under', accent: '#FF6B6B',
-        page: 'grade-5-under.html', gid: '0' },
+        page: 'grade-5-under.html', gid: '0', testGid: '900001' },
       { id: 'sr', name: 'Grades 6–8', accent: '#4DABF7',
-        page: 'grades-6-8.html', gid: '86502539' }
+        page: 'grades-6-8.html', gid: '86502539', testGid: '900002' }
     ]
   };
 
@@ -252,7 +257,7 @@
     return -1;
   }
 
-  /** Rows are dense (gviz drops blanks), so "is this a header" = has an R1. */
+  /** A row is a match header if it carries R1 markers; each R1 starts a band. */
   function bandsIn(row) {
     var out = [];
     if (!row) return out;
@@ -508,28 +513,29 @@
   var TIMEOUT_MS = 9000;
 
   /**
-   * One tab, as CSV.
+   * One tab, as CSV, exactly as typed.
    *
-   * headers=0 is not optional. Left to itself gviz GUESSES how many leading
-   * rows are headers, column by column, from the data types it finds — and
-   * then joins every row it guessed into one. On this sheet that turned
-   * column A's first five rows into the single cell
-   *
-   *     "Group 1 A B C Round Robin Matches"
-   *
-   * while column B, which had numbers in it, kept fewer. Worse, the guess
-   * CHANGES as scores are entered, so a sheet that reads perfectly during
-   * setup silently reshapes itself once the tournament starts. headers=0
-   * says "there are no header rows, give me every row as data".
+   * This reads the sheet's CSV export, not the gviz query feed it used to.
+   * gviz GUESSES a type for every column and blanks whatever does not fit.
+   * Columns B and C hold mostly scores, so gviz decided they were numbers and
+   * returned "Group 2", "Group 3" and every team name typed under them as
+   * empty cells: half the groups would have vanished from the bracket on the
+   * day teams were entered. (It also guessed header rows, which headers=0 had
+   * been papering over.) The export has no guessing, keeps every cell, and is
+   * just as current. It needs the same sharing: anyone with the link, Viewer.
    */
   function tabUrl(gid) {
     return 'https://docs.google.com/spreadsheets/d/' + CONFIG.sheetId +
-           '/gviz/tq?tqx=out:csv&headers=0&gid=' + gid + '&_=' + Date.now();
+           '/export?format=csv&gid=' + gid + '&_=' + Date.now();
   }
 
   function wiredDivisions() {
     return CONFIG.divisions.filter(function (d) { return !isBlank(d.gid); });
   }
+
+  /* ?test in the address: read each division's practice tab (testGid). */
+  var TEST_MODE = /[?&]test(=|&|$)/.test(root.location ? root.location.search : '');
+  function gidFor(d) { return TEST_MODE && !isBlank(d.testGid) ? d.testGid : d.gid; }
 
   function isWired() { return !isBlank(CONFIG.sheetId) && wiredDivisions().length > 0; }
 
@@ -568,7 +574,7 @@
     var warn = function (msg) { if (warnings.indexOf(msg) === -1) warnings.push(msg); };
 
     return Promise.all(divs.map(function (d) {
-      return fetchTab(d.gid).then(function (csv) {
+      return fetchTab(gidFor(d)).then(function (csv) {
         return { id: d.id, data: readTab(csv, function (m) { warn(d.name + ' — ' + m); }) };
       }, function (err) {
         warn(d.name + ' — could not be read: ' + err.message);
@@ -587,6 +593,7 @@
 
   root.SMASH = {
     config: CONFIG,
+    testMode: TEST_MODE,
     isWired: isWired,
     load: load,
     tabUrl: tabUrl,
