@@ -685,12 +685,13 @@
     document.body.insertBefore(nav, document.body.firstChild);
 
     var btn = document.getElementById('psd-hamburger');
-    btn.addEventListener('click', function () {
-      var open = drawer.classList.toggle('open');
+    function setDrawer(open) {
+      drawer.classList.toggle('open', open);
       btn.classList.toggle('open', open);
       btn.setAttribute('aria-expanded', String(open));
       drawer.setAttribute('aria-hidden', String(!open));
-    });
+    }
+    btn.addEventListener('click', function () { setDrawer(!drawer.classList.contains('open')); });
 
     /* ---- game menus: hover, focus, tap and Escape ------------------------ */
     Array.prototype.forEach.call(nav.querySelectorAll('.nav-item'), function (item) {
@@ -790,6 +791,15 @@
     function fitBar() {
       nav.classList.remove('nav-compact');
       if (inner.scrollWidth > inner.clientWidth + 1) nav.classList.add('nav-compact');
+      /* Back to the full bar (a wider window, or text reset to 100% from the
+         drawer's own settings) while the drawer is open: the menu button that
+         would close it is gone, so close it here. If focus was inside it, it
+         moves to the "Aa" button, which holds the same settings. */
+      if (drawer.classList.contains('open') && getComputedStyle(btn).display === 'none') {
+        var hadFocus = drawer.contains(document.activeElement);
+        setDrawer(false);
+        if (hadFocus) displayBtnEl.focus();
+      }
     }
     window.addEventListener('resize', fitBar);
     /* the readable font arrives after first paint and widens the bar */
