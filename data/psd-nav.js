@@ -60,7 +60,12 @@
     url:    'https://forms.gle/PHLTBQBWvUJktBgw8',
     closes: '2026-10-30',
     label:  '⚔️ Smash Sign-Up',
-    title:  'Register a team for the Super Smash Bros. tournament'
+    title:  'Register a team for the Super Smash Bros. tournament',
+    /* Once entries close, every link to the form becomes an email to the
+       organizer instead, so a late entry or a roster change still has a way in
+       and the form stops collecting entries nobody is watching for. */
+    lateEmail:   'csvanderzee@palmdalesd.org',
+    lateSubject: 'Smash tournament: late registration or team change'
   };
 
   /**
@@ -84,6 +89,16 @@
     today.setHours(0, 0, 0, 0);
     return end >= today;
   }
+
+  /** The email that replaces the form once entries close. */
+  var LATE_URL = 'mailto:' + REGISTRATION.lateEmail +
+                 '?subject=' + encodeURIComponent(REGISTRATION.lateSubject);
+
+  /** The Smash menu's sign-up entry: the form while it is open, then the email. */
+  var REGISTER_LINK = registrationOpen()
+    ? { text: 'Register a Team', href: REGISTRATION.url, external: true }
+    : { text: 'Late Entry or Change', href: LATE_URL,
+        title: 'Registration has closed. Email Mr. Vanderzee for a late entry or a team change' };
 
   var SECTIONS = [
     {
@@ -141,7 +156,7 @@
             /* Not last: the sign-up pill comes straight after this list in the
                page, and two links in a row to the same form is one too many
                for anyone tabbing through. */
-            { text: 'Register a Team', href: REGISTRATION.url, external: true },
+            REGISTER_LINK,
             { text: 'Rules',           href: '/smash/rules.html' }
           ]
         }
@@ -912,6 +927,8 @@
     sections: SECTIONS,
     render: render,
     registration: REGISTRATION,
+    registrationOpen: registrationOpen,
+    lateUrl: LATE_URL,
     /** True while the visitor has animations paused. Pages with their own
         timers (countdowns, rotating cards) check this before moving, and can
         listen for the 'psd:motion' event to catch up when it changes. */

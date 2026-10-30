@@ -247,5 +247,33 @@
 </main>
 
 <script src="/data/psd-copy-email.js"></script>
+<script>
+/* After entries close, the form links on this page (the button, the hot spots
+   on the flyer image and the transcript) become an email to the organizer, so
+   a late entry or a team change goes to a person instead of an unwatched form.
+   The flyer image itself still says "Register by Friday, October 30", which
+   stays true; only where the links lead changes. */
+(function () {
+    var nav = window.PSD_NAV;
+    if (!nav || nav.registrationOpen()) return;
+    var links = document.querySelectorAll('a[href="' + nav.registration.url + '"]');
+    for (var i = 0; i < links.length; i++) {
+        var a = links[i];
+        a.href = nav.lateUrl;
+        a.removeAttribute('target');
+        a.removeAttribute('rel');
+        if (a.classList.contains('btn')) {
+            a.textContent = 'Late entry or change? Email us';
+        } else if (a.classList.contains('hot')) {
+            a.querySelector('span').textContent =
+                'Registration closed. Email Mr. Vanderzee for a late entry or a team change';
+        } else {
+            a.textContent = nav.registration.lateEmail;
+            var p = a.parentNode;
+            if (p.firstChild.nodeType === 3) p.firstChild.nodeValue = 'Registration closed. Late entry or change: ';
+        }
+    }
+})();
+</script>
 </body>
 </html>
