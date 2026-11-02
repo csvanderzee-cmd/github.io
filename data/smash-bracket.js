@@ -114,7 +114,10 @@
           return mini[y.name] - mini[x.name] || y.sd - x.sd ||
                  y.gw - x.gw || x.name.localeCompare(y.name);
         });
-        for (var k = 0; k < block.length; k++) rows[i + k] = block[k];
+        for (var k = 0; k < block.length; k++) {
+          block[k].mini = mini[block[k].name];
+          rows[i + k] = block[k];
+        }
       }
       i = j + 1;
     }
@@ -162,7 +165,7 @@
 
      Four groups, each sending its winner to the quarter-finals and its 2nd and
      3rd place teams to the play-in, always against another group. Same kind of
-     hint as above: it only labels empty slots. Group 1 is kept apart from its
+     hint as above: it only fills empty slots. Group 1 is kept apart from its
      own 2nd place team until the final, and likewise every other group, by
      pairing the semi-finals QF 1 v QF 2 and QF 3 v QF 4.
      ------------------------------------------------------------------------ */
@@ -170,22 +173,80 @@
   var PLAY_IN_SEATS = [[2, 3], [1, 0], [3, 2], [0, 1]];  /* [group of 2nd, group of 3rd] */
   var QUARTER_WINNERS = [0, 3, 1, 2];                    /* group winner waiting in each QF */
 
-  function playInHints(rounds) {
-    var g = div().groups, pi = rounds[0], qf = rounds[1], sf = rounds[2];
+  /* A slot's label, as text on screen and words for a screen reader. Once a
+     result is known the label becomes a ghost: the team's name, unofficial until
+     it is typed into the sheet, which always wins. */
+  function seat(text) { return { text: text, say: text }; }
+  function ghost(name) { return { text: name, say: 'projected ' + name }; }
+
+  /* Level on points, on the head-to-head mini-table and on stock differential:
+     the point at which the written rules stop and a playoff can start. */
+  function stillTied(a, b) {
+    return a.pts === b.pts && a.mini === b.mini && a.sd === b.sd;
+  }
+
+  /* Who a finished group sends to `pos` (0-based), or its placeholder until then.
+     A tie for first place, or for the last place that advances, needs a playoff
+     the page cannot see, so it names the teams instead of guessing. */
+  function groupSeat(gi, pos, label) {
+    if (!groupComplete(gi)) return seat(label);
+    var rows = standings(gi);
+    if (!rows[pos]) return seat(label);
+
+    var lo = pos, hi = pos;
+    while (lo > 0 && stillTied(rows[lo - 1], rows[lo])) lo--;
+    while (hi + 1 < rows.length && stillTied(rows[hi], rows[hi + 1])) hi++;
+
+    var decidesFirst = lo === 0 && hi >= 1;
+    var decidesAdvance = lo < ADVANCE && hi >= ADVANCE;
+    if (decidesFirst || decidesAdvance) {
+      var names = rows.slice(lo, hi + 1).map(function (r) { return r.name; });
+      var list = names.slice(0, -1).join(', ') + ' or ' + names[names.length - 1];
+      return { text: 'Playoff: ' + list, say: 'Playoff for this spot: ' + list };
+    }
+    return ghost(rows[pos].name);
+  }
+
+  function winnerSeat(m, label) { return m && m.done && m.winner ? ghost(m.winner) : seat(label); }
+
+  function loserSeat(m, label) {
+    if (!m || !m.done || !m.winner) return seat(label);
+    return ghost(norm(m.winner) === norm(m.teams[0]) ? m.teams[1] : m.teams[0]);
+  }
+
+  function setSeats(m, top, bottom) {
+    m.hints = [top.text, bottom.text];
+    m.says = [top.say, bottom.say];
+  }
+
+  function playInHints(rounds, third) {
+    var g = div().groups, pi = rounds[0], qf = rounds[1], sf = rounds[2], fin = rounds[3];
     if (g.length !== 4 || !pi || pi.name !== 'Play-In' || pi.matches.length !== 4) return false;
 
     pi.matches.forEach(function (m, i) {
-      m.hints = ['2nd place ' + g[PLAY_IN_SEATS[i][0]].name, '3rd place ' + g[PLAY_IN_SEATS[i][1]].name];
+      var second = PLAY_IN_SEATS[i][0], thirdPlace = PLAY_IN_SEATS[i][1];
+      setSeats(m, groupSeat(second, 1, '2nd place ' + g[second].name),
+                  groupSeat(thirdPlace, 2, '3rd place ' + g[thirdPlace].name));
     });
-    if (qf && qf.matches.length === 4) {
-      qf.matches.forEach(function (m, i) {
-        m.hints = ['Winner ' + g[QUARTER_WINNERS[i]].name, 'Winner Play-In ' + (i + 1)];
-      });
+    if (!qf || qf.matches.length !== 4) return true;
+    qf.matches.forEach(function (m, i) {
+      var w = QUARTER_WINNERS[i];
+      setSeats(m, groupSeat(w, 0, 'Winner ' + g[w].name),
+                  winnerSeat(pi.matches[i], 'Winner Play-In ' + (i + 1)));
+    });
+    if (!sf || sf.matches.length !== 2) return true;
+    sf.matches.forEach(function (m, i) {
+      var q1 = 2 * i, q2 = 2 * i + 1;
+      setSeats(m, winnerSeat(qf.matches[q1], 'Winner Quarter Final ' + (q1 + 1)),
+                  winnerSeat(qf.matches[q2], 'Winner Quarter Final ' + (q2 + 1)));
+    });
+    if (fin && fin.matches.length === 1) {
+      setSeats(fin.matches[0], winnerSeat(sf.matches[0], 'Winner Semi Final 1'),
+                               winnerSeat(sf.matches[1], 'Winner Semi Final 2'));
     }
-    if (sf && sf.matches.length === 2) {
-      sf.matches.forEach(function (m, i) {
-        m.hints = ['Winner Quarter Final ' + (2 * i + 1), 'Winner Quarter Final ' + (2 * i + 2)];
-      });
+    if (third) {
+      setSeats(third, loserSeat(sf.matches[0], 'Loser Semi Final 1'),
+                      loserSeat(sf.matches[1], 'Loser Semi Final 2'));
     }
     return true;
   }
@@ -225,7 +286,7 @@
       rd.straight = !!next && next.matches.length === rd.matches.length;
     });
 
-    var hints = playInHints(rounds) ? null : crossingHints();
+    var hints = playInHints(rounds, third) ? null : crossingHints();
     if (hints && rounds.length && rounds[0].matches.length === hints.length) {
       rounds[0].matches.forEach(function (m, i) { m.hints = hints[i]; });
     }
@@ -427,8 +488,10 @@
     var known = name && name !== '';
     var isWinner = known && winner && norm(winner) === norm(name);
     var label = known ? name : (hint || 'TBD');
+    /* A playoff slot names every team in it, so it wraps rather than cuts off. */
+    var wrap = !known && hint && hint.indexOf('Playoff:') === 0 ? ' style="white-space:normal"' : '';
     return '<div class="bk-team' + (isWinner ? ' won' : '') + (known ? '' : ' tbd') + '">' +
-           '<span class="nm">' + esc(label) + '</span>' +
+           '<span class="nm"' + wrap + '>' + esc(label) + '</span>' +
            '<span class="sc">' + (scoreVal === null ? '' : scoreVal) + '</span></div>';
   }
 
@@ -437,7 +500,8 @@
     var h = m.hints || [];
     /* An empty slot is announced by who the tables say belongs there, when
        that is known, the same as it reads on screen. */
-    var a = m.teams[0] || h[0] || '', b = m.teams[1] || h[1] || '';
+    var say = m.says || h;
+    var a = m.teams[0] || say[0] || '', b = m.teams[1] || say[1] || '';
     return '<div class="bk-match' + (isFinal ? ' final-match' : '') + '" role="group" aria-label="' + esc(label) + '">' +
            sr(matchSentence(a, b, { a: m.scoreA, b: m.scoreB, done: m.done })) +
            '<div aria-hidden="true">' +
@@ -464,8 +528,8 @@
        how a parent finds out the day ends in a final and a third-place match.
        It just should not be described as though results were expected in it. */
     note.textContent = div().drawn
-      ? 'Teams fill in as each round is decided. Empty slots show who the group ' +
-        'tables say belongs there.'
+      ? 'Teams fill in as each round is decided. Names in gray italics are projected ' +
+        'from the results so far, and become official once entered.'
       : 'How the knockout stage runs. Teams fill in on the day, round by round.';
 
     /* Each round is a section under its own heading, so a screen-reader user

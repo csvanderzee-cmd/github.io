@@ -123,6 +123,12 @@ round, the pairings are:
 | Semi Final 1 | Winner Quarter Final 1 | Winner Quarter Final 2 |
 | Semi Final 2 | Winner Quarter Final 3 | Winner Quarter Final 4 |
 
+As soon as a group has played all its matches, or a match has a winner, the slot
+shows the team's name in gray italics. That name is only a projection: type it
+into the sheet to make it official and to enter scores against it. Whatever you
+type always wins, so a forfeit or late change just needs the right team typed in.
+A tie that needs a playoff shows `Playoff:` and the teams instead of a name.
+
 A group's top two can only meet again in the final. Without a play-in round the
 page falls back to the World Cup crossing, when the qualifiers make a clean
 bracket.

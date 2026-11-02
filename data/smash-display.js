@@ -187,15 +187,18 @@
   function teamRow(name, hint, score, winner) {
     var known = name && name !== '';
     var won = known && winner && winner === name;
+    /* A playoff slot names every team in it, so it wraps rather than cuts off. */
+    var wrap = !known && hint && hint.indexOf('Playoff:') === 0 ? ' style="white-space:normal"' : '';
     return '<div class="sd-team' + (won ? ' won' : '') + (known ? '' : ' tbd') + '">' +
-      '<span class="t">' + esc(known ? name : (hint || 'TBD')) + '</span>' +
+      '<span class="t"' + wrap + '>' + esc(known ? name : (hint || 'TBD')) + '</span>' +
       '<span class="s">' + (score === null || score === undefined ? '' : score) + '</span></div>';
   }
 
   function matchHtml(m, isFinal, label) {
     var show = m.done || (m.scoreA + m.scoreB) > 0;
     var h = m.hints || [];
-    var say = root.SMASH_PAGE.matchSentence(m.teams[0] || h[0] || '', m.teams[1] || h[1] || '',
+    var slot = m.says || h;
+    var say = root.SMASH_PAGE.matchSentence(m.teams[0] || slot[0] || '', m.teams[1] || slot[1] || '',
                                             { a: m.scoreA, b: m.scoreB, done: m.done });
     return '<div class="sd-match' + (isFinal ? ' final' : '') + '" role="group" aria-label="' + esc(label) + '">' +
       sr(say) + '<div aria-hidden="true">' +
