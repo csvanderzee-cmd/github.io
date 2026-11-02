@@ -155,6 +155,7 @@
             { text: 'Flyer',           href: '/smash/flyer.html' },
             { text: 'Grade 5 & Under', href: '/smash/grade-5-under.html' },
             { text: 'Grades 6–8',      href: '/smash/grades-6-8.html' },
+            { text: 'Schedule',        href: '/smash/schedule.html' },
             /* Not last: the sign-up pill comes straight after this list in the
                page, and two links in a row to the same form is one too many
                for anyone tabbing through. */
