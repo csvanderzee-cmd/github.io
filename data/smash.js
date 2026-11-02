@@ -89,7 +89,7 @@
 
     /* ---- format --------------------------------------------------------- */
 
-    advance: 2,            /* teams out of each group */
+    advance: 3,            /* teams out of each group: 1st to the quarter-finals, 2nd and 3rd to the play-in */
     maxStock: 6,           /* 2 players x 3 stock */
     refreshSeconds: 30,
 
@@ -107,8 +107,9 @@
        ---------------------------------------------------------------------- */
 
     rules: {
-      version: '1.0',
-      updated: '2 September 2026',
+      version: '1.1',
+      updated: '2 November 2026',
+      changed: 'Schools may enter up to four teams. Groups can have 3 to 5 teams. Group winners go to the quarter-finals; second and third place enter a play-in round.',
       doc: 'PSD-Smash-Tournament-Rules.docx',
 
       /* VERBATIM from smash/PSD-Smash-Tournament-Rules.docx. Do not paraphrase
@@ -119,7 +120,7 @@
       sections: [
         { title: 'Divisions & Teams', items: [
           'Two divisions: Grade 5 & under, and Grades 6–8. Teams play only within their division.',
-          'Schools may enter up to two teams, distinguished by a color (e.g., Shadow Hills Red, Shadow Hills Gold).',
+          'Schools may enter up to four teams, distinguished by a color (e.g., Shadow Hills Red, Shadow Hills Gold).',
           'Team format: 2v2 doubles — each team is two players, plus an optional alternate. An alternate is locked to that team and may not play for any other team.'
         ]},
         { title: 'Match Format', items: [
@@ -141,10 +142,10 @@
           "Tied game (equal stock at time, or a simultaneous final KO): resolved by the game's built-in Sudden Death — surviving fighters go to one stock at 300% and the next KO wins. Applies in both the group and knockout stages; no game ends in a draw."
         ]},
         { title: 'Group Stage', items: [
-          'Teams are drawn into groups of 4 teams (odd amounts of teams will result in groups of 3) — round-robin: a group of 4 plays 6 matches, a group of 3 plays 3.',
+          'Teams are placed into four groups of 3 to 5 teams — round-robin: a group of 5 plays 10 matches, a group of 4 plays 6, a group of 3 plays 3.',
           'Points per match: Win = 3, Loss = 0. (Every game produces a winner, so matches always finish 2–0 or 2–1.)',
           'Tiebreakers (in order): 1) record / points, 2) head-to-head result, 3) remaining-stock differential (every stock a team had left across its group games, minus every stock its opponents had left).',
-          'Top two teams from each group advance to the elimination bracket.'
+          'Each group winner advances to the quarter-finals. Second- and third-place teams enter a play-in round, each against a team from another group; the four play-in winners take the remaining quarter-final spots.'
         ]},
         { title: 'Elimination Bracket', items: [
           'Single-elimination, best of 3, same game settings.',

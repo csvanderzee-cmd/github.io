@@ -45,7 +45,7 @@ and that game's stock in the three columns from `R1` rightwards.
 Two rows = one match. Add as many group bands across the page as you have
 groups; add rows down as you have matches.
 
-**Groups of 3 or 4 both work.** A group of three simply uses three match
+**Groups of 3, 4 or 5 all work.** A group of three simply uses three match
 pairs and leaves the rest of its column blank.
 
 ---
@@ -144,7 +144,7 @@ tables can never drift out of step with what was actually played:
 
 - Points (win = 3, loss = 0), games won and lost, stock differential
 - Tiebreakers, in order: **points → head-to-head → stock differential → games won**
-- Who qualifies (top two per group)
+- Who qualifies (top three per group)
 - Which rounds the bracket has, and who has won each match
 
 ---
