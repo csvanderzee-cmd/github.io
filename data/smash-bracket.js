@@ -177,7 +177,7 @@
      result is known the label becomes a ghost: the team's name, unofficial until
      it is typed into the sheet, which always wins. */
   function seat(text) { return { text: text, say: text }; }
-  function ghost(name) { return { text: name, say: 'projected ' + name }; }
+  function ghost(name) { return { text: name, say: 'projected ' + name, ghost: true }; }
 
   /* Level on points, on the head-to-head mini-table and on stock differential:
      the point at which the written rules stop and a playoff can start. */
@@ -202,7 +202,7 @@
     if (decidesFirst || decidesAdvance) {
       var names = rows.slice(lo, hi + 1).map(function (r) { return r.name; });
       var list = names.slice(0, -1).join(', ') + ' or ' + names[names.length - 1];
-      return { text: 'Playoff: ' + list, say: 'Playoff for this spot: ' + list };
+      return { text: 'Playoff: ' + list, say: 'Playoff for this spot: ' + list, ghost: true };
     }
     return ghost(rows[pos].name);
   }
@@ -217,6 +217,7 @@
   function setSeats(m, top, bottom) {
     m.hints = [top.text, bottom.text];
     m.says = [top.say, bottom.say];
+    m.ghosts = [!!top.ghost, !!bottom.ghost];
   }
 
   function playInHints(rounds, third) {
@@ -484,13 +485,14 @@
       }).join('') + '</div>';
   }
 
-  function bkTeam(name, hint, scoreVal, winner) {
+  function bkTeam(name, hint, scoreVal, winner, isGhost) {
     var known = name && name !== '';
     var isWinner = known && winner && norm(winner) === norm(name);
     var label = known ? name : (hint || 'TBD');
     /* A playoff slot names every team in it, so it wraps rather than cuts off. */
     var wrap = !known && hint && hint.indexOf('Playoff:') === 0 ? ' style="white-space:normal"' : '';
-    return '<div class="bk-team' + (isWinner ? ' won' : '') + (known ? '' : ' tbd') + '">' +
+    return '<div class="bk-team' + (isWinner ? ' won' : (known && winner ? ' out' : '')) +
+           (known ? '' : ' tbd' + (isGhost ? ' ghost' : '')) + '">' +
            '<span class="nm"' + wrap + '>' + esc(label) + '</span>' +
            '<span class="sc">' + (scoreVal === null ? '' : scoreVal) + '</span></div>';
   }
@@ -500,13 +502,13 @@
     var h = m.hints || [];
     /* An empty slot is announced by who the tables say belongs there, when
        that is known, the same as it reads on screen. */
-    var say = m.says || h;
+    var say = m.says || h, g = m.ghosts || [];
     var a = m.teams[0] || say[0] || '', b = m.teams[1] || say[1] || '';
     return '<div class="bk-match' + (isFinal ? ' final-match' : '') + '" role="group" aria-label="' + esc(label) + '">' +
            sr(matchSentence(a, b, { a: m.scoreA, b: m.scoreB, done: m.done })) +
            '<div aria-hidden="true">' +
-             bkTeam(m.teams[0], h[0], show ? m.scoreA : null, m.winner) +
-             bkTeam(m.teams[1], h[1], show ? m.scoreB : null, m.winner) +
+             bkTeam(m.teams[0], h[0], show ? m.scoreA : null, m.winner, g[0]) +
+             bkTeam(m.teams[1], h[1], show ? m.scoreB : null, m.winner, g[1]) +
            '</div></div>';
   }
 
@@ -528,7 +530,7 @@
        how a parent finds out the day ends in a final and a third-place match.
        It just should not be described as though results were expected in it. */
     note.textContent = div().drawn
-      ? 'Teams fill in as each round is decided. Names in gray italics are projected ' +
+      ? 'Teams fill in as each round is decided. Names in gold italics are projected ' +
         'from the results so far, and become official once entered.'
       : 'How the knockout stage runs. Teams fill in on the day, round by round.';
 

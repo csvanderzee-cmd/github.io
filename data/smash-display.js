@@ -78,14 +78,16 @@
     '#sd .sd-conn{position:absolute;left:calc(100% + 2rem);top:50%;width:2px;height:100%;' +
       'background:rgba(255,255,255,.14);display:none;}' +
     '#sd .sd-round:not(:last-child) .sd-slot:nth-child(odd) .sd-conn{display:block;}' +
-    '#sd .sd-match{width:100%;background:#151B26;border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;}' +
-    '#sd .sd-team{display:flex;align-items:center;gap:.6rem;padding:9px 12px;font-size:1.1rem;color:#9ca3af;}' +
-    '#sd .sd-team + .sd-team{border-top:1px solid rgba(255,255,255,.07);}' +
+    '#sd .sd-match{width:100%;background:#1B2331;border:1px solid rgba(255,255,255,.2);border-radius:10px;overflow:hidden;}' +
+    '#sd .sd-team{display:flex;align-items:center;gap:.6rem;padding:9px 12px;font-size:1.15rem;font-weight:600;color:#f3f4f6;}' +
+    '#sd .sd-team + .sd-team{border-top:1px solid rgba(255,255,255,.12);}' +
     '#sd .sd-team .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
-    '#sd .sd-team .s{font-family:Rajdhani,sans-serif;font-weight:900;color:#8f97a5;font-variant-numeric:tabular-nums;font-size:1.25rem;}' +
+    '#sd .sd-team .s{font-family:Rajdhani,sans-serif;font-weight:900;color:#d1d5db;font-variant-numeric:tabular-nums;font-size:1.25rem;}' +
     '#sd .sd-team.won{color:#fff;font-weight:800;background:rgba(253,185,19,.08);}' +
     '#sd .sd-team.won .s{color:#FFD166;}' +
-    '#sd .sd-team.tbd{color:#8f97a5;font-style:italic;}' +
+    '#sd .sd-team.out{color:#9ca3af;font-weight:500;}' +
+    '#sd .sd-team.tbd{color:#aab2bf;font-weight:500;font-style:italic;}' +
+    '#sd .sd-team.ghost{color:#FFD166;font-weight:600;}' +
     '#sd .sd-match.final{border-color:rgba(253,185,19,.5);box-shadow:0 0 30px rgba(253,185,19,.15);}' +
     '#sd .sd-third{margin-top:26px;text-align:center;}' +
     '#sd .sd-third-label,#sd .sd-champ-label{font-family:Rajdhani,sans-serif;font-weight:800;font-size:.8rem;' +
@@ -184,12 +186,13 @@
     };
   }
 
-  function teamRow(name, hint, score, winner) {
+  function teamRow(name, hint, score, winner, isGhost) {
     var known = name && name !== '';
     var won = known && winner && winner === name;
     /* A playoff slot names every team in it, so it wraps rather than cuts off. */
     var wrap = !known && hint && hint.indexOf('Playoff:') === 0 ? ' style="white-space:normal"' : '';
-    return '<div class="sd-team' + (won ? ' won' : '') + (known ? '' : ' tbd') + '">' +
+    return '<div class="sd-team' + (won ? ' won' : (known && winner ? ' out' : '')) +
+      (known ? '' : ' tbd' + (isGhost ? ' ghost' : '')) + '">' +
       '<span class="t"' + wrap + '>' + esc(known ? name : (hint || 'TBD')) + '</span>' +
       '<span class="s">' + (score === null || score === undefined ? '' : score) + '</span></div>';
   }
@@ -197,13 +200,13 @@
   function matchHtml(m, isFinal, label) {
     var show = m.done || (m.scoreA + m.scoreB) > 0;
     var h = m.hints || [];
-    var slot = m.says || h;
+    var slot = m.says || h, g = m.ghosts || [];
     var say = root.SMASH_PAGE.matchSentence(m.teams[0] || slot[0] || '', m.teams[1] || slot[1] || '',
                                             { a: m.scoreA, b: m.scoreB, done: m.done });
     return '<div class="sd-match' + (isFinal ? ' final' : '') + '" role="group" aria-label="' + esc(label) + '">' +
       sr(say) + '<div aria-hidden="true">' +
-      teamRow(m.teams[0], h[0], show ? m.scoreA : null, m.winner) +
-      teamRow(m.teams[1], h[1], show ? m.scoreB : null, m.winner) +
+      teamRow(m.teams[0], h[0], show ? m.scoreA : null, m.winner, g[0]) +
+      teamRow(m.teams[1], h[1], show ? m.scoreB : null, m.winner, g[1]) +
       '</div></div>';
   }
 

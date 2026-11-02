@@ -104,15 +104,17 @@
         .bk-conn { position:absolute; left:calc(100% + 1.5rem); top:50%; width:2px; height:100%;
                    background:rgba(255,255,255,.13); display:none; }
         .bk-round:not(:last-child) .bk-slot:nth-child(odd) .bk-conn { display:block; }
-        .bk-match { width:100%; background:#151B26; border:1px solid rgba(255,255,255,.07);
+        .bk-match { width:100%; background:#1B2331; border:1px solid rgba(255,255,255,.2);
                     border-radius:.6rem; overflow:hidden; text-align:left; transition:border-color .15s; }
-        .bk-team { display:flex; align-items:center; gap:.5rem; padding:.45rem .6rem; font-size:.78rem; color:#9ca3af; }
-        .bk-team + .bk-team { border-top:1px solid rgba(255,255,255,.06); }
+        .bk-team { display:flex; align-items:center; gap:.5rem; padding:.5rem .65rem; font-size:.875rem; font-weight:600; color:#f3f4f6; }
+        .bk-team + .bk-team { border-top:1px solid rgba(255,255,255,.12); }
         .bk-team .nm { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .bk-team .sc { font-family:'Rajdhani',sans-serif; font-weight:900; color:#8f97a5; font-variant-numeric:tabular-nums; }
+        .bk-team .sc { font-family:'Rajdhani',sans-serif; font-weight:900; font-size:1rem; color:#d1d5db; font-variant-numeric:tabular-nums; }
         .bk-team.won { color:#fff; font-weight:700; background:rgba(253,185,19,.07); }
         .bk-team.won .sc { color:#FFD166; }
-        .bk-team.tbd { color:#8f97a5; font-style:italic; }
+        .bk-team.out { color:#9ca3af; font-weight:500; }
+        .bk-team.tbd { color:#aab2bf; font-weight:500; font-style:italic; }
+        .bk-team.ghost { color:#FFD166; font-weight:600; }
         .bk-match.final-match { border-color:rgba(253,185,19,.45); box-shadow:0 0 26px rgba(253,185,19,.13); }
 
         /* ---- live feed status ---- */

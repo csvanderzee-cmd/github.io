@@ -124,7 +124,7 @@ round, the pairings are:
 | Semi Final 2 | Winner Quarter Final 3 | Winner Quarter Final 4 |
 
 As soon as a group has played all its matches, or a match has a winner, the slot
-shows the team's name in gray italics. That name is only a projection: type it
+shows the team's name in gold italics. That name is only a projection: type it
 into the sheet to make it official and to enter scores against it. Whatever you
 type always wins, so a forfeit or late change just needs the right team typed in.
 A tie that needs a playoff shows `Playoff:` and the teams instead of a name.
