@@ -156,7 +156,9 @@ You never enter any of this — it is computed from the games above, so the
 tables can never drift out of step with what was actually played:
 
 - Points (win = 3, loss = 0), games won and lost, stock differential
-- Tiebreakers, in order: **points → head-to-head → stock differential → games won**
+- Tiebreakers, in order: **points → head-to-head → stock differential → one-game playoff**. The page cannot
+  see a playoff, so it lists a tie that gets that far by games won, then by name. Type the
+  playoff winner into the bracket yourself
 - Who qualifies (top three per group)
 - Which rounds the bracket has, and who has won each match
 

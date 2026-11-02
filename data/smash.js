@@ -107,9 +107,9 @@
        ---------------------------------------------------------------------- */
 
     rules: {
-      version: '1.1',
+      version: '1.2',
       updated: '2 November 2026',
-      changed: 'Schools may enter up to four teams. Groups can have 3 to 5 teams. Group winners go to the quarter-finals; second and third place enter a play-in round.',
+      changed: 'Teams still tied after stock differential play a one-game playoff if the tie decides first place or who advances.',
       doc: 'PSD-Smash-Tournament-Rules.docx',
 
       /* VERBATIM from smash/PSD-Smash-Tournament-Rules.docx. Do not paraphrase
@@ -144,7 +144,7 @@
         { title: 'Group Stage', items: [
           'Teams are placed into four groups of 3 to 5 teams — round-robin: a group of 5 plays 10 matches, a group of 4 plays 6, a group of 3 plays 3.',
           'Points per match: Win = 3, Loss = 0. (Every game produces a winner, so matches always finish 2–0 or 2–1.)',
-          'Tiebreakers (in order): 1) record / points, 2) head-to-head result, 3) remaining-stock differential (every stock a team had left across its group games, minus every stock its opponents had left).',
+          'Tiebreakers (in order): 1) record / points, 2) head-to-head result, 3) remaining-stock differential (every stock a team had left across its group games, minus every stock its opponents had left), 4) if teams are still tied and the tie decides first place or who advances, a one-game playoff (a single game, not best of 3).',
           'Each group winner advances to the quarter-finals. Second- and third-place teams enter a play-in round, each against a team from another group; the four play-in winners take the remaining quarter-final spots.'
         ]},
         { title: 'Elimination Bracket', items: [
