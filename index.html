@@ -168,8 +168,71 @@
 
 <script src="/data/psd-nav.js"></script>
 <script>PSD_NAV.init();</script>
+<script src="/data/smash.js"></script>
 
-    <header role="banner" class="relative min-h-[680px] flex items-center overflow-hidden">
+    <!-- ─── SMASH WEEK HERO ───
+         Temporary. Stands in for the Rocket League hero below until the date in
+         SMASH.config.homeUntil (data/smash.js), then the page goes back on its
+         own with no code change. Both headers stay in the page because the
+         season scripts fill in the Rocket League one either way; only one is
+         ever displayed. Without JavaScript this stays hidden and the Rocket
+         League hero shows. -->
+    <header id="smash-hero" role="banner" style="display:none" class="relative min-h-[680px] flex items-center overflow-hidden">
+        <div aria-hidden="true" class="absolute inset-0 bg-[url('/smash/home-hero.jpg')] bg-cover bg-center opacity-75 blur-2xl scale-110"></div>
+        <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-esports-dark via-esports-dark/70 to-esports-dark/30"></div>
+        <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-r from-esports-dark/90 via-esports-dark/50 to-transparent"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 py-8 z-20 w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+
+                <div class="lg:order-2 relative">
+                    <div aria-hidden="true" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[110%] h-[120%] bg-esports-red/30 blur-[80px] rounded-full -z-10"></div>
+                    <img src="/smash/home-hero.jpg" width="1200" height="512"
+                         alt="Mario, Link, Donkey Kong, Samus and Pikachu surrounded by flames around the words Super Smash Bros. Tournament."
+                         class="w-full h-auto rounded-2xl border border-esports-yellow/40 shadow-2xl lg:-rotate-1">
+                </div>
+
+                <div class="lg:order-1 max-w-3xl">
+                    <div class="inline-flex items-center gap-3 px-5 py-2 rounded-sm bg-esports-yellow/10 border-l-4 border-esports-yellow-text text-esports-yellow-text font-display font-bold uppercase tracking-widest mb-5">
+                        <span aria-hidden="true">⚔️</span>
+                        <span id="smash-hero-count">Coming up</span>
+                    </div>
+
+                    <h1 class="font-display font-black uppercase leading-[0.9] mb-6 tracking-tight">
+                        <span class="block text-5xl md:text-7xl lg:text-8xl text-white">Super Smash Bros.</span>
+                        <span class="block text-5xl md:text-7xl lg:text-8xl pr-3 text-transparent bg-clip-text bg-gradient-to-r from-esports-red-text to-esports-yellow-text italic">Tournament</span>
+                    </h1>
+
+                    <div class="border-l-4 border-esports-red pl-6 mb-6 bg-gradient-to-r from-esports-red/10 to-transparent py-4 rounded-r-xl">
+                        <p class="text-xl text-gray-200 font-light">
+                            <strong id="smash-hero-when" class="text-white font-bold block">Saturday, November 14 · 8:00 AM</strong>
+                            <span id="smash-hero-venue">Quail Valley Esports Arena</span>
+                        </p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 mb-5 font-display font-bold uppercase tracking-wider">
+                        <a href="/smash/grade-5-under.html" class="smash-btn bg-esports-yellow text-black hover:bg-esports-yellow-text">Grade 5 &amp; Under<span class="sr-only"> bracket</span></a>
+                        <a href="/smash/grades-6-8.html" class="smash-btn bg-esports-yellow text-black hover:bg-esports-yellow-text">Grades 6&ndash;8<span class="sr-only"> bracket</span></a>
+                        <a href="/smash/rules.html" class="smash-btn bg-white/10 border border-white/30 text-white hover:bg-white/20">Rules</a>
+                        <a id="smash-hero-missed" href="mailto:csvanderzee@palmdalesd.org" class="smash-btn bg-esports-red text-white hover:brightness-110">
+                            <i data-lucide="mail" class="w-4 h-4" aria-hidden="true"></i>Missed Sign-Ups?
+                        </a>
+                    </div>
+
+                    <p class="text-sm text-gray-300">
+                        Rocket League continues as usual:
+                        <a href="/rocket-league/promise-league.html" class="underline text-esports-blue-text hover:text-white">Late Release</a> and
+                        <a href="/rocket-league/jr-promise-league.html" class="underline text-esports-blue-text hover:text-white">Early Release</a> standings.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </header>
+    <style>
+        .smash-btn { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: .5rem 1.25rem; border-radius: .5rem; transition: background-color .18s ease, filter .18s ease; }
+        .smash-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+    </style>
+    <header id="season-hero" role="banner" class="relative min-h-[680px] flex items-center overflow-hidden">
         <div aria-hidden="true" class="absolute inset-0 bg-[url('https://i.imgur.com/xJbVm81.png')] bg-cover bg-center opacity-25"></div>
         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-esports-dark via-esports-dark/80 to-transparent"></div>
         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-r from-esports-dark/90 via-transparent to-transparent"></div>
@@ -327,6 +390,36 @@
             </div>
         </div>
     </header>
+    <script>
+    /* Decides which hero shows, before the page paints, so a visitor never sees
+       one flash into the other. Also read by the announcement strip and the
+       particles further down. */
+    (function () {
+        'use strict';
+        var CFG = window.SMASH && window.SMASH.config;
+        var until = CFG && CFG.homeUntil && new Date(CFG.homeUntil + 'T00:00:00');
+        if (!until || isNaN(until) || new Date() >= until) return;
+        window.PSD_SMASH_WEEK = true;
+
+        document.getElementById('smash-hero').style.display = '';
+        document.getElementById('season-hero').style.display = 'none';
+        document.title = 'PSD Esports | Super Smash Bros. Tournament';
+
+        var day = new Date(CFG.eventDate + 'T00:00:00');
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var daysAway = Math.round((day - today) / 86400000);
+        document.getElementById('smash-hero-count').textContent =
+            daysAway <= 0 ? 'Today' : daysAway === 1 ? 'Tomorrow' : daysAway + ' days away';
+        document.getElementById('smash-hero-when').textContent =
+            day.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) +
+            ' · ' + CFG.startTime;
+        document.getElementById('smash-hero-venue').textContent = CFG.venue;
+
+        if (window.PSD_NAV) document.getElementById('smash-hero-missed').href = PSD_NAV.lateUrl;
+    })();
+    </script>
+
 
     <main id="main-content">
 
@@ -387,14 +480,13 @@
                 </span>
             </a>
         </aside>
-        <script src="/data/smash.js"></script>
         <script>
         (function () {
             'use strict';
             var CFG = window.SMASH && window.SMASH.config;
             var strip = document.getElementById('smash-strip');
             var when = document.getElementById('smash-strip-when');
-            if (!CFG || !strip || !when) return;
+            if (!CFG || !strip || !when || window.PSD_SMASH_WEEK) return;  /* the hero already says all this */
 
             var label = '';
             if (CFG.eventDate) {
@@ -454,6 +546,14 @@
                 </div>
             </div>
         </aside>
+        <script>
+        /* During the Smash takeover the ticker leads with the tournament. */
+        if (window.PSD_SMASH_WEEK) {
+            document.querySelectorAll('aside[aria-label="Season Champions Ticker"] .animate-marquee > div > span:first-child').forEach(function (s) {
+                s.textContent = 'SUPER SMASH BROS. TOURNAMENT · SATURDAY, NOVEMBER 14 · QUAIL VALLEY ESPORTS ARENA';
+            });
+        }
+        </script>
 
 
         <!-- ─── PHOTO TICKER ─── -->
@@ -1698,7 +1798,9 @@
     if (!mq.matches) {
         var canvas = document.getElementById('particleCanvas'), ctx = canvas.getContext('2d');
         var w, h, p = [];
-        var C = [{r:77,g:171,b:247},{r:255,g:209,b:102},{r:255,g:107,b:107},{r:255,g:255,b:255}];
+        var C = window.PSD_SMASH_WEEK
+            ? [{r:255,g:107,b:107},{r:255,g:159,b:67},{r:255,g:209,b:102},{r:255,g:255,b:255}]   /* embers, to match the flyer */
+            : [{r:77,g:171,b:247},{r:255,g:209,b:102},{r:255,g:107,b:107},{r:255,g:255,b:255}];
         function rs() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
         window.addEventListener('resize', rs); rs();
         function Part() { this.reset(); }

@@ -67,6 +67,10 @@
     venue: 'Quail Valley Esports Arena',
     startTime: '8:00 AM',
 
+    /* The home page leads with the tournament until this date, then goes back
+       to Rocket League by itself. 'YYYY-MM-DD'; the first day it is back. */
+    homeUntil: '2026-11-15',
+
     /* ---- registration ----------------------------------------------------
 
        Read by smash/flyer.html, which is the printed handout that goes out to
