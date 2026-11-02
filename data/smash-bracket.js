@@ -158,6 +158,38 @@
     });
   }
 
+  /* ---- who the play-in expects ---------------------------------------------
+
+     Four groups, each sending its winner to the quarter-finals and its 2nd and
+     3rd place teams to the play-in, always against another group. Same kind of
+     hint as above: it only labels empty slots. Group 1 is kept apart from its
+     own 2nd place team until the final, and likewise every other group, by
+     pairing the semi-finals QF 1 v QF 2 and QF 3 v QF 4.
+     ------------------------------------------------------------------------ */
+
+  var PLAY_IN_SEATS = [[2, 3], [1, 0], [3, 2], [0, 1]];  /* [group of 2nd, group of 3rd] */
+  var QUARTER_WINNERS = [0, 3, 1, 2];                    /* group winner waiting in each QF */
+
+  function playInHints(rounds) {
+    var g = div().groups, pi = rounds[0], qf = rounds[1], sf = rounds[2];
+    if (g.length !== 4 || !pi || pi.name !== 'Play-In' || pi.matches.length !== 4) return false;
+
+    pi.matches.forEach(function (m, i) {
+      m.hints = ['2nd place ' + g[PLAY_IN_SEATS[i][0]].name, '3rd place ' + g[PLAY_IN_SEATS[i][1]].name];
+    });
+    if (qf && qf.matches.length === 4) {
+      qf.matches.forEach(function (m, i) {
+        m.hints = ['Winner ' + g[QUARTER_WINNERS[i]].name, 'Winner Play-In ' + (i + 1)];
+      });
+    }
+    if (sf && sf.matches.length === 2) {
+      sf.matches.forEach(function (m, i) {
+        m.hints = ['Winner Quarter Final ' + (2 * i + 1), 'Winner Quarter Final ' + (2 * i + 2)];
+      });
+    }
+    return true;
+  }
+
   /* ---- bracket ----------------------------------------------------------- */
 
   function bracket() {
@@ -186,7 +218,14 @@
     rounds.forEach(function (rd) { rd.matches.forEach(decorate); });
     if (third) decorate(third);
 
-    var hints = crossingHints();
+    /* Most rounds halve, so two matches join into one. A play-in winner goes
+       straight into one quarter-final, so its round draws no joining line. */
+    rounds.forEach(function (rd, i) {
+      var next = rounds[i + 1];
+      rd.straight = !!next && next.matches.length === rd.matches.length;
+    });
+
+    var hints = playInHints(rounds) ? null : crossingHints();
     if (hints && rounds.length && rounds[0].matches.length === hints.length) {
       rounds[0].matches.forEach(function (m, i) { m.hints = hints[i]; });
     }
@@ -386,7 +425,7 @@
              '<h3 class="bk-round-title" id="bk-round-' + ri + '">' + esc(rd.name) + '</h3>' +
              '<div class="bk-body">' + rd.matches.map(function (m, mi) {
                return '<div class="bk-slot">' + bkMatch(m, isLast, one ? rd.name : rd.name + ', match ' + (mi + 1)) +
-                      '<span class="bk-conn" aria-hidden="true"></span></div>';
+                      '<span class="bk-conn" aria-hidden="true"' + (rd.straight ? ' style="display:none"' : '') + '></span></div>';
              }).join('') + '</div></section>';
     }).join('') + '</div>';
 

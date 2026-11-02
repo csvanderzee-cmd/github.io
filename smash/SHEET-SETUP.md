@@ -100,19 +100,32 @@ the teams.
  23 | F               |  0  |  3  |  0
 ```
 
-Recognised labels: `Quarter Final 1`–`4`, `Semi Final 1`–`2`, `Final`,
-`Third`, and `Round of 16 1`–`8` if you ever need that many.
+Recognised labels: `Play-In 1`–`4`, `Quarter Final 1`–`4`, `Semi Final 1`–`2`,
+`Final`, `Third`, and `Round of 16 1`–`8` if you ever need that many.
 
 **Type the team names in yourself** as each round is decided. The page does
 *not* seed the bracket for you — a referee's call on the day, a forfeit or a
 no-show beats anything computed, so the sheet is the authority here.
 
-To help, an empty first-round slot shows who the group tables say belongs
-there (`Winner Group 1`, `Runner-up Group 2`) using the World Cup crossing:
-each group winner against the runner-up of its partner group, with the two
-teams out of any one group in opposite halves so they can only meet again in
-the final. That hint only appears when the group count divides into a clean
-bracket — with 2, 4 or 8 groups. At any other count the seeding is your call.
+To help, an empty slot shows who belongs there. With four groups and a play-in
+round, the pairings are:
+
+| Match | Top slot | Bottom slot |
+|---|---|---|
+| Play-In 1 | 2nd place Group 3 | 3rd place Group 4 |
+| Play-In 2 | 2nd place Group 2 | 3rd place Group 1 |
+| Play-In 3 | 2nd place Group 4 | 3rd place Group 3 |
+| Play-In 4 | 2nd place Group 1 | 3rd place Group 2 |
+| Quarter Final 1 | Winner Group 1 | Winner Play-In 1 |
+| Quarter Final 2 | Winner Group 4 | Winner Play-In 2 |
+| Quarter Final 3 | Winner Group 2 | Winner Play-In 3 |
+| Quarter Final 4 | Winner Group 3 | Winner Play-In 4 |
+| Semi Final 1 | Winner Quarter Final 1 | Winner Quarter Final 2 |
+| Semi Final 2 | Winner Quarter Final 3 | Winner Quarter Final 4 |
+
+A group's top two can only meet again in the final. Without a play-in round the
+page falls back to the World Cup crossing, when the qualifiers make a clean
+bracket.
 
 ---
 

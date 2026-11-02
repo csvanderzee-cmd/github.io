@@ -385,7 +385,7 @@
 
   /* ---- elimination -------------------------------------------------------
 
-     Each label row ("Quarter Final 1", "Semi Final 1", "Final", "Third")
+     Each label row ("Play-In 1", "Quarter Final 1", "Semi Final 1", "Final", "Third")
      carries its own R1/R2/R3 bands. The two teams are simply the first two
      names under the label, typed in by hand as the bracket fills out.
      ------------------------------------------------------------------------ */
@@ -393,6 +393,7 @@
   var ROUND_ORDER = [
     { re: /round\s*of\s*32/i, rank: 0, name: 'Round of 32' },
     { re: /round\s*of\s*16/i, rank: 1, name: 'Round of 16' },
+    { re: /play.?in/i,        rank: 1.5, name: 'Play-In' },
     { re: /quarter/i,         rank: 2, name: 'Quarter-finals' },
     { re: /semi/i,            rank: 3, name: 'Semi-finals' },
     { re: /third|bronze|3rd/i, rank: 5, name: 'Third Place' },
@@ -424,7 +425,7 @@
         var round = roundOf(label);
         if (!round) {
           warn('Elimination: "' + label + '" is not a round name I recognise ' +
-               '(expected Quarter Final, Semi Final, Final or Third).');
+               '(expected Play-In, Quarter Final, Semi Final, Final or Third).');
           return;
         }
 

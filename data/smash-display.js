@@ -216,7 +216,7 @@
         '<h3 class="sd-rtitle" id="sd-round-' + ri + '">' + esc(rd.name) + '</h3><div class="sd-rbody">' +
         rd.matches.map(function (m, mi) {
           return '<div class="sd-slot">' + matchHtml(m, isLast, one ? rd.name : rd.name + ', match ' + (mi + 1)) +
-                 '<span class="sd-conn" aria-hidden="true"></span></div>';
+                 '<span class="sd-conn" aria-hidden="true"' + (rd.straight ? ' style="display:none"' : '') + '></span></div>';
         }).join('') + '</div></section>';
     }).join('') + '</div>';
 
