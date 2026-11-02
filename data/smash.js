@@ -183,11 +183,31 @@
        showing on the public page. With no testGid set, ?test does nothing and
        the page is the normal one. The practice tabs were deleted on Oct 29,
        2026; to bring them back, duplicate a real tab and put its gid here. */
+    /* stations.groups: the station for each group match, one list per group, in
+       the order the matches sit on the division's tab. By position rather than
+       by team name, so a school sending in its real color changes nothing. If
+       the match rows on a tab are ever reordered, reorder its list to match.
+       Station 1 is the big screen; the knockout rounds are worked out in
+       data/smash-bracket.js. */
     divisions: [
       { id: 'jr', name: 'Grade 5 & Under', accent: '#FF6B6B',
-        page: 'grade-5-under.html', gid: '0', testGid: null },
+        page: 'grade-5-under.html', gid: '0', testGid: null,
+        startTime: '8:00 AM',
+        stations: { groups: [
+          [2, 1, 3, 4, 3, 4],
+          [3, 4, 1, 2, 5, 6],
+          [2, 1, 3, 4, 3, 4],
+          [5, 6, 5, 6, 5, 6, 2, 1, 1, 2]
+        ] } },
       { id: 'sr', name: 'Grades 6–8', accent: '#4DABF7',
-        page: 'grades-6-8.html', gid: '86502539', testGid: null }
+        page: 'grades-6-8.html', gid: '86502539', testGid: null,
+        startTime: '12:00 PM',
+        stations: { groups: [
+          [3, 4, 2, 1, 2, 3],
+          [2, 1, 3, 4, 4, 5],
+          [5, 1, 5],
+          [6, 6, 6]
+        ] } }
     ]
   };
 

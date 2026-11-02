@@ -83,6 +83,9 @@
     '#sd .sd-team + .sd-team{border-top:1px solid rgba(255,255,255,.12);}' +
     '#sd .sd-team .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
     '#sd .sd-team .s{font-family:Rajdhani,sans-serif;font-weight:900;color:#d1d5db;font-variant-numeric:tabular-nums;font-size:1.25rem;}' +
+    '#sd .sd-station{font-family:Rajdhani,sans-serif;font-weight:800;font-size:.8rem;letter-spacing:.14em;' +
+      'text-transform:uppercase;color:#aab2bf;padding:6px 12px 2px;}' +
+    '#sd .sd-station.big{color:#FFD166;}' +
     '#sd .sd-team.won{color:#0B0E14;font-weight:800;background:#FDB913;}' +
     '#sd .sd-team.won .s{color:#0B0E14;}' +
     '#sd .sd-team.out{color:#9ca3af;font-weight:500;}' +
@@ -197,14 +200,15 @@
       '<span class="s">' + (score === null || score === undefined ? '' : score) + '</span></div>';
   }
 
-  function matchHtml(m, isFinal, label) {
+  function matchHtml(s, m, isFinal, label) {
     var show = m.done || (m.scoreA + m.scoreB) > 0;
     var h = m.hints || [];
     var slot = m.says || h, g = m.ghosts || [];
     var say = root.SMASH_PAGE.matchSentence(m.teams[0] || slot[0] || '', m.teams[1] || slot[1] || '',
                                             { a: m.scoreA, b: m.scoreB, done: m.done });
     return '<div class="sd-match' + (isFinal ? ' final' : '') + '" role="group" aria-label="' + esc(label) + '">' +
-      sr(say) + '<div aria-hidden="true">' +
+      sr((m.station ? s.stationLabel(m.station) + ': ' : '') + say) + '<div aria-hidden="true">' +
+      (m.station ? '<div class="sd-station' + (m.station === 1 ? ' big' : '') + '">' + esc(s.stationLabel(m.station)) + '</div>' : '') +
       teamRow(m.teams[0], h[0], show ? m.scoreA : null, m.winner, g[0]) +
       teamRow(m.teams[1], h[1], show ? m.scoreB : null, m.winner, g[1]) +
       '</div></div>';
@@ -221,14 +225,14 @@
       return '<section class="sd-round" aria-labelledby="sd-round-' + ri + '">' +
         '<h3 class="sd-rtitle" id="sd-round-' + ri + '">' + esc(rd.name) + '</h3><div class="sd-rbody">' +
         rd.matches.map(function (m, mi) {
-          return '<div class="sd-slot">' + matchHtml(m, isLast, one ? rd.name : rd.name + ', match ' + (mi + 1)) +
+          return '<div class="sd-slot">' + matchHtml(s, m, isLast, one ? rd.name : rd.name + ', match ' + (mi + 1)) +
                  '<span class="sd-conn" aria-hidden="true"' + (rd.straight ? ' style="display:none"' : '') + '></span></div>';
         }).join('') + '</div></section>';
     }).join('') + '</div>';
 
     if (b.third) {
       html += '<section class="sd-third" aria-labelledby="sd-third"><h3 class="sd-third-label" id="sd-third">Third Place</h3>' +
-              matchHtml(b.third, false, 'Third place match') + '</section>';
+              matchHtml(s, b.third, false, 'Third place match') + '</section>';
     }
 
     /* Once the final is decided the champion is the thing worth reading from
@@ -295,6 +299,9 @@
 
     el.badge.textContent = (root.SMASH && root.SMASH.testMode ? 'TEST DATA · ' : '') + snap.division.name;
     el.badge.style.background = snap.division.accent;
+    if (root.SMASH && snap.division.startTime) {
+      el.where.textContent = [root.SMASH.config.venue, snap.division.startTime].filter(Boolean).join(' \u00b7 ');
+    }
     el.view.textContent = showing === 'bracket' ? 'Elimination Bracket' : 'Group Stage';
     el.legend.textContent = showing === 'bracket'
       ? 'Single elimination · Best of 3'

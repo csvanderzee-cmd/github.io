@@ -252,6 +252,59 @@
     return true;
   }
 
+  /* ---- stations ------------------------------------------------------------
+
+     Group matches come from the division's list in data/smash.js. In the play-in
+     and the quarter-finals, Station 1 (the big screen) goes to the match with the
+     most teams that have not been on it yet, so as many as possible get a turn.
+     The other matches take the next stations in order. The semi-finals, final and
+     third-place match are always the same two stations.
+     ------------------------------------------------------------------------ */
+
+  function groupStation(gi, i) {
+    var plan = DIV.stations && DIV.stations.groups[gi];
+    return plan ? plan[i] : undefined;
+  }
+
+  function stationLabel(n) { return 'Station ' + n + (n === 1 ? ' \u00b7 Big Screen' : ''); }
+
+  function assignStations(rounds, third) {
+    var pi = rounds[0], qf = rounds[1], sf = rounds[2], fin = rounds[3];
+    if (!DIV.stations || !pi || pi.name !== 'Play-In') return;
+
+    var seen = {};
+    div().groups.forEach(function (g, gi) {
+      div().groupMatches.filter(function (m) { return m.group === g.name; }).forEach(function (m, i) {
+        if (groupStation(gi, i) === 1) m.teams.forEach(function (t) { seen[norm(t)] = true; });
+      });
+    });
+
+    /* A typed name, or a projected one. A playoff slot has no team yet. */
+    function namesIn(m) {
+      return [0, 1].map(function (i) {
+        if (m.teams[i]) return m.teams[i];
+        var hint = m.ghosts && m.ghosts[i] && m.hints[i];
+        return hint && hint.indexOf('Playoff:') !== 0 ? hint : '';
+      }).filter(Boolean);
+    }
+    function spread(round) {
+      if (!round) return;
+      var best = 0, bestCount = -1;
+      round.matches.forEach(function (m, i) {
+        var count = namesIn(m).filter(function (t) { return !seen[norm(t)]; }).length;
+        if (count > bestCount) { best = i; bestCount = count; }
+      });
+      var next = 2;
+      round.matches.forEach(function (m, i) { m.station = i === best ? 1 : next++; });
+      namesIn(round.matches[best]).forEach(function (t) { seen[norm(t)] = true; });
+    }
+    spread(pi);
+    spread(qf);
+    if (sf) sf.matches.forEach(function (m, i) { m.station = i + 1; });
+    if (fin) fin.matches[0].station = 1;
+    if (third) third.station = 2;
+  }
+
   /* ---- bracket ----------------------------------------------------------- */
 
   function bracket() {
@@ -291,6 +344,7 @@
     if (hints && rounds.length && rounds[0].matches.length === hints.length) {
       rounds[0].matches.forEach(function (m, i) { m.hints = hints[i]; });
     }
+    assignStations(rounds, third);
 
     return { rounds: rounds, third: third };
   }
@@ -338,11 +392,13 @@
                      : b + ' beat ' + a + ' ' + s.b + ' to ' + s.a;
   }
 
-  function fixtureRow(m) {
+  function fixtureRow(m, station) {
     var s = root.SMASH.matchScore(m);
     var aWon = s.done && s.a > s.b, bWon = s.done && s.b > s.a;
     var chip = s.done ? s.a + ' – ' + s.b : 'vs';
-    return '<li class="fix-wrap">' + sr(matchSentence(m.teams[0], m.teams[1], s)) +
+    var where = station ? stationLabel(station) : '';
+    return '<li class="fix-wrap">' + sr((where ? where + ': ' : '') + matchSentence(m.teams[0], m.teams[1], s)) +
+           (where ? '<p class="match-station' + (station === 1 ? ' big' : '') + '" aria-hidden="true">' + where + '</p>' : '') +
            '<div class="fix-row" aria-hidden="true">' +
              '<span class="side' + (aWon ? ' won' : '') + '">' + esc(m.teams[0]) + '</span>' +
              '<span class="fix-score' + (s.done ? ' done' : '') + '">' + esc(chip) + '</span>' +
@@ -395,7 +451,11 @@
       '.col-tip-pop strong{display:block;color:#FFD166;font-weight:700;}' +
       '.col-tip:hover .col-tip-pop,.col-tip:focus .col-tip-pop{display:block;}' +
       'body.col-tips-off .col-tip-pop{display:none!important;}' +
-      '.grp-table td:nth-child(6){white-space:nowrap;}';
+      '.grp-table td:nth-child(6){white-space:nowrap;}' +
+      ".match-station{font-family:'Rajdhani',sans-serif;font-weight:800;font-size:.6875rem;letter-spacing:.14em;" +
+        'text-transform:uppercase;color:#aab2bf;margin:0;padding:.3rem .65rem .2rem;}' +
+      '.fix-wrap .match-station{padding:0 .1rem .15rem;}' +
+      '.match-station.big{color:#FFD166;}';
     document.head.appendChild(style);
 
     document.addEventListener('keydown', function (e) {
@@ -479,7 +539,7 @@
           '</div>' + table +
           '<h4 class="text-[11px] font-display font-bold uppercase tracking-[0.2em] text-gray-600 mt-5 mb-2">' +
             'Matches' + sr(' in ' + g.name) + '</h4>' +
-          (ms.length ? '<ul class="space-y-1.5">' + ms.map(fixtureRow).join('') + '</ul>'
+          (ms.length ? '<ul class="space-y-1.5">' + ms.map(function (m, i) { return fixtureRow(m, groupStation(gi, i)); }).join('') + '</ul>'
                      : '<p class="text-[11px] text-gray-600">No matches listed yet.</p>') +
           '</div>';
       }).join('') + '</div>';
@@ -505,8 +565,9 @@
     var say = m.says || h, g = m.ghosts || [];
     var a = m.teams[0] || say[0] || '', b = m.teams[1] || say[1] || '';
     return '<div class="bk-match' + (isFinal ? ' final-match' : '') + '" role="group" aria-label="' + esc(label) + '">' +
-           sr(matchSentence(a, b, { a: m.scoreA, b: m.scoreB, done: m.done })) +
+           sr((m.station ? stationLabel(m.station) + ': ' : '') + matchSentence(a, b, { a: m.scoreA, b: m.scoreB, done: m.done })) +
            '<div aria-hidden="true">' +
+             (m.station ? '<p class="match-station' + (m.station === 1 ? ' big' : '') + '">' + stationLabel(m.station) + '</p>' : '') +
              bkTeam(m.teams[0], h[0], show ? m.scoreA : null, m.winner, g[0]) +
              bkTeam(m.teams[1], h[1], show ? m.scoreB : null, m.winner, g[1]) +
            '</div></div>';
@@ -695,6 +756,7 @@
                       d.groups.every(function (g, gi) { return groupComplete(gi); }),
       bracket: state.data ? bracket() : null,
       advance: ADVANCE,
+      stationLabel: stationLabel,
       loadedAt: state.loadedAt,
       loading: state.loading,
       error: state.error,

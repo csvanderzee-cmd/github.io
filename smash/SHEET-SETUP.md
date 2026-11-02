@@ -129,6 +129,11 @@ into the sheet to make it official and to enter scores against it. Whatever you
 type always wins, so a forfeit or late change just needs the right team typed in.
 A tie that needs a playoff shows `Playoff:` and the teams instead of a name.
 
+Stations appear on every group match and bracket match. Group stations are listed
+in `data/smash.js` by the order of the match rows, so keep that order if you edit a
+tab. In the play-in and quarter-finals, Station 1 goes to the match with the most
+teams that have not been on the big screen.
+
 A group's top two can only meet again in the final. Without a play-in round the
 page falls back to the World Cup crossing, when the qualifiers make a clean
 bracket.
