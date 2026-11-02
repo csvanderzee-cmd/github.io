@@ -233,8 +233,8 @@
                Live bracket: <a href="/smash/tournament.html">psdesports.com/smash</a></p>
 
             <h2>Questions</h2>
-            <p>Mr. Vanderzee (<a href="mailto:csvanderzee@palmdalesd.org">csvanderzee@palmdalesd.org</a>)
-               &middot; Mr. Hubler (<a href="mailto:drhubler@palmdalesd.org">drhubler@palmdalesd.org</a>)</p>
+            <p>Mr. Vanderzee (<a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=csvanderzee@palmdalesd.org" target="_blank" rel="noopener">csvanderzee@palmdalesd.org<span class="sr-only"> (opens in a new tab)</span></a>)
+               &middot; Mr. Hubler (<a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=drhubler@palmdalesd.org" target="_blank" rel="noopener">drhubler@palmdalesd.org<span class="sr-only"> (opens in a new tab)</span></a>)</p>
 
             <p style="margin-top:1.4rem;color:#949cab;font-size:.82rem">
                 This is a transcription of the flyer image above, for screen readers and for
@@ -246,7 +246,6 @@
 
 </main>
 
-<script src="/data/psd-copy-email.js"></script>
 <script>
 /* After entries close, the form links on this page (the button, the hot spots
    on the flyer image and the transcript) become an email to the organizer, so
@@ -260,15 +259,15 @@
     for (var i = 0; i < links.length; i++) {
         var a = links[i];
         a.href = nav.lateUrl;
-        a.removeAttribute('target');
-        a.removeAttribute('rel');
+        a.target = '_blank';
+        a.rel = 'noopener';
         if (a.classList.contains('btn')) {
-            a.textContent = 'Late entry or change? Email us';
+            a.innerHTML = 'Late entry or change? Email us<span class="sr-only"> (opens in a new tab)</span>';
         } else if (a.classList.contains('hot')) {
             a.querySelector('span').textContent =
-                'Registration closed. Email Mr. Vanderzee for a late entry or a team change';
+                'Registration closed. Email Mr. Vanderzee for a late entry or a team change (opens in a new tab)';
         } else {
-            a.textContent = nav.registration.lateEmail;
+            a.innerHTML = nav.registration.lateEmail + '<span class="sr-only"> (opens in a new tab)</span>';
             var p = a.parentNode;
             if (p.firstChild.nodeType === 3) p.firstChild.nodeValue = 'Registration closed. Late entry or change: ';
         }

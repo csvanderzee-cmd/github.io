@@ -90,15 +90,17 @@
     return end >= today;
   }
 
-  /** The email that replaces the form once entries close. */
-  var LATE_URL = 'mailto:' + REGISTRATION.lateEmail +
-                 '?subject=' + encodeURIComponent(REGISTRATION.lateSubject);
+  /** The email that replaces the form once entries close. Gmail's compose page
+      rather than mailto: on school devices mailto asks which app to use, or for
+      another sign-in. */
+  var LATE_URL = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + REGISTRATION.lateEmail +
+                 '&su=' + encodeURIComponent(REGISTRATION.lateSubject);
 
   /** The Smash menu's sign-up entry: the form while it is open, then the email. */
   var REGISTER_LINK = registrationOpen()
     ? { text: 'Register a Team', href: REGISTRATION.url, external: true }
-    : { text: 'Late Entry or Change', href: LATE_URL,
-        title: 'Registration has closed. Email Mr. Vanderzee for a late entry or a team change' };
+    : { text: 'Late Entry or Change', href: LATE_URL, external: true,
+        title: 'Registration has closed. Email Mr. Vanderzee for a late entry or a team change (opens in a new tab)' };
 
   var SECTIONS = [
     {
@@ -539,13 +541,13 @@
     '.psd-a11y-link:hover{color:#fff!important;}',
     '.psd-a11y-link:focus-visible{outline:2px solid #FFD166;outline-offset:2px;}',
     '@media print{.psd-footer{display:none;}}',
-    /* The full bar fits down to about 1150px with the registration pill, the
-       three sitewide pills (Champions, In the News, Games) and the "Aa" button
-       in it. The drawer takes over below 1180, which
-       leaves room for a Windows scrollbar. Larger text or the readable font
-       widen the bar past any fixed number, so fitBar() also switches to the
-       drawer (.nav-compact) whenever the bar's contents would overflow it. */
-    '@media(max-width:1180px){#psd-nav .nav-links,#psd-nav .nav-right,#psd-nav .nav-promo{display:none;}#psd-nav .nav-hamburger{display:flex;}}',
+    /* The full bar fits down to about 1150px with the registration pill in it,
+       and about 920px without, alongside the three sitewide pills (Champions,
+       In the News, Games) and the "Aa" button. The drawer takes over below
+       1180 or 1000, which leaves room for a Windows scrollbar. Larger text or
+       the readable font widen the bar past any fixed number, so fitBar() also
+       switches to the drawer (.nav-compact) when those settings overflow it. */
+    '@media(max-width:' + (PROMO ? 1180 : 1000) + 'px){#psd-nav .nav-links,#psd-nav .nav-right,#psd-nav .nav-promo{display:none;}#psd-nav .nav-hamburger{display:flex;}}',
     '#psd-nav.nav-compact .nav-links,#psd-nav.nav-compact .nav-right,#psd-nav.nav-compact .nav-promo{display:none;}',
     '#psd-nav.nav-compact .nav-hamburger{display:flex;}',
     '@media print{#psd-nav,#psd-nav-drawer{display:none!important;}}'
@@ -800,12 +802,17 @@
       });
     });
 
-    /* Switch to the drawer whenever the bar's contents would run past its
-       edge, which larger text and the wider readable font both cause. */
+    /* Switch to the drawer when the bar's contents would run past its edge,
+       which larger text and the wider readable font both cause. Only under
+       those settings: at the standard ones the breakpoint above decides, so a
+       measurement taken while the page's CSS is still arriving can never leave
+       a full-size window stuck on the drawer. */
     var inner = nav.querySelector('.nav-inner');
     function fitBar() {
+      var c = document.documentElement.classList;
+      var widened = c.contains('psd-t125') || c.contains('psd-t150') || c.contains('psd-readable');
       nav.classList.remove('nav-compact');
-      if (inner.scrollWidth > inner.clientWidth + 1) nav.classList.add('nav-compact');
+      if (widened && inner.scrollWidth > inner.clientWidth + 1) nav.classList.add('nav-compact');
       /* Back to the full bar (a wider window, or text reset to 100% from the
          drawer's own settings) while the drawer is open: the menu button that
          would close it is gone, so close it here. If focus was inside it, it
@@ -817,6 +824,7 @@
       }
     }
     window.addEventListener('resize', fitBar);
+    window.addEventListener('load', fitBar);
     /* the readable font arrives after first paint and widens the bar */
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitBar);
     document.fonts && document.fonts.addEventListener && document.fonts.addEventListener('loadingdone', fitBar);
