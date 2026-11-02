@@ -345,8 +345,11 @@
 
      Each team's remaining stock for a game sits on that team's own row, so a
      game's winner is simply whichever row holds the larger number. A blank or
-     equal pair means the game has not been played.
+     equal pair means the game has not been played. An F marks the team that
+     forfeited the game: the other team wins it, and the F counts as 0 stock.
      ------------------------------------------------------------------------ */
+
+  function isForfeit(cell) { return /^f$/i.test(String(cell === null || cell === undefined ? '' : cell).trim()); }
 
   function readGames(grid, rowTop, rowBottom, cols, label, warn) {
     var games = [];
@@ -354,7 +357,17 @@
       var a = at(grid, rowTop, c), b = at(grid, rowBottom, c);
       if (isBlank(a) && isBlank(b)) return;
 
+      var fa = isForfeit(a), fb = isForfeit(b);
       var na = Number(a) || 0, nb = Number(b) || 0;
+      if (fa && fb) {
+        warn(label + ': game ' + (gi + 1) + ' has an F on both rows, so there is no winner. ' +
+             'One of them needs correcting.');
+        return;
+      }
+      if (fa || fb) {
+        games.push({ top: na, bottom: nb, topWon: fb, forfeit: true });
+        return;
+      }
       if (na === nb) {
         if (na > 0) {
           warn(label + ': game ' + (gi + 1) + ' has the same stock on both rows (' +

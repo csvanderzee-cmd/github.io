@@ -73,6 +73,7 @@ with the right margin.
 | Someone's stock ran out | Winner's remaining stock, loser `0` |
 | Timer ran out, **unequal** stock | Both teams' actual stock — e.g. `4` and `3` |
 | Timer ran out, **equal** stock → Sudden Death | `1` and `0` |
+| A team forfeits the game | Winner `0`, forfeiting team `F` (or `f`) |
 
 In one sentence: **if stock did not decide it, write 1 and 0.**
 

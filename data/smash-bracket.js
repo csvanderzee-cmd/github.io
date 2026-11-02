@@ -392,18 +392,34 @@
                      : b + ' beat ' + a + ' ' + s.b + ' to ' + s.a;
   }
 
+  /* Who forfeited, in words, or '' if nobody did. Every decided game forfeited
+     by one team is the whole match; anything less is a game within it. */
+  function forfeitLabel(m) {
+    var by = {}, count = 0;
+    (m.games || []).forEach(function (g) {
+      if (!g.forfeit) return;
+      by[g.topWon ? m.teams[1] : m.teams[0]] = true;
+      count++;
+    });
+    var names = Object.keys(by);
+    if (!count) return '';
+    var whole = names.length === 1 && count === m.games.length && count === 2;
+    return (whole ? 'Forfeit: ' : 'Game forfeit: ') + names.join(' and ');
+  }
+
   function fixtureRow(m, station) {
     var s = root.SMASH.matchScore(m);
     var aWon = s.done && s.a > s.b, bWon = s.done && s.b > s.a;
     var chip = s.done ? s.a + ' – ' + s.b : 'vs';
     var where = station ? stationLabel(station) : '';
-    return '<li class="fix-wrap">' + sr((where ? where + ': ' : '') + matchSentence(m.teams[0], m.teams[1], s)) +
+    var ff = forfeitLabel(m);
+    return '<li class="fix-wrap">' + sr((where ? where + ': ' : '') + matchSentence(m.teams[0], m.teams[1], s) + (ff ? '. ' + ff : '')) +
            (where ? '<p class="match-station' + (station === 1 ? ' big' : '') + '" aria-hidden="true">' + where + '</p>' : '') +
            '<div class="fix-row" aria-hidden="true">' +
              '<span class="side' + (aWon ? ' won' : '') + '">' + esc(m.teams[0]) + '</span>' +
              '<span class="fix-score' + (s.done ? ' done' : '') + '">' + esc(chip) + '</span>' +
              '<span class="side right' + (bWon ? ' won' : '') + '">' + esc(m.teams[1]) + '</span>' +
-           '</div></li>';
+           '</div>' + (ff ? '<p class="match-forfeit" aria-hidden="true">' + esc(ff) + '</p>' : '') + '</li>';
   }
 
   /* Column headings are abbreviated to fit. Each stat heading is a button that
@@ -455,7 +471,10 @@
       ".match-station{font-family:'Rajdhani',sans-serif;font-weight:800;font-size:.6875rem;letter-spacing:.14em;" +
         'text-transform:uppercase;color:#aab2bf;margin:0;padding:.3rem .65rem .2rem;}' +
       '.fix-wrap .match-station{padding:0 .1rem .15rem;}' +
-      '.match-station.big{color:#FFD166;}';
+      '.match-station.big{color:#FFD166;}' +
+      ".match-forfeit{font-family:'Rajdhani',sans-serif;font-weight:800;font-size:.75rem;letter-spacing:.06em;" +
+        'color:#FF6B6B;margin:0;padding:.25rem .65rem .35rem;}' +
+      '.fix-wrap .match-forfeit{padding:.2rem .1rem 0;}';
     document.head.appendChild(style);
 
     document.addEventListener('keydown', function (e) {
@@ -564,12 +583,14 @@
        that is known, the same as it reads on screen. */
     var say = m.says || h, g = m.ghosts || [];
     var a = m.teams[0] || say[0] || '', b = m.teams[1] || say[1] || '';
+    var ff = forfeitLabel(m);
     return '<div class="bk-match' + (isFinal ? ' final-match' : '') + '" role="group" aria-label="' + esc(label) + '">' +
-           sr((m.station ? stationLabel(m.station) + ': ' : '') + matchSentence(a, b, { a: m.scoreA, b: m.scoreB, done: m.done })) +
+           sr((m.station ? stationLabel(m.station) + ': ' : '') + matchSentence(a, b, { a: m.scoreA, b: m.scoreB, done: m.done }) + (ff ? '. ' + ff : '')) +
            '<div aria-hidden="true">' +
              (m.station ? '<p class="match-station' + (m.station === 1 ? ' big' : '') + '">' + stationLabel(m.station) + '</p>' : '') +
              bkTeam(m.teams[0], h[0], show ? m.scoreA : null, m.winner, g[0]) +
              bkTeam(m.teams[1], h[1], show ? m.scoreB : null, m.winner, g[1]) +
+             (ff ? '<p class="match-forfeit">' + esc(ff) + '</p>' : '') +
            '</div></div>';
   }
 
@@ -757,6 +778,7 @@
       bracket: state.data ? bracket() : null,
       advance: ADVANCE,
       stationLabel: stationLabel,
+      forfeitLabel: forfeitLabel,
       loadedAt: state.loadedAt,
       loading: state.loading,
       error: state.error,

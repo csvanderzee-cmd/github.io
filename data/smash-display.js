@@ -86,6 +86,8 @@
     '#sd .sd-station{font-family:Rajdhani,sans-serif;font-weight:800;font-size:.9rem;letter-spacing:.12em;' +
       'text-transform:uppercase;color:#aab2bf;padding:6px 12px 2px;}' +
     '#sd .sd-station.big{color:#FFD166;}' +
+    '#sd .sd-forfeit{font-family:Rajdhani,sans-serif;font-weight:800;font-size:.9rem;letter-spacing:.05em;' +
+      'color:#FF6B6B;padding:4px 12px 6px;}' +
     '#sd .sd-team.won{color:#0B0E14;font-weight:800;background:#FDB913;}' +
     '#sd .sd-team.won .s{color:#0B0E14;}' +
     '#sd .sd-team.out{color:#9ca3af;font-weight:500;}' +
@@ -207,14 +209,15 @@
   function matchHtml(s, m, isFinal, label) {
     var show = m.done || (m.scoreA + m.scoreB) > 0;
     var h = m.hints || [];
-    var slot = m.says || h, g = m.ghosts || [];
+    var slot = m.says || h, g = m.ghosts || [], ff = s.forfeitLabel(m);
     var say = root.SMASH_PAGE.matchSentence(m.teams[0] || slot[0] || '', m.teams[1] || slot[1] || '',
                                             { a: m.scoreA, b: m.scoreB, done: m.done });
     return '<div class="sd-match' + (isFinal ? ' final' : '') + '" role="group" aria-label="' + esc(label) + '">' +
-      sr((m.station ? s.stationLabel(m.station) + ': ' : '') + say) + '<div aria-hidden="true">' +
+      sr((m.station ? s.stationLabel(m.station) + ': ' : '') + say + (ff ? '. ' + ff : '')) + '<div aria-hidden="true">' +
       (m.station ? '<div class="sd-station' + (m.station === 1 ? ' big' : '') + '">' + esc(s.stationLabel(m.station)) + '</div>' : '') +
       teamRow(m.teams[0], h[0], show ? m.scoreA : null, m.winner, g[0]) +
       teamRow(m.teams[1], h[1], show ? m.scoreB : null, m.winner, g[1]) +
+      (ff ? '<div class="sd-forfeit">' + esc(ff) + '</div>' : '') +
       '</div></div>';
   }
 

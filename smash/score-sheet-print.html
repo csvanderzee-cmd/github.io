@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smash Tournament Score Sheet | PSD Esports</title>
+<!--
+  Source for smash/PSD-Smash-Score-Sheet.pdf: two half-page sheets on one Letter page, cut
+  on the dashed line. To regenerate the PDF:
+
+    "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --headless=new
+      - -disable-gpu - -no-pdf-header-footer
+      - -print-to-pdf="smash\PSD-Smash-Score-Sheet.pdf" http://localhost:8765/smash/score-sheet-print.html
+
+  (Remove the space after each "-" in the flags; HTML comments cannot hold two hyphens.)
+-->
+<style>
+    @page { size: letter portrait; margin: 0; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #fff; color: #000; }
+    body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.25; }
+
+    .page { width: 8.5in; height: 11in; }
+    .sheet { width: 8.5in; height: 5.5in; padding: .3in .42in .24in; display: flex; flex-direction: column; overflow: hidden; }
+    .sheet + .sheet { border-top: 1px dashed #666; }
+
+    .head { display: flex; align-items: baseline; justify-content: space-between; border-bottom: 2.5px solid #000; padding-bottom: 3pt; }
+    h1 { margin: 0; font-size: 15pt; font-weight: 800; letter-spacing: .01em; }
+    .sub { font-size: 9pt; }
+
+    .info { display: grid; grid-template-columns: 1.55fr .75fr .95fr 1.15fr; column-gap: .16in; margin-top: 8pt; font-size: 9.5pt; }
+    .field { display: flex; align-items: flex-end; gap: 4pt; white-space: nowrap; }
+    .field b { font-weight: 700; }
+    .line { flex: 1; border-bottom: 1px solid #000; height: 13pt; }
+    .box { display: inline-block; width: 9.5pt; height: 9.5pt; border: 1.2px solid #000; margin-right: 2pt; vertical-align: -1pt; }
+    .opts { display: flex; gap: 8pt; align-items: flex-end; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 9pt; table-layout: fixed; }
+    th, td { border: 1.5px solid #000; text-align: center; }
+    th { background: #e8e8e8; font-size: 9pt; font-weight: 700; padding: 3pt 2pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    th small { display: block; font-size: 7.5pt; font-weight: 400; }
+    th.team { width: 42%; text-align: left; padding-left: 6pt; }
+    td { height: .74in; }
+    td.team { text-align: left; padding: 0 6pt; font-size: 8pt; vertical-align: top; padding-top: 2pt; }
+    td.won { background: #f4f4f4; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    .winner { display: grid; grid-template-columns: 2.4fr 1fr; column-gap: .2in; margin-top: 9pt; font-size: 9.5pt; }
+
+    .rules { margin-top: auto; border-top: 1px solid #000; padding-top: 5pt; display: grid; grid-template-columns: 1fr 1fr; column-gap: .22in; font-size: 8.2pt; line-height: 1.24; }
+    .rules h2 { grid-column: 1 / -1; margin: 0 0 2pt; font-size: 8.8pt; font-weight: 800; }
+    .rules ul { margin: 0; padding-left: 10pt; }
+    .rules li { margin-bottom: 1.6pt; }
+</style>
+</head>
+<body>
+<main class="page">
+    <section class="sheet" aria-label="Score sheet 1">
+        <div class="head"><h1>Super Smash Bros. Tournament Score Sheet</h1><span class="sub">PSD Esports</span></div>
+        <div class="info">
+            <div class="opts"><span><span class="box"></span>Grade 5 &amp; Under</span><span><span class="box"></span>Grades 6&ndash;8</span></div>
+            <div class="field"><b>Station</b><span class="line"></span></div>
+            <div class="field"><b>Time</b><span class="line"></span></div>
+            <div class="field"><b>Group/Round</b><span class="line"></span></div>
+        </div>
+        <table>
+            <thead><tr>
+                <th class="team" scope="col">Team</th>
+                <th scope="col">Game 1<small>stock left</small></th>
+                <th scope="col">Game 2<small>stock left</small></th>
+                <th scope="col">Game 3<small>stock left</small></th>
+                <th scope="col">Games won</th>
+            </tr></thead>
+            <tbody>
+                <tr><td class="team"></td><td></td><td></td><td></td><td class="won"></td></tr>
+                <tr><td class="team"></td><td></td><td></td><td></td><td class="won"></td></tr>
+            </tbody>
+        </table>
+        <div class="winner">
+            <div class="field"><b>Match winner</b><span class="line"></span></div>
+            <div class="field"><b>Referee</b><span class="line"></span></div>
+        </div>
+        <div class="rules">
+            <h2>Referee quick rules</h2>
+            <ul>
+                <li><b>Match:</b> best of 3. First team to win 2 games wins. Leave Game 3 blank if not played.</li>
+                <li><b>Lost all stock:</b> write the winner's stock left, loser 0.</li>
+                <li><b>Timer ran out, different stock:</b> write both teams' actual stock.</li>
+                <li><b>Timer ran out, same stock (Sudden Death):</b> winner 1, loser 0.</li>
+                <li><b>Forfeit:</b> winner 0, forfeiting team F.</li>
+            </ul>
+            <ul>
+                <li><b>Settings:</b> 2v2, 3 stock, 6 minutes, Battlefield only, hazards and items off. Wrong settings: restart that game.</li>
+                <li><b>Late team:</b> 5 minutes, forfeit Game 1. 10 minutes, forfeit the match.</li>
+                <li><b>Disconnect or crash:</b> before the first stock is lost, you may order a replay. After that, your call.</li>
+                <li><b>Coaching:</b> between games only. Referee decisions are final.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="sheet" aria-label="Score sheet 2">
+        <div class="head"><h1>Super Smash Bros. Tournament Score Sheet</h1><span class="sub">PSD Esports</span></div>
+        <div class="info">
+            <div class="opts"><span><span class="box"></span>Grade 5 &amp; Under</span><span><span class="box"></span>Grades 6&ndash;8</span></div>
+            <div class="field"><b>Station</b><span class="line"></span></div>
+            <div class="field"><b>Time</b><span class="line"></span></div>
+            <div class="field"><b>Group/Round</b><span class="line"></span></div>
+        </div>
+        <table>
+            <thead><tr>
+                <th class="team" scope="col">Team</th>
+                <th scope="col">Game 1<small>stock left</small></th>
+                <th scope="col">Game 2<small>stock left</small></th>
+                <th scope="col">Game 3<small>stock left</small></th>
+                <th scope="col">Games won</th>
+            </tr></thead>
+            <tbody>
+                <tr><td class="team"></td><td></td><td></td><td></td><td class="won"></td></tr>
+                <tr><td class="team"></td><td></td><td></td><td></td><td class="won"></td></tr>
+            </tbody>
+        </table>
+        <div class="winner">
+            <div class="field"><b>Match winner</b><span class="line"></span></div>
+            <div class="field"><b>Referee</b><span class="line"></span></div>
+        </div>
+        <div class="rules">
+            <h2>Referee quick rules</h2>
+            <ul>
+                <li><b>Match:</b> best of 3. First team to win 2 games wins. Leave Game 3 blank if not played.</li>
+                <li><b>Lost all stock:</b> write the winner's stock left, loser 0.</li>
+                <li><b>Timer ran out, different stock:</b> write both teams' actual stock.</li>
+                <li><b>Timer ran out, same stock (Sudden Death):</b> winner 1, loser 0.</li>
+                <li><b>Forfeit:</b> winner 0, forfeiting team F.</li>
+            </ul>
+            <ul>
+                <li><b>Settings:</b> 2v2, 3 stock, 6 minutes, Battlefield only, hazards and items off. Wrong settings: restart that game.</li>
+                <li><b>Late team:</b> 5 minutes, forfeit Game 1. 10 minutes, forfeit the match.</li>
+                <li><b>Disconnect or crash:</b> before the first stock is lost, you may order a replay. After that, your call.</li>
+                <li><b>Coaching:</b> between games only. Referee decisions are final.</li>
+            </ul>
+        </div>
+    </section>
+</main>
+</body>
+</html>
