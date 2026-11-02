@@ -288,15 +288,67 @@
            '</div></li>';
   }
 
-  /* Column headings are abbreviated to fit; each also carries its full name,
-     read aloud in place of the letters and shown on hover. */
-  var COLUMNS = [['#', 'Position'], ['Team', 'Team'], ['P', 'Played'], ['W', 'Won'], ['L', 'Lost'],
-                 ['Gm', 'Games won and lost'], ['SD', 'Stock differential'], ['Pts', 'Points']];
+  /* Column headings are abbreviated to fit. Each stat heading is a button that
+     opens a short explanation on hover, keyboard focus or tap: [letters, full
+     name, explanation]. `abbr` keeps the name a screen reader repeats on every
+     cell short, while the button itself reads the whole explanation. */
+  var COLUMNS = [['#', 'Position'], ['Team', 'Team'],
+                 ['P', 'Played', 'Matches played so far'],
+                 ['W', 'Won', 'Matches won'],
+                 ['L', 'Lost', 'Matches lost'],
+                 ['Gm', 'Games', 'Games won and lost, across all matches'],
+                 ['SD', 'Stock differential', 'Stock your team had left, minus stock your opponents had left'],
+                 ['Pts', 'Points', '3 points for each match won']];
 
   function columnHead(c) {
-    return c[0] === c[1]
-      ? '<th scope="col">' + esc(c[0]) + '</th>'
-      : '<th scope="col" title="' + esc(c[1]) + '"><span aria-hidden="true">' + esc(c[0]) + '</span>' + sr(c[1]) + '</th>';
+    if (!c[2]) {
+      return c[0] === c[1]
+        ? '<th scope="col">' + esc(c[0]) + '</th>'
+        : '<th scope="col" abbr="' + esc(c[1]) + '"><span aria-hidden="true">' + esc(c[0]) + '</span>' + sr(c[1]) + '</th>';
+    }
+    return '<th scope="col" abbr="' + esc(c[1]) + '">' +
+           '<button type="button" class="col-tip" aria-label="' + esc(c[1] + ': ' + c[2]) + '">' +
+             '<span aria-hidden="true">' + esc(c[0]) + '</span>' +
+             '<span class="col-tip-pop" aria-hidden="true"><strong>' + esc(c[1]) + '</strong>' + esc(c[2]) + '</span>' +
+           '</button></th>';
+  }
+
+  /* Injected once, like the rules panel's styles, so the two bracket pages
+     cannot drift apart. The popup can be moved onto without closing and Escape
+     dismisses it (WCAG 1.4.13). */
+  function addColumnTips() {
+    var style = document.createElement('style');
+    style.textContent =
+      '.col-tip{position:relative;display:inline-flex;align-items:center;justify-content:flex-end;min-width:24px;min-height:24px;' +
+        'padding:0;background:none;border:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;cursor:help;}' +
+      '.col-tip > span:first-child{border-bottom:1px dotted #949cab;}' +
+      '.col-tip:hover,.col-tip:focus-visible{color:#fff;}' +
+      '.col-tip:focus-visible{outline:2px solid #FFD166;outline-offset:1px;border-radius:2px;}' +
+      '.col-tip-pop{display:none;position:absolute;bottom:100%;right:0;z-index:40;width:max-content;max-width:190px;margin-bottom:6px;' +
+        'padding:.45rem .6rem;background:#0B0E14;border:1px solid rgba(255,255,255,.22);border-radius:.45rem;' +
+        "box-shadow:0 8px 24px rgba(0,0,0,.6);font-family:'Inter',sans-serif;font-size:.75rem;font-weight:400;" +
+        'line-height:1.35;letter-spacing:normal;text-transform:none;text-align:left;white-space:normal;color:#e5e7eb;}' +
+      /* bridges the gap, so the pointer can reach the popup without closing it */
+      '.col-tip-pop::after{content:"";position:absolute;left:0;right:0;top:100%;height:8px;}' +
+      '.col-tip-pop strong{display:block;color:#FFD166;font-weight:700;}' +
+      '.col-tip:hover .col-tip-pop,.col-tip:focus .col-tip-pop{display:block;}' +
+      'body.col-tips-off .col-tip-pop{display:none!important;}' +
+      '.grp-table td:nth-child(6){white-space:nowrap;}';
+    document.head.appendChild(style);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') document.body.classList.add('col-tips-off');
+    });
+    function reopen(e) {
+      if (e.target.closest && e.target.closest('.col-tip')) document.body.classList.remove('col-tips-off');
+    }
+    document.addEventListener('focusin', reopen);
+    document.addEventListener('mouseout', reopen);
+    /* Safari does not focus a button on tap, which is what opens it on a phone. */
+    document.addEventListener('click', function (e) {
+      var tip = e.target.closest && e.target.closest('.col-tip');
+      if (tip) tip.focus();
+    });
   }
 
   function renderGroups() {
@@ -332,7 +384,9 @@
       '<p class="text-[11px] text-gray-500 mb-4">' +
         'P played · W won · L lost · Gm games won–lost · SD stock differential · Pts points. ' +
         'The highlighted top ' + ADVANCE + ' in each group advance.</p>' +
-      '<div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">' +
+      /* Two across, however wide the screen: three squeezed the stat columns
+         until the numbers wrapped. One across below that, for the same reason. */
+      '<div class="grid gap-6 lg:grid-cols-2">' +
       d.groups.map(function (g, gi) {
         var rows = standings(gi);
         var complete = groupComplete(gi);
@@ -876,6 +930,7 @@
 
   function init(divisionId) {
     if (!setup(divisionId)) return;
+    addColumnTips();
 
     var badge = byId('division-badge');
     if (badge) {
@@ -885,7 +940,8 @@
     var other = CFG.divisions.filter(function (d) { return d.id !== divisionId; })[0];
     var link = byId('other-division');
     if (link && other) {
-      link.textContent = other.name + ' →';
+      /* "Go to" so it cannot be mistaken for a label of the division on screen. */
+      link.textContent = 'Go to ' + other.name + ' →';
       link.setAttribute('href', other.page + (root.SMASH.testMode ? '?test' : ''));
       link.style.borderColor = other.accent;
       link.style.color = other.accent;
