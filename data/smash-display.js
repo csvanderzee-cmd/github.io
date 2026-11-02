@@ -33,7 +33,7 @@
     '#sd .sd-view{font-family:Rajdhani,sans-serif;font-weight:900;font-style:italic;text-transform:uppercase;' +
       'color:#fff;font-size:clamp(1.1rem,2.6vmin,2.6rem);line-height:1;}' +
     '#sd .sd-right{margin-left:auto;display:flex;align-items:center;gap:1.1rem;font-family:Rajdhani,sans-serif;' +
-      'font-weight:700;text-transform:uppercase;letter-spacing:.14em;font-size:clamp(.6rem,1.25vmin,1.1rem);color:#9ca3af;}' +
+      'font-weight:700;text-transform:uppercase;letter-spacing:.14em;font-size:clamp(.8rem,1.9vmin,1.7rem);color:#d1d5db;}' +
     '#sd .sd-clock{color:#fff;font-weight:900;letter-spacing:.06em;}' +
     '#sd .sd-dot{width:.9vmin;height:.9vmin;min-width:7px;min-height:7px;border-radius:50%;background:#4b5563;display:inline-block;}' +
     '#sd .sd-dot.live{background:#34d399;}' +
@@ -49,14 +49,14 @@
     '#sd .sd-ghead{display:flex;align-items:baseline;gap:.6rem;margin-bottom:10px;}' +
     '#sd .sd-gname{font-family:Rajdhani,sans-serif;font-weight:900;font-style:italic;text-transform:uppercase;' +
       'font-size:1.5rem;color:#fff;line-height:1;}' +
-    '#sd .sd-gtag{margin-left:auto;font-family:Rajdhani,sans-serif;font-weight:700;font-size:.72rem;' +
+    '#sd .sd-gtag{margin-left:auto;font-family:Rajdhani,sans-serif;font-weight:700;font-size:.9rem;' +
       'letter-spacing:.18em;text-transform:uppercase;color:#949cab;}' +
     '#sd .sd-gtag.done{color:#FFD166;}' +
     '#sd table{width:100%;border-collapse:collapse;}' +
-    '#sd th{font-family:Rajdhani,sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.16em;' +
-      'text-transform:uppercase;color:#949cab;text-align:right;padding:0 4px 6px;}' +
+    '#sd th{font-family:Rajdhani,sans-serif;font-weight:700;font-size:.95rem;letter-spacing:.12em;' +
+      'text-transform:uppercase;color:#d1d5db;text-align:right;padding:0 10px 6px;}' +
     '#sd th:first-child,#sd td:first-child,#sd th:nth-child(2),#sd td:nth-child(2){text-align:left;}' +
-    '#sd td{padding:7px 4px;text-align:right;border-top:1px solid rgba(255,255,255,.07);color:#d1d5db;' +
+    '#sd td{padding:7px 10px;text-align:right;border-top:1px solid rgba(255,255,255,.07);color:#d1d5db;' +
       'font-variant-numeric:tabular-nums;font-size:1.15rem;}' +
     '#sd tr.q td{background:linear-gradient(90deg,rgba(253,185,19,.1),transparent);}' +
     '#sd tr.q td:first-child{box-shadow:inset 3px 0 0 #FDB913;}' +
@@ -67,7 +67,7 @@
     '#sd .sd-bracket{display:flex;align-items:stretch;justify-content:center;}' +
     '#sd .sd-round{flex:0 0 300px;display:flex;flex-direction:column;margin-right:4rem;}' +
     '#sd .sd-round:last-child{margin-right:0;}' +
-    '#sd .sd-rtitle{font-family:Rajdhani,sans-serif;font-weight:800;font-size:.85rem;letter-spacing:.22em;' +
+    '#sd .sd-rtitle{font-family:Rajdhani,sans-serif;font-weight:800;font-size:1rem;letter-spacing:.2em;' +
       'text-transform:uppercase;color:#949cab;text-align:center;padding-bottom:14px;}' +
     '#sd .sd-rbody{flex:1;display:flex;flex-direction:column;}' +
     '#sd .sd-slot{flex:1;display:flex;align-items:center;position:relative;min-height:96px;}' +
@@ -83,7 +83,7 @@
     '#sd .sd-team + .sd-team{border-top:1px solid rgba(255,255,255,.12);}' +
     '#sd .sd-team .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}' +
     '#sd .sd-team .s{font-family:Rajdhani,sans-serif;font-weight:900;color:#d1d5db;font-variant-numeric:tabular-nums;font-size:1.25rem;}' +
-    '#sd .sd-station{font-family:Rajdhani,sans-serif;font-weight:800;font-size:.8rem;letter-spacing:.14em;' +
+    '#sd .sd-station{font-family:Rajdhani,sans-serif;font-weight:800;font-size:.9rem;letter-spacing:.12em;' +
       'text-transform:uppercase;color:#aab2bf;padding:6px 12px 2px;}' +
     '#sd .sd-station.big{color:#FFD166;}' +
     '#sd .sd-team.won{color:#0B0E14;font-weight:800;background:#FDB913;}' +
@@ -93,7 +93,7 @@
     '#sd .sd-team.ghost{color:#FFD166;font-weight:600;}' +
     '#sd .sd-match.final{border-color:rgba(253,185,19,.5);box-shadow:0 0 30px rgba(253,185,19,.15);}' +
     '#sd .sd-third{margin-top:26px;text-align:center;}' +
-    '#sd .sd-third-label,#sd .sd-champ-label{font-family:Rajdhani,sans-serif;font-weight:800;font-size:.8rem;' +
+    '#sd .sd-third-label,#sd .sd-champ-label{font-family:Rajdhani,sans-serif;font-weight:800;font-size:1rem;' +
       'letter-spacing:.22em;text-transform:uppercase;color:#949cab;margin-bottom:10px;}' +
     '#sd .sd-third .sd-match{max-width:300px;margin:0 auto;}' +
     '#sd .sd-champ{text-align:center;margin-top:26px;}' +
@@ -108,7 +108,7 @@
 
     '#sd .sd-bottom{flex-shrink:0;display:flex;align-items:center;gap:1rem;padding-top:.9vmin;' +
       'border-top:1px solid rgba(255,255,255,.1);font-family:Rajdhani,sans-serif;font-weight:700;' +
-      'text-transform:uppercase;letter-spacing:.16em;font-size:clamp(.6rem,1.25vmin,1.05rem);color:#949cab;}' +
+      'text-transform:uppercase;letter-spacing:.16em;font-size:clamp(.75rem,1.7vmin,1.5rem);color:#d1d5db;}' +
     '#sd .sd-switch{margin-left:auto;display:flex;gap:.5rem;}' +
     '#sd .sd-switch button{font:inherit;letter-spacing:.14em;color:#9ca3af;cursor:pointer;' +
       'background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:9999px;' +
@@ -117,6 +117,10 @@
     '#sd .sd-switch button[aria-pressed="true"]{color:#0B0E14;background:var(--accent,#FDB913);border-color:var(--accent,#FDB913);}' +
     '#sd .sd-switch button:focus-visible{outline:3px solid #FFD166;outline-offset:2px;}' +
     '#sd .sd-hint{color:#8f97a5;}' +
+    /* On the big screen and the stream the controls stay out of the picture until
+       someone reaches for them. They still take keyboard focus while hidden. */
+    '#sd.sd-idle .sd-switch,#sd.sd-idle .sd-hint{opacity:0;}' +
+    '#sd.sd-idle{cursor:none;}' +
     '@media (max-width:700px){#sd .sd-hint{display:none;}}' +
     /* read by screen readers, not drawn; headings keep their display styling */
     '#sd .sd-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}' +
@@ -124,7 +128,7 @@
     '@media print{#sd{display:none!important;}}';
 
   var MAX_SCALE = 2.4;
-  var COL_W = 460, COL_GAP = 22;
+  var COL_WIDTHS = [460, 540, 620, 700, 780, 860], COL_GAP = 22;
 
   var el = {};          // the display's own elements
   var snap = null;      // last snapshot from the bracket script
@@ -159,7 +163,7 @@
     return '<div class="sd-wait"><h2>' + esc(title) + '</h2><p>' + esc(body) + '</p></div>';
   }
 
-  function groupsHtml(s, cols) {
+  function groupsHtml(s, cols, colW) {
     if (!s.groups.length) {
       return { html: waiting('Groups not posted yet', 'They appear here as soon as the draw is in the sheet.'),
                width: '900px' };
@@ -185,7 +189,7 @@
     return {
       html: '<div class="sd-groups" style="grid-template-columns:repeat(' + cols + ',minmax(0,1fr))">' +
             cards + '</div>',
-      width: (cols * COL_W + (cols - 1) * COL_GAP) + 'px'
+      width: (cols * colW + (cols - 1) * COL_GAP) + 'px'
     };
   }
 
@@ -262,22 +266,26 @@
     fit.style.transform = 'scale(' + scale + ')';
   }
 
-  /* How many columns the groups go in is decided by trying them: a wide
-     screen reads four groups best in one row, a squarer one in two rows of
-     two. Whichever arrangement ends up largest on this screen wins. */
+  /* How many columns the groups go in, and how wide, is decided by trying them:
+     a wide screen reads four groups best in one row, a squarer one in two rows
+     of two. Whichever arrangement ends up largest on this screen wins, and of
+     two the same size the wider one, which spreads the numbers and stops long
+     team names wrapping. */
   function drawGroups(s) {
     var n = s.groups.length || 1;
     var best = null;
 
     for (var cols = 1; cols <= Math.min(n, 4); cols++) {
-      var g = groupsHtml(s, cols);
-      el.fit.style.width = g.width;
-      el.fit.innerHTML = g.html;
-      el.fit.style.transform = 'scale(1)';
-      var w = el.fit.scrollWidth, h = el.fit.scrollHeight;
-      if (!w || !h) continue;
-      var scale = Math.min(el.stage.clientWidth / w, el.stage.clientHeight / h, MAX_SCALE);
-      if (!best || scale > best.scale) best = { scale: scale, html: g.html, width: g.width };
+      COL_WIDTHS.forEach(function (colW) {
+        var g = groupsHtml(s, cols, colW);
+        el.fit.style.width = g.width;
+        el.fit.innerHTML = g.html;
+        el.fit.style.transform = 'scale(1)';
+        var w = el.fit.scrollWidth, h = el.fit.scrollHeight;
+        if (!w || !h) return;
+        var scale = Math.min(el.stage.clientWidth / w, el.stage.clientHeight / h, MAX_SCALE);
+        if (!best || scale >= best.scale - 0.005) best = { scale: scale, html: g.html, width: g.width };
+      });
     }
 
     if (!best) { scaleToFit(); return; }
@@ -396,6 +404,27 @@
     tick();
     setInterval(tick, 20000);
     window.addEventListener('resize', render);
+
+    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'focusin', 'focusout'].forEach(function (type) {
+      sd.addEventListener(type, wakeControls);
+    });
+    document.addEventListener('keydown', wakeControls);
+    wakeControls();
+  }
+
+  /* Hides the controls a few seconds after the last sign of anyone using them.
+     Not while a button has focus, where a keyboard user is working, and not
+     while updates are paused, which nobody should be able to leave on unseen. */
+  var IDLE_MS = 4000, idleTimer = null;
+  function wakeControls() {
+    if (!el || !el.root) return;
+    el.root.classList.remove('sd-idle');
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(function hide() {
+      var focused = el.root.querySelector('.sd-switch button:focus');
+      if (focused || (snap && snap.paused)) { idleTimer = setTimeout(hide, IDLE_MS); return; }
+      el.root.classList.add('sd-idle');
+    }, IDLE_MS);
   }
 
   function tick() {

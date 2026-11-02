@@ -82,7 +82,7 @@
             #psd-nav, #psd-nav-drawer, .no-print { display:none !important; }
             html, body { background:#fff !important; color:#000 !important; }
             main { padding:0 !important; max-width:none !important; }
-            h1, h2, h3, p, li, b, th, td, span, .sched-title, .sched-sub { color:#000 !important; }
+            h1, h2, h3, p, li, b, th, td, span, .sched-title, .sched-sub, .text-esports-yellow-text { color:#000 !important; }
             .sched-table { background:#fff; font-size:10pt; }
             .sched-table th { border-bottom:2px solid #000; }
             .sched-table td, .sched-table tbody th { border-top:1px solid #999; padding:.2rem .4rem; }
@@ -109,6 +109,7 @@
         <h1 class="sched-title" style="font-size:2.6rem">Tournament Schedule</h1>
         <p id="sched-when" class="text-gray-300 mt-2"></p>
         <p class="text-gray-300 mt-1">Station 1 is the big screen in the main arena. Stations 2&ndash;6 are in the cafeteria.</p>
+        <p class="mt-1 font-bold text-esports-yellow-text">All times are tentative and may change on the day.</p>
 
         <div class="flex flex-wrap gap-3 mt-6 mb-10 no-print" id="print-buttons">
             <button type="button" class="div-tab primary" data-print-target="jr">Print Grade 5 &amp; Under</button>
@@ -176,7 +177,7 @@
 
     function overviewTable(div) {
         return '<div class="overflow-x-auto"><table class="sched-table"><caption class="sr-only">' + esc(div.name) + ' day at a glance</caption>' +
-            '<thead><tr><th scope="col">Time</th><th scope="col">What happens</th></tr></thead><tbody>' +
+            '<thead><tr><th scope="col">Time (tentative)</th><th scope="col">What happens</th></tr></thead><tbody>' +
             div.schedule.day.map(function (d) {
                 return '<tr><td class="nowrap">' + esc(d[0]) + '</td><td>' + esc(d[1]) + '</td></tr>';
             }).join('') + '</tbody></table></div>';
@@ -185,7 +186,7 @@
     function matchTable(div, matches) {
         var last = null;
         return '<div class="overflow-x-auto"><table class="sched-table"><caption class="sr-only">' + esc(div.name) + ' group matches by time and station</caption>' +
-            '<thead><tr><th scope="col">Time</th><th scope="col">Station</th><th scope="col">Group</th><th scope="col">Match</th></tr></thead><tbody>' +
+            '<thead><tr><th scope="col">Time (tentative)</th><th scope="col">Station</th><th scope="col">Group</th><th scope="col">Match</th></tr></thead><tbody>' +
             matches.map(function (m) {
                 var cls = [];
                 if (m.station === 1) cls.push('big');
@@ -198,7 +199,7 @@
 
     function knockoutTable(div) {
         return '<div class="overflow-x-auto"><table class="sched-table"><caption class="sr-only">' + esc(div.name) + ' knockout rounds</caption>' +
-            '<thead><tr><th scope="col">Time</th><th scope="col">Round</th><th scope="col">Stations</th></tr></thead><tbody>' +
+            '<thead><tr><th scope="col">Time (tentative)</th><th scope="col">Round</th><th scope="col">Stations</th></tr></thead><tbody>' +
             div.schedule.knockout.map(function (k) {
                 return '<tr><td class="nowrap">' + esc(k[0]) + '</td><td>' + esc(k[1]) + '</td><td>' + esc(k[2]) + '</td></tr>';
             }).join('') + '</tbody></table></div>';
@@ -211,7 +212,7 @@
         });
         rows.sort(function (x, y) { return x.team.localeCompare(y.team); });
         return '<div class="overflow-x-auto"><table class="sched-table"><caption class="sr-only">' + esc(div.name) + ' matches for each team</caption>' +
-            '<thead><tr><th scope="col">Team</th><th scope="col">Group</th><th scope="col">Group matches</th></tr></thead><tbody>' +
+            '<thead><tr><th scope="col">Team</th><th scope="col">Group</th><th scope="col">Group matches (times tentative)</th></tr></thead><tbody>' +
             rows.map(function (r) {
                 var mine = matches.filter(function (m) {
                     return SMASH.norm(m.a) === SMASH.norm(r.team) || SMASH.norm(m.b) === SMASH.norm(r.team);
