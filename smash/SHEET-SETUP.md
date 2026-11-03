@@ -104,12 +104,20 @@ the teams.
 Recognised labels: `Play-In 1`–`4`, `Quarter Final 1`–`4`, `Semi Final 1`–`2`,
 `Final`, `Third`, and `Round of 16 1`–`8` if you ever need that many.
 
-**Type the team names in yourself** as each round is decided. The page does
-*not* seed the bracket for you — a referee's call on the day, a forfeit or a
-no-show beats anything computed, so the sheet is the authority here.
+**The sheet fills in the team names.** Each division has a Standings tab next to
+its Enter tab. When a group has played all its matches, its finishers move to the
+play-in and quarter-final slots on the Enter tab, and the winners of each match
+move up from there. The page reads those names like any others, so the sheet is
+still the authority here.
 
-To help, an empty slot shows who belongs there. With four groups and a play-in
-round, the pairings are:
+A tie that needs a playoff leaves its slots empty and shows a message above the
+knockout rounds. Enter the result in the yellow Playoff column on the Standings
+tab: 1 for the winner, and 2 for the next team if three teams tied. For a referee's
+call on the day, type the right team over the slot on the Enter tab. That replaces
+the formula in that cell, so that slot no longer updates by itself.
+
+An empty slot shows who belongs there. With four groups and a play-in round, the
+pairings are:
 
 | Match | Top slot | Bottom slot |
 |---|---|---|
@@ -124,11 +132,9 @@ round, the pairings are:
 | Semi Final 1 | Winner Quarter Final 1 | Winner Quarter Final 2 |
 | Semi Final 2 | Winner Quarter Final 3 | Winner Quarter Final 4 |
 
-As soon as a group has played all its matches, or a match has a winner, the slot
-shows the team's name in gold italics. That name is only a projection: type it
-into the sheet to make it official and to enter scores against it. Whatever you
-type always wins, so a forfeit or late change just needs the right team typed in.
-A tie that needs a playoff shows `Playoff:` and the teams instead of a name.
+A name in a slot on the sheet always wins. A slot left empty shows `Playoff:` and
+the teams while a tie is open. Gold italic names only appear if a formula on the
+sheet has been cleared.
 
 Stations appear on every group match and bracket match. Group stations are listed
 in `data/smash.js` by the order of the match rows, so keep that order if you edit a
@@ -170,8 +176,9 @@ tables can never drift out of step with what was actually played:
 
 - Points (win = 3, loss = 0), games won and lost, stock differential
 - Tiebreakers, in order: **points → head-to-head → stock differential → one-game playoff**. The page cannot
-  see a playoff, so it lists a tie that gets that far by games won, then by name. Type the
-  playoff winner into the bracket yourself
+  see a playoff, so its group table lists a tie that gets that far by games won, then by name.
+  The Standings tab holds the playoff result, and the formulas there follow the same order as
+  `standings()` and `groupSeat()` in `data/smash-bracket.js`, so change both together
 - Who qualifies (top three per group)
 - Which rounds the bracket has, and who has won each match
 

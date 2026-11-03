@@ -11,9 +11,10 @@
 
    Group tables are computed here rather than read from the sheet, so points,
    tiebreakers and who qualifies can never drift out of step with the recorded
-   games. The bracket teams are whatever has been typed into the elimination
-   rows — the sheet is the authority there, since a referee's call on the day
-   beats anything computed.
+   games. The bracket teams are whatever the elimination rows hold: formulas on
+   the sheet's Standings tabs fill them using the same rules as standings() and
+   groupSeat() below, so change both together. The sheet is the authority, since
+   a referee's call on the day beats anything computed.
    ========================================================================== */
 
 (function (root) {
