@@ -73,13 +73,8 @@
 
     /* ---- registration ----------------------------------------------------
 
-       Read by smash/flyer.html, which is the printed handout that goes out to
-       schools. Kept here with everything else so a flyer run off in October
-       cannot quietly disagree with the website in November.
-
-       registerBy is 'YYYY-MM-DD' so the flyer can spell out the weekday
-       itself — a deadline a coach has to look up on a calendar is a deadline
-       that gets missed. */
+       registerBy is 'YYYY-MM-DD'. After it, register links become an email to
+       the organizer. */
     registerUrl: 'https://forms.gle/PHLTBQBWvUJktBgw8',
     registerBy: '2026-10-30',    /* Friday */
 

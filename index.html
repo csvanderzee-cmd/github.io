@@ -521,7 +521,7 @@
             <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-esports-red via-esports-yellow to-esports-blue" aria-hidden="true"></div>
             <div class="flex items-center whitespace-nowrap animate-marquee font-display font-bold text-lg uppercase tracking-widest" aria-hidden="true">
                 <div class="flex items-center gap-12 px-4">
-                    <span class="text-esports-yellow-text">2026-27 FALL SEASON BEGINS SEPTEMBER 21</span>
+                    <span class="text-esports-yellow-text">ROCKET LEAGUE FINALS · SATURDAY, JANUARY 16 · QUAIL VALLEY ARENA</span>
                     <span class="text-gray-600">///</span>
                     <span class="text-esports-blue-text">DEFENDING LATE RELEASE CHAMPIONS: SHADOW HILLS</span>
                     <span class="text-gray-600">///</span>
@@ -533,7 +533,7 @@
                     <span class="text-gray-600">///</span>
                 </div>
                 <div class="flex items-center gap-12 px-4">
-                    <span class="text-esports-yellow-text">2026-27 FALL SEASON BEGINS SEPTEMBER 21</span>
+                    <span class="text-esports-yellow-text">ROCKET LEAGUE FINALS · SATURDAY, JANUARY 16 · QUAIL VALLEY ARENA</span>
                     <span class="text-gray-600">///</span>
                     <span class="text-esports-blue-text">DEFENDING LATE RELEASE CHAMPIONS: SHADOW HILLS</span>
                     <span class="text-gray-600">///</span>
@@ -547,10 +547,13 @@
             </div>
         </aside>
         <script>
-        /* During the Smash takeover the ticker leads with the tournament. */
+        /* During the Smash takeover the ticker leads with the tournament, ahead of
+           the Rocket League finals, and the line goes when the takeover ends. */
         if (window.PSD_SMASH_WEEK) {
-            document.querySelectorAll('aside[aria-label="Season Champions Ticker"] .animate-marquee > div > span:first-child').forEach(function (s) {
-                s.textContent = 'SUPER SMASH BROS. TOURNAMENT · SATURDAY, NOVEMBER 14 · QUAIL VALLEY ESPORTS ARENA';
+            document.querySelectorAll('aside[aria-label="Season Champions Ticker"] .animate-marquee > div').forEach(function (row) {
+                row.insertAdjacentHTML('afterbegin',
+                    '<span class="text-esports-red-text">SUPER SMASH BROS. TOURNAMENT · SATURDAY, NOVEMBER 14 · QUAIL VALLEY ESPORTS ARENA</span>' +
+                    '<span class="text-gray-600">///</span>');
             });
         }
         </script>
@@ -1799,7 +1802,7 @@
         var canvas = document.getElementById('particleCanvas'), ctx = canvas.getContext('2d');
         var w, h, p = [];
         var C = window.PSD_SMASH_WEEK
-            ? [{r:255,g:107,b:107},{r:255,g:159,b:67},{r:255,g:209,b:102},{r:255,g:255,b:255}]   /* embers, to match the flyer */
+            ? [{r:255,g:107,b:107},{r:255,g:159,b:67},{r:255,g:209,b:102},{r:255,g:255,b:255}]   /* embers */
             : [{r:77,g:171,b:247},{r:255,g:209,b:102},{r:255,g:107,b:107},{r:255,g:255,b:255}];
         function rs() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
         window.addEventListener('resize', rs); rs();
