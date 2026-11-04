@@ -75,6 +75,26 @@
         .note-list li { margin-bottom:.5rem; color:#e5e7eb; }
         .note-list b { color:#fff; }
 
+        /* Jump tabs: on the left edge when the page margin has room for them, and a
+           row held under the menu when it does not, with more room left above a
+           heading a tab jumps to so the row does not cover it. */
+        .jump-tabs { position:sticky; top:var(--menu-height,3.3rem); z-index:20; display:grid; grid-template-columns:repeat(3,1fr); gap:.35rem;
+                     margin:0 -1rem 2rem; padding:.5rem 1rem; background:#0B0E14; border-bottom:1px solid rgba(255,255,255,.14); }
+        .jump-tabs[hidden] { display:none; }
+        .jump-tab { display:flex; align-items:center; justify-content:center; min-height:44px; padding:.3rem .4rem; text-align:center;
+                    font-family:'Rajdhani',sans-serif; font-weight:800; font-size:.8rem; line-height:1.1; letter-spacing:.06em; text-transform:uppercase;
+                    color:#e5e7eb; background:#151B26; border:1px solid rgba(255,255,255,.2); border-bottom:3px solid var(--tab); border-radius:.4rem; }
+        .jump-tab:hover { color:#fff; background:#212a3a; }
+        .jump-tab:focus-visible { outline:3px solid #fff; outline-offset:2px; }
+        .jump-tab[aria-current] { color:#0B0E14; background:var(--tab); }
+        @media (max-width:1279px) { .sched-title { scroll-margin-top:3.5rem; } }
+        @media (min-width:1280px) {
+            .jump-tabs { position:fixed; top:50%; left:0; transform:translateY(-50%); grid-template-columns:7.25rem; gap:.5rem;
+                         margin:0; padding:0; background:none; border:0; }
+            .jump-tab { min-height:60px; padding:.5rem .6rem; font-size:.85rem; border-left:0; border-bottom:1px solid rgba(255,255,255,.2);
+                        border-right:4px solid var(--tab); border-radius:0 .5rem .5rem 0; }
+        }
+
         /* The page exists to end up on paper. A print button may pick one division:
            it sets data-print on <body>, and everything else drops out. */
         @media print {
@@ -118,6 +138,8 @@
             <a href="/smash/PSD-Smash-Score-Sheet.pdf" download class="div-tab">Referee score sheet (PDF)</a>
             <a href="/smash/tournament.html" class="div-tab">Back to the brackets</a>
         </div>
+
+        <nav id="jump-tabs" class="jump-tabs no-print" aria-label="Jump to a section of the schedule" hidden></nav>
 
         <p id="sched-status" role="status" class="text-gray-300 mb-8">Loading the schedule&hellip;</p>
         <div id="sched-content"></div>
@@ -240,6 +262,48 @@
             '</section>';
     }
 
+    /* One tab per division on the page, plus the referee notes. Plain links to the
+       headings, so they work by keyboard and move a screen reader along too. The
+       tab for the section being read stays filled in. */
+    function buildJumpTabs() {
+        var nav = document.getElementById('jump-tabs');
+        var targets = CFG.divisions.filter(function (div) {
+            return document.getElementById('sec-' + div.id);
+        }).map(function (div) {
+            return { id: 'sec-' + div.id, label: div.name, color: div.accent };
+        });
+        targets.push({ id: 'notes-title', label: 'Referee notes', color: '#FFD166' });
+
+        nav.innerHTML = targets.map(function (t) {
+            return '<a class="jump-tab" href="#' + esc(t.id) + '" style="--tab:' + esc(t.color) + '">' + esc(t.label) + '</a>';
+        }).join('');
+        nav.hidden = false;
+
+        var links = nav.querySelectorAll('a'), pending = false;
+        function mark() {
+            pending = false;
+            var menu = document.getElementById('psd-nav');
+            if (menu) nav.style.setProperty('--menu-height', menu.offsetHeight + 'px');
+            var line = window.innerHeight / 3, at = -1;
+            targets.forEach(function (t, i) {
+                if (document.getElementById(t.id).getBoundingClientRect().top <= line) at = i;
+            });
+            if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) at = targets.length - 1;
+            for (var i = 0; i < links.length; i++) {
+                if (i === at) links[i].setAttribute('aria-current', 'location');
+                else links[i].removeAttribute('aria-current');
+            }
+        }
+        function queue() {
+            if (pending) return;
+            pending = true;
+            requestAnimationFrame(mark);
+        }
+        window.addEventListener('scroll', queue, { passive: true });
+        window.addEventListener('resize', queue);
+        mark();
+    }
+
     var when = new Date(CFG.eventDate + 'T00:00:00');
     document.getElementById('sched-when').textContent =
         when.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) + ' · ' + CFG.venue;
@@ -254,6 +318,7 @@
         document.getElementById('sched-content').innerHTML = html;
         status.textContent = '';
         status.classList.add('hidden');
+        buildJumpTabs();
     }).catch(function () {
         status.textContent = 'The schedule could not load, because the tournament sheet could not be reached. Please refresh and try again.';
     });
