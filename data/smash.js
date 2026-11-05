@@ -221,31 +221,31 @@
         page: 'grades-6-8.html', gid: '86502539', testGid: null,
         startTime: '12:00 PM',
         stations: { groups: [
-          [3, 4, 2, 1, 2, 3],
-          [2, 1, 3, 4, 4, 5],
-          [5, 1, 5],
-          [6, 6, 6]
+          [2, 1, 3, 4, 3, 4],
+          [2, 1, 5, 6, 3, 4],
+          [2, 1, 3, 4, 5, 6],
+          [2, 1, 5, 6, 5, 6]
         ] },
         schedule: {
-          rounds: ['12:00 PM', '12:24 PM', '12:48 PM'],
+          rounds: ['12:00 PM', '12:24 PM', '12:48 PM', '1:12 PM'],
           groupRounds: [
-            [0, 0, 1, 1, 2, 2],
-            [0, 0, 1, 1, 2, 2],
-            [0, 2, 1],
-            [0, 1, 2]
+            [3, 3, 1, 1, 2, 2],
+            [0, 0, 2, 2, 3, 3],
+            [1, 1, 0, 0, 3, 3],
+            [2, 2, 0, 0, 1, 1]
           ],
           day: [
             ['11:35 AM', 'Teams and referees arrive; referee briefing'],
-            ['12:00–1:12 PM', 'Group matches'],
-            ['1:12 PM', 'Seeding break'],
-            ['1:26–3:02 PM', 'Knockout rounds'],
-            ['3:02 PM', 'Awards']
+            ['12:00–1:36 PM', 'Group matches'],
+            ['1:36 PM', 'Seeding break'],
+            ['1:50–3:26 PM', 'Knockout rounds'],
+            ['3:26 PM', 'Awards']
           ],
           knockout: [
-            ['1:26 PM', 'Play-In', 'Stations 1\u20134'],
-            ['1:50 PM', 'Quarterfinals', 'Stations 1\u20134'],
-            ['2:14 PM', 'Semifinals', 'Stations 1\u20132'],
-            ['2:38 PM', 'Final and third place', 'Final on Station 1, third place on Station 2']
+            ['1:50 PM', 'Play-In', 'Stations 1\u20134'],
+            ['2:14 PM', 'Quarterfinals', 'Stations 1\u20134'],
+            ['2:38 PM', 'Semifinals', 'Stations 1\u20132'],
+            ['3:02 PM', 'Final and third place', 'Final on Station 1, third place on Station 2']
           ]
         } }
     ]
