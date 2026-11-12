@@ -255,15 +255,13 @@
 
   /* ---- stations ------------------------------------------------------------
 
-     Group matches come from the division's list in data/smash.js. In the play-in
-     and the quarter-finals, Station 1 (the big screen) goes to the match with the
-     most teams that have not been on it yet, so as many as possible get a turn.
-     The other matches take the next stations in order. The quarter-finals count
-     from the bottom (QF 4 on Station 1 up to QF 1 on Station 4), because Play-In 1
-     feeds QF 1 and would otherwise put the same team back on the big screen. The
-     semi-finals, final and third-place match are always the same two stations.
-     The Enter tabs of the sheet do the same
-     sums for their Station column, so change both together.
+     Group matches come from the division's list in data/smash.js. The knockout
+     stations are fixed, so the printed scorecards always match: Play-In 1-4 on
+     Stations 1-4, the quarter-finals from the bottom (QF 4 on Station 1 up to
+     QF 1 on Station 4, because Play-In 1 feeds QF 1 and would otherwise put the
+     same team back on the big screen), the semi-finals on 1 and 2, the final on
+     1 and third place on 2. The Station column on the sheet's Enter tabs holds
+     the same numbers, so change both together.
      ------------------------------------------------------------------------ */
 
   function groupStation(gi, i) {
@@ -276,36 +274,8 @@
   function assignStations(rounds, third) {
     var pi = rounds[0], qf = rounds[1], sf = rounds[2], fin = rounds[3];
     if (!DIV.stations || !pi || pi.name !== 'Play-In') return;
-
-    var seen = {};
-    div().groups.forEach(function (g, gi) {
-      div().groupMatches.filter(function (m) { return m.group === g.name; }).forEach(function (m, i) {
-        if (groupStation(gi, i) === 1) m.teams.forEach(function (t) { seen[norm(t)] = true; });
-      });
-    });
-
-    /* A typed name, or a projected one. A playoff slot has no team yet. */
-    function namesIn(m) {
-      return [0, 1].map(function (i) {
-        if (m.teams[i]) return m.teams[i];
-        var hint = m.ghosts && m.ghosts[i] && m.hints[i];
-        return hint && hint.indexOf('Playoff:') !== 0 ? hint : '';
-      }).filter(Boolean);
-    }
-    function spread(round, fromBottom) {
-      if (!round) return;
-      var order = fromBottom ? round.matches.slice().reverse() : round.matches;
-      var best = order[0], bestCount = -1;
-      order.forEach(function (m) {
-        var count = namesIn(m).filter(function (t) { return !seen[norm(t)]; }).length;
-        if (count > bestCount) { best = m; bestCount = count; }
-      });
-      var next = 2;
-      order.forEach(function (m) { m.station = m === best ? 1 : next++; });
-      namesIn(best).forEach(function (t) { seen[norm(t)] = true; });
-    }
-    spread(pi);
-    spread(qf, true);
+    pi.matches.forEach(function (m, i) { m.station = i + 1; });
+    if (qf) qf.matches.forEach(function (m, i) { m.station = qf.matches.length - i; });
     if (sf) sf.matches.forEach(function (m, i) { m.station = i + 1; });
     if (fin) fin.matches[0].station = 1;
     if (third) third.station = 2;

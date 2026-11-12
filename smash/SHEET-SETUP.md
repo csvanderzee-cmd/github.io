@@ -138,9 +138,10 @@ sheet has been cleared.
 
 Stations appear on every group match and bracket match. Group stations are listed
 in `data/smash.js` by the order of the match rows, so keep that order if you edit a
-tab. In the play-in and quarter-finals, Station 1 goes to the match with the most
-teams that have not been on the big screen. The other stations follow in order, top
-down for the play-in and bottom up for the quarter-finals (QF 4 on 1 up to QF 1 on 4).
+tab. Knockout stations are fixed, to match the printed scorecards: Play-In 1-4 on
+Stations 1-4, the quarter-finals bottom up (QF 4 on 1 up to QF 1 on 4), the semi-finals
+on 1 and 2, the final on 1 and third place on 2. The Station column on the Enter tabs
+holds the same numbers as plain values.
 
 A group's top two can only meet again in the final. Without a play-in round the
 page falls back to the World Cup crossing, when the qualifiers make a clean
