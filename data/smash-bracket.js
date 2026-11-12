@@ -74,6 +74,9 @@
       var A = byName[norm(m.teams[0])], B = byName[norm(m.teams[1])];
       if (!A || !B) return;
 
+      /* Neither team showed: both played it and lost it, nobody scores. */
+      if (s.double) { A.p++; B.p++; A.l++; B.l++; return; }
+
       played.push({ a: A.name, b: B.name, winner: s.a > s.b ? A.name : B.name });
 
       A.p++; B.p++;
@@ -303,8 +306,10 @@
 
     function decorate(m) {
       var s = root.SMASH.matchScore(m);
-      m.scoreA = s.a; m.scoreB = s.b; m.done = s.done;
-      m.winner = s.done ? (s.a > s.b ? m.teams[0] : m.teams[1]) : null;
+      /* A knockout needs a winner, so a double forfeit there stays open until
+         the referee's call is typed over a slot on the sheet. */
+      m.scoreA = s.a; m.scoreB = s.b; m.done = s.done && !s.double;
+      m.winner = m.done ? (s.a > s.b ? m.teams[0] : m.teams[1]) : null;
     }
     rounds.forEach(function (rd) { rd.matches.forEach(decorate); });
     if (third) decorate(third);
@@ -359,6 +364,7 @@
 
   function matchSentence(a, b, s) {
     if (!a || !b) return (a || 'To be decided') + ' versus ' + (b || 'to be decided') + ', not played yet';
+    if (s.double) return a + ' versus ' + b + ', double forfeit, both teams lose';
     if (!s.done) {
       return (s.a + s.b) > 0
         ? a + ' versus ' + b + ', in progress, ' + s.a + ' to ' + s.b
@@ -371,6 +377,7 @@
   /* Who forfeited, in words, or '' if nobody did. Every decided game forfeited
      by one team is the whole match; anything less is a game within it. */
   function forfeitLabel(m) {
+    if ((m.games || []).some(function (g) { return g.double; })) return 'Double forfeit: both teams lose';
     var by = {}, count = 0;
     (m.games || []).forEach(function (g) {
       if (!g.forfeit) return;
@@ -396,9 +403,9 @@
   function fixtureRow(m, station) {
     var s = root.SMASH.matchScore(m);
     var aWon = s.done && s.a > s.b, bWon = s.done && s.b > s.a;
-    var chip = s.done ? s.a + ' – ' + s.b : 'vs';
+    var chip = s.double ? 'FF' : s.done ? s.a + ' – ' + s.b : 'vs';
     var where = station ? stationLabel(station) : '';
-    var ff = withdrawnLabel(m) || forfeitLabel(m);
+    var ff = s.double ? forfeitLabel(m) : withdrawnLabel(m) || forfeitLabel(m);
     return '<li class="fix-wrap">' + sr((where ? where + ': ' : '') + matchSentence(m.teams[0], m.teams[1], s) + (ff ? '. ' + ff : '')) +
            (where ? '<p class="match-station' + (station === 1 ? ' big' : '') + '" aria-hidden="true">' + where + '</p>' : '') +
            '<div class="fix-row" aria-hidden="true">' +

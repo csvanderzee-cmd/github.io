@@ -361,6 +361,8 @@
      game's winner is simply whichever row holds the larger number. A blank or
      equal pair means the game has not been played. An F marks the team that
      forfeited the game: the other team wins it, and the F counts as 0 stock.
+     An F on both rows means neither team showed: a double forfeit. It ends
+     the match with no winner, and both teams take the loss.
      ------------------------------------------------------------------------ */
 
   function isForfeit(cell) { return /^f$/i.test(String(cell === null || cell === undefined ? '' : cell).trim()); }
@@ -374,8 +376,7 @@
       var fa = isForfeit(a), fb = isForfeit(b);
       var na = Number(a) || 0, nb = Number(b) || 0;
       if (fa && fb) {
-        warn(label + ': game ' + (gi + 1) + ' has an F on both rows, so there is no winner. ' +
-             'One of them needs correcting.');
+        games.push({ top: 0, bottom: 0, topWon: false, forfeit: true, double: true });
         return;
       }
       if (fa || fb) {
@@ -394,9 +395,12 @@
     return games;
   }
 
+  /* A double forfeit is done with nobody on 2: check `double` before reading a
+     winner off a > b. */
   function matchScore(m) {
-    var a = 0, b = 0;
-    m.games.forEach(function (g) { if (g.topWon) a++; else b++; });
+    var a = 0, b = 0, dbl = false;
+    m.games.forEach(function (g) { if (g.double) dbl = true; else if (g.topWon) a++; else b++; });
+    if (dbl) return { a: 0, b: 0, done: true, double: true };
     return { a: a, b: b, done: a === 2 || b === 2 };
   }
 

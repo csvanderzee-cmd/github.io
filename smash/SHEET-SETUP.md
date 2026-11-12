@@ -74,6 +74,14 @@ with the right margin.
 | Timer ran out, **unequal** stock | Both teams' actual stock — e.g. `4` and `3` |
 | Timer ran out, **equal** stock → Sudden Death | `1` and `0` |
 | A team forfeits the game | Winner `0`, forfeiting team `F` (or `f`) |
+| Neither team shows (double forfeit) | `F` on **both** rows |
+
+A double forfeit ends the match on the spot: both teams are credited with a
+played match and a loss, and neither gets points, games or stock. This is how a
+match against Summerwind (withdrawn) is entered if the other team does not show
+either: change that team's `0`s to `F`. The Standings tabs count it as played,
+so the group still finishes. It is for group matches only. A knockout match
+needs a winner, so for one there, type the referee's call over the slot instead.
 
 In one sentence: **if stock did not decide it, write 1 and 0.**
 
