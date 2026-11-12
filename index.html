@@ -168,7 +168,7 @@
 
 <script src="/data/psd-nav.js"></script>
 <script>PSD_NAV.init();</script>
-<script src="/data/smash.js?v=20261112"></script>
+<script src="/data/smash.js?v=20261113"></script>
 
     <!-- ─── SMASH WEEK HERO ───
          Temporary. Stands in for the Rocket League hero below until the date in
@@ -422,6 +422,48 @@
 
 
     <main id="main-content">
+
+        <!-- ─── SMASH LIVESTREAM ───
+             Only on SMASH.config.eventDate (data/smash.js). The player is added by
+             script on the day, so on any other day the page loads nothing from
+             YouTube here. -->
+        <section id="smash-live" hidden class="bg-esports-dark py-12 border-b border-white/10 relative z-20" aria-labelledby="smash-live-heading">
+            <div class="max-w-5xl mx-auto px-4">
+                <div class="text-center mb-6">
+                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded bg-red-600/15 border border-red-500/40 text-red-300 text-xs font-bold uppercase tracking-widest mb-3">
+                        <span class="relative flex h-2 w-2" aria-hidden="true">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                        </span>
+                        Live today
+                    </span>
+                    <h2 id="smash-live-heading" class="font-display text-4xl md:text-5xl font-black uppercase text-white">Watch the Tournament</h2>
+                </div>
+                <div id="smash-live-player" class="video-wrapper bg-black/60 rounded-xl overflow-hidden"></div>
+                <p class="text-gray-300 text-sm text-center mt-4">
+                    If the player says the stream is offline, it has not started yet or is between sessions.
+                    <a href="https://www.youtube.com/@LevelUpPSD/streams" target="_blank" rel="noopener noreferrer" class="underline text-esports-blue-text hover:text-white">Open the stream on YouTube<span class="sr-only"> (opens in a new tab)</span></a>
+                </p>
+            </div>
+        </section>
+        <script>
+        (function () {
+            'use strict';
+            var CFG = window.SMASH && window.SMASH.config, S = CFG && CFG.stream;
+            if (!S || !CFG.eventDate || !window.PSD_SMASH_WEEK) return;
+            var d = new Date(), today = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+            if (today !== CFG.eventDate) return;
+            var src = S.video ? 'https://www.youtube.com/embed/' + encodeURIComponent(S.video)
+                              : 'https://www.youtube.com/embed/live_stream?channel=' + encodeURIComponent(S.channel);
+            var f = document.createElement('iframe');
+            f.src = src;
+            f.title = 'PSD Esports ' + (S.title || CFG.eventName) + ' livestream';
+            f.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+            f.setAttribute('allowfullscreen', '');
+            document.getElementById('smash-live-player').appendChild(f);
+            document.getElementById('smash-live').hidden = false;
+        })();
+        </script>
 
         <!-- ─── CONTACT BAR ─── -->
         <div class="bg-gradient-to-r from-esports-blue/20 via-esports-card to-esports-yellow/10 border-b border-white/10 relative z-30" role="complementary" aria-label="League contact information">
@@ -1090,21 +1132,21 @@
                                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
                                     <span class="relative inline-flex rounded-full h-2 w-2 bg-yellow-300"></span>
                                 </span>
-                                25-26 Championship Finals
+                                <span id="archive-main-badge">25-26 Championship Finals</span>
                             </span>
                         </div>
                         <div class="video-wrapper bg-black/60">
-                            <iframe src="https://www.youtube.com/embed/WqsQoQnU0RA"
+                            <iframe id="archive-main-video" src="https://www.youtube.com/embed/WqsQoQnU0RA"
                                     title="PSD Esports 25-26 Championship Finals Livestream"
                                     frameborder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     allowfullscreen></iframe>
                         </div>
-                        <p class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Spring Season Championship · 25-26</p>
+                        <p id="archive-main-caption" class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Spring Season Championship · 25-26</p>
                     </div>
 
                     <!-- Sidebar: past videos + channel link -->
-                    <div class="flex flex-col gap-5">
+                    <div id="archive-sidebar" class="flex flex-col gap-5">
 
                         <div class="bg-esports-card border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-300 group">
                             <a href="https://www.youtube.com/watch?v=12PhyAoZbJU"
@@ -1159,6 +1201,42 @@
                 </div>
             </div>
         </section>
+        <script>
+        /* After the Smash tournament (from SMASH.config.homeUntil), its stream leads the
+           archive and the 25-26 finals move to the top of the sidebar. Waits for
+           SMASH.config.stream.video: until that is set, the archive is unchanged. */
+        (function () {
+            'use strict';
+            var CFG = window.SMASH && window.SMASH.config, S = CFG && CFG.stream;
+            if (!S || !S.video || !CFG.homeUntil) return;
+            var from = new Date(CFG.homeUntil + 'T00:00:00');
+            if (isNaN(from) || new Date() < from) return;
+            var title = S.title || CFG.eventName;
+            var year = CFG.eventDate ? new Date(CFG.eventDate + 'T00:00:00') : from;
+            var label = year.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            var f = document.getElementById('archive-main-video');
+            f.src = 'https://www.youtube.com/embed/' + encodeURIComponent(S.video);
+            f.title = 'PSD Esports ' + title + ' livestream';
+            document.getElementById('archive-main-badge').textContent = title;
+            document.getElementById('archive-main-caption').textContent = 'Smash Bros. Tournament · ' + label;
+
+            var card = document.createElement('div');
+            card.className = 'bg-esports-card border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-300 group';
+            card.innerHTML =
+                '<a href="https://www.youtube.com/watch?v=WqsQoQnU0RA" target="_blank" rel="noopener noreferrer" class="block no-underline">' +
+                  '<div class="relative aspect-video overflow-hidden">' +
+                    '<img src="https://img.youtube.com/vi/WqsQoQnU0RA/hqdefault.jpg" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">' +
+                  '</div>' +
+                  '<div class="p-4">' +
+                    '<div class="text-[11px] text-gray-400 uppercase tracking-widest font-bold mb-1">Spring Season Championship</div>' +
+                    '<h3 class="font-display font-bold text-base text-white group-hover:text-esports-yellow-text transition-colors leading-tight">25-26 Championship Finals<span class="sr-only"> (opens YouTube in a new tab)</span></h3>' +
+                  '</div>' +
+                '</a>';
+            var side = document.getElementById('archive-sidebar');
+            side.insertBefore(card, side.firstElementChild);
+        })();
+        </script>
 
     </main>
 

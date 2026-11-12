@@ -71,6 +71,21 @@
        to Rocket League by itself. 'YYYY-MM-DD'; the first day it is back. */
     homeUntil: '2026-11-15',
 
+    /* The livestream. On eventDate the home page shows it live under the hero.
+       From homeUntil on it leads the Finals Archive instead.
+
+         channel  the YouTube channel id. Without a video, the live player
+                  shows whatever that channel is streaming right now.
+         video    the stream's own video id (the part after watch?v=), once
+                  YouTube has one. The live player uses it if set, and the
+                  archive needs it: until it is set the archive is unchanged.
+         title    shown over the archived stream. */
+    stream: {
+      channel: 'UCR0ykkwXsn8614O73wrVA1g',   /* @LevelUpPSD */
+      video: '',
+      title: 'Super Smash Bros. Tournament'
+    },
+
     /* ---- registration ----------------------------------------------------
 
        registerBy is 'YYYY-MM-DD'. After it, register links become an email to
