@@ -413,12 +413,22 @@
     return (whole ? 'Forfeit: ' : 'Game forfeit: ') + names.join(' and ');
   }
 
+  /* A match against a team that withdrew: '' if neither did. */
+  function withdrawnLabel(m) {
+    var out = (m.teams || []).filter(function (t) { return root.SMASH.withdrawn(t); });
+    return out.length ? 'Forfeit: ' + out.join(' and ') + ' withdrew' : '';
+  }
+
+  function wdTag(name) {
+    return root.SMASH.withdrawn(name) ? ' <span class="wd-tag">Withdrawn</span>' : '';
+  }
+
   function fixtureRow(m, station) {
     var s = root.SMASH.matchScore(m);
     var aWon = s.done && s.a > s.b, bWon = s.done && s.b > s.a;
     var chip = s.done ? s.a + ' – ' + s.b : 'vs';
     var where = station ? stationLabel(station) : '';
-    var ff = forfeitLabel(m);
+    var ff = withdrawnLabel(m) || forfeitLabel(m);
     return '<li class="fix-wrap">' + sr((where ? where + ': ' : '') + matchSentence(m.teams[0], m.teams[1], s) + (ff ? '. ' + ff : '')) +
            (where ? '<p class="match-station' + (station === 1 ? ' big' : '') + '" aria-hidden="true">' + where + '</p>' : '') +
            '<div class="fix-row" aria-hidden="true">' +
@@ -480,7 +490,9 @@
       '.match-station.big{color:#FFD166;}' +
       ".match-forfeit{font-family:'Rajdhani',sans-serif;font-weight:800;font-size:.75rem;letter-spacing:.06em;" +
         'color:#FF6B6B;margin:0;padding:.25rem .65rem .35rem;}' +
-      '.fix-wrap .match-forfeit{padding:.2rem .1rem 0;}';
+      '.fix-wrap .match-forfeit{padding:.2rem .1rem 0;}' +
+      ".wd-tag{font-family:'Rajdhani',sans-serif;font-weight:800;font-size:.6875rem;letter-spacing:.08em;" +
+        'text-transform:uppercase;color:#FF6B6B;white-space:nowrap;}';
     document.head.appendChild(style);
 
     document.addEventListener('keydown', function (e) {
@@ -548,7 +560,7 @@
               ? sr(complete ? ', qualified' : ', currently in a qualifying place') : '';
             return '<tr class="' + (i < ADVANCE ? 'qualified' : '') + '">' +
               '<td class="pos">' + (i + 1) + '</td>' +
-              '<td class="nm">' + esc(r.name) + place + '</td>' +
+              '<td class="nm">' + esc(r.name) + wdTag(r.name) + place + '</td>' +
               '<td>' + r.p + '</td><td>' + r.w + '</td><td>' + r.l + '</td>' +
               '<td>' + r.gw + '–' + r.gl + '</td>' +
               '<td>' + (r.sd > 0 ? '+' : '') + r.sd + '</td>' +

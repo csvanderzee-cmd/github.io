@@ -71,6 +71,8 @@
         @media (max-width:639px) { .sched-table th, .sched-table td { padding-left:.45rem; padding-right:.45rem; } }
         .team-match { display:block; }
         .team-match.big { color:#FFD166; font-weight:700; }
+        .wd { display:block; color:#FF6B6B; font-weight:700; }
+        .sched-table tr.big td .wd { color:#FF6B6B; }
 
         .note-list li { margin-bottom:.5rem; color:#e5e7eb; }
         .note-list b { color:#fff; }
@@ -182,6 +184,11 @@
             return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
         });
     }
+    /* A match against a team that withdrew is a forfeit; say so in the row. */
+    function wdNote(m) {
+        var out = [m.a, m.b].filter(function (t) { return SMASH.withdrawn(t); });
+        return out.length ? ' <span class="wd">Forfeit: ' + esc(out.join(' and ')) + ' withdrew</span>' : '';
+    }
     function stationName(n) { return n === 1 ? '1 (Big Screen)' : String(n); }
 
     /* Every group match, with its time and station, in playing order. */
@@ -216,7 +223,7 @@
                 if (last !== null && m.round !== last) cls.push('new-block');
                 last = m.round;
                 return '<tr class="' + cls.join(' ') + '"><td class="nowrap">' + esc(m.time) + '</td><td class="nowrap">' + esc(stationName(m.station)) +
-                       '</td><td class="nowrap">' + esc(m.group) + '</td><td>' + esc(m.a) + ' v ' + esc(m.b) + '</td></tr>';
+                       '</td><td class="nowrap">' + esc(m.group) + '</td><td>' + esc(m.a) + ' v ' + esc(m.b) + wdNote(m) + '</td></tr>';
             }).join('') + '</tbody></table></div>';
     }
 
@@ -240,6 +247,10 @@
                 var mine = matches.filter(function (m) {
                     return SMASH.norm(m.a) === SMASH.norm(r.team) || SMASH.norm(m.b) === SMASH.norm(r.team);
                 });
+                if (SMASH.withdrawn(r.team)) {
+                    return '<tr><th scope="row">' + esc(r.team) + '</th><td class="nowrap">' + esc(r.group) + '</td><td>' +
+                        '<span class="wd">Withdrawn. Its matches are forfeits.</span></td></tr>';
+                }
                 return '<tr><th scope="row">' + esc(r.team) + '</th><td class="nowrap">' + esc(r.group) + '</td><td>' +
                     mine.map(function (m) {
                         var other = SMASH.norm(m.a) === SMASH.norm(r.team) ? m.b : m.a;

@@ -189,6 +189,10 @@
       { id: 'jr', name: 'Grade 5 & Under', accent: '#FF6B6B',
         page: 'grade-5-under.html', gid: '0', testGid: null,
         startTime: '8:00 AM',
+        /* Schools that pulled out after the draw. Their matches stay on the
+           tab and are scored as forfeits (0 and F); the pages label each team
+           and match so nobody waits for them. Matched on the start of the name. */
+        withdrawn: ['Summerwind'],
         stations: { groups: [
           [1, 2, 3, 4, 3, 4],
           [3, 4, 1, 2, 5, 6],
@@ -674,8 +678,17 @@
     });
   }
 
+  /* True when a team's school is in its division's withdrawn list. */
+  function withdrawn(name) {
+    var n = norm(name);
+    return !!n && CONFIG.divisions.some(function (d) {
+      return (d.withdrawn || []).some(function (w) { return n.indexOf(norm(w)) === 0; });
+    });
+  }
+
   root.SMASH = {
     config: CONFIG,
+    withdrawn: withdrawn,
     testMode: TEST_MODE,
     isWired: isWired,
     load: load,

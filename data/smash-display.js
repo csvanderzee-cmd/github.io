@@ -62,6 +62,7 @@
     '#sd tr.q td:first-child{box-shadow:inset 3px 0 0 #FDB913;}' +
     '#sd .sd-pos{color:#8f97a5;width:2rem;}' +
     '#sd .sd-nm{color:#fff;font-weight:700;}' +
+    '#sd .sd-wd{color:#FF6B6B;font-size:.75em;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;}' +
     '#sd .sd-pts{color:#fff;font-weight:800;}' +
 
     '#sd .sd-bracket{display:flex;align-items:stretch;justify-content:center;}' +
@@ -175,7 +176,8 @@
         var place = i < s.advance ? sr(g.complete ? ', qualified' : ', currently in a qualifying place') : '';
         return '<tr class="' + (i < s.advance ? 'q' : '') + '">' +
           '<td class="sd-pos">' + (i + 1) + '</td>' +
-          '<td class="sd-nm">' + esc(r.name) + place + '</td>' +
+          '<td class="sd-nm">' + esc(r.name) +
+            (root.SMASH.withdrawn(r.name) ? ' <span class="sd-wd">Withdrawn</span>' : '') + place + '</td>' +
           '<td>' + r.p + '</td><td>' + r.w + '</td><td>' + r.l + '</td>' +
           '<td>' + (r.sd > 0 ? '+' : '') + r.sd + '</td>' +
           '<td class="sd-pts">' + r.pts + '</td></tr>';
