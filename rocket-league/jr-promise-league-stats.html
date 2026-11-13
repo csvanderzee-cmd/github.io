@@ -71,6 +71,18 @@
   #controls-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 1rem; margin: 0 0 1.75rem; }
   .control-group { display: flex; flex-direction: column; min-width: 190px; }
   .control-group label { font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 700; }
+  /* "Average Score (weighted)" explainer: shows on hover, keyboard focus or a tap,
+     stays while the pointer is over it, and Escape closes it. */
+  .label-row { position: relative; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+  .label-row label { margin-bottom: 0; }
+  .tip { display: inline-flex; }
+  .tip[hidden] { display: none; }
+  .tip-btn { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border-mid); background: var(--card-bg); color: var(--psd-blue-text); font: 700 .8rem/1 'Rajdhani', sans-serif; cursor: help; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
+  .tip-btn:focus-visible { outline: 2px solid var(--psd-yellow-text); outline-offset: 2px; }
+  .tip-text { position: absolute; left: 0; top: calc(100% + 6px); z-index: 50; width: min(260px, calc(100vw - 32px)); padding: 10px 12px; border-radius: 8px; background: var(--card-bg-deep); border: 1px solid var(--border-mid); color: var(--text-color); font: 400 .85rem/1.4 system-ui, sans-serif; text-transform: none; letter-spacing: normal; box-shadow: 0 8px 24px rgba(0,0,0,.5); display: none; }
+  .tip-text::before { content: ''; position: absolute; left: 0; right: 0; top: -8px; height: 8px; }
+  .tip:hover .tip-text, .tip:focus-within .tip-text, .tip.open .tip-text { display: block; }
+  .tip.closed .tip-text { display: none; }
   .custom-select, .search-input { position: relative; }
   .custom-select select, .search-input input { appearance: none; -webkit-appearance: none; background-color: #0d1119; color: var(--text-color); border: 1px solid #6b7280; /* 3.9:1 against the field, WCAG 1.4.11 */ border-radius: 9999px; padding: 0.55rem 1rem; font-size: 0.88rem; cursor: pointer; width: 100%; transition: border-color 0.18s, box-shadow 0.18s; box-shadow: 0 4px 12px rgba(0,0,0,0.5); font-family: 'Inter', sans-serif; }
   .custom-select select:focus, .search-input input:focus { outline: none; border-color: var(--psd-red-text); box-shadow: 0 0 0 2px rgba(255,107,107,0.2), 0 4px 12px rgba(0,0,0,0.5); }
@@ -140,6 +152,8 @@
   .stat-item { text-align: center; width: 78px; flex-shrink: 0; background: rgba(7,10,16,0.8); border-radius: 10px; padding: 6px 4px 5px; border: 1px solid var(--border-subtle); }
   .stat-label { font-family: 'Rajdhani', sans-serif; font-size: .6875rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 2px; }
   .stat-value { font-family: 'Rajdhani', sans-serif; font-size: 1.15rem; font-weight: 900; line-height: 1.1; }
+  .stat-item .stat-label-sub { margin-top: 4px; }
+  .stat-item .stat-value-sub { font-size: .9rem; font-weight: 700; color: var(--text-color); }
   .stat-yellow { color: var(--psd-yellow-text); }
   .stat-red    { color: var(--psd-red-text); }
   .stat-blue   { color: var(--psd-blue-text); }
@@ -267,7 +281,13 @@
 
   <div id="controls-container">
     <div class="control-group">
-      <label for="sort-select">Sort Players By</label>
+      <div class="label-row">
+        <label for="sort-select">Sort Players By</label>
+        <span class="tip" id="weighted-tip" hidden>
+          <button type="button" class="tip-btn" aria-label="What is Average Score (weighted)?" aria-describedby="weighted-tip-text" aria-expanded="false">?</button>
+          <span class="tip-text" id="weighted-tip-text" role="tooltip">Rewards players who score well over many games, not just one or two.</span>
+        </span>
+      </div>
       <div class="custom-select"><select id="sort-select"></select></div>
     </div>
     <div class="control-group">
@@ -428,6 +448,20 @@ function escapeHtml(s) {
 
 window.onload = loadAndProcessData;
 document.getElementById('sort-select').addEventListener('change', updateDisplay);
+/* The "?" next to Sort Players By: only while the weighted sort is picked. */
+(function () {
+  const tip = document.getElementById('weighted-tip');
+  const btn = tip.querySelector('.tip-btn');
+  const sel = document.getElementById('sort-select');
+  const set = open => { tip.classList.toggle('open', open); tip.classList.toggle('closed', !open); btn.setAttribute('aria-expanded', String(open)); };
+  window.syncWeightedTip = () => { tip.hidden = sel.value !== 'avg_score_weighted'; tip.classList.remove('open', 'closed'); btn.setAttribute('aria-expanded', 'false'); };
+  btn.addEventListener('click', () => set(!tip.classList.contains('open')));
+  tip.addEventListener('mouseleave', () => tip.classList.remove('closed'));
+  btn.addEventListener('blur', () => { tip.classList.remove('open', 'closed'); btn.setAttribute('aria-expanded', 'false'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !tip.hidden) set(false); });
+  sel.addEventListener('change', syncWeightedTip);
+})();
+
 document.getElementById('school-filter').addEventListener('change', updateDisplay);
 document.getElementById('stat-mode-select').addEventListener('change', () => { updateSortOptions(); updateDisplay(); });
 document.getElementById('player-search-input').addEventListener('keyup', updateDisplay);
@@ -446,6 +480,7 @@ async function loadAndProcessData() {
     const csvTexts = await PSD.fetchAllCSV(sheetId, tabGids);
     const allRawData = csvTexts.flatMap(text => text ? parseCSV(text) : []);
     masterPlayerData = aggregateStats(allRawData);
+    addWeightedScore(masterPlayerData);
     populateSchoolFilter(masterPlayerData);
     updateSortOptions();
     updateDisplay();
@@ -549,6 +584,19 @@ function parseCSV(text) {
   });
 }
 
+/* Average Score (weighted): a Bayesian average. Every player starts with
+   WEIGHT_GAMES games at the league's average score, so a big score over one or
+   two games no longer outranks a strong score held over a whole season.
+   Only the "Average Score (weighted)" sort uses it; nothing else changes. */
+const WEIGHT_GAMES = 5;
+function addWeightedScore(players) {
+  const games = players.reduce((a, p) => a + p.gamesPlayed, 0);
+  const leagueAvg = games > 0 ? players.reduce((a, p) => a + p.score, 0) / games : 0;
+  players.forEach(p => {
+    p.avgScoreWeighted = p.gamesPlayed > 0 ? (p.score + WEIGHT_GAMES * leagueAvg) / (p.gamesPlayed + WEIGHT_GAMES) : -1;
+  });
+}
+
 function aggregateStats(rawData) {
   const players = {};
   rawData.forEach(row => {
@@ -592,9 +640,10 @@ function updateSortOptions() {
   const sortSelect = document.getElementById('sort-select');
   const isAvg = document.getElementById('stat-mode-select').value === 'averages';
   const cur = sortSelect.value;
-  const opts = isAvg ? [['avg_score','Avg Score'],['avg_goals','Avg Goals'],['avg_shots','Avg Shots'],['shootingPercentage','Shooting %'],['avg_assists','Avg Assists'],['avg_saves','Avg Saves'],['mvps','MVPs'],['gamesPlayed','Games'],['name_asc','Name (A-Z)'],['wins','Wins']] : [['total_score','Total Score'],['goals','Goals Total'],['shots','Shots Total'],['shootingPercentage','Shooting %'],['assists','Assists Total'],['saves','Saves Total'],['mvps','MVPs'],['gamesPlayed','Games'],['name_asc','Name (A-Z)'],['wins','Wins']];
+  const opts = isAvg ? [['avg_score','Avg Score'],['avg_score_weighted','Average Score (weighted)'],['avg_goals','Avg Goals'],['avg_shots','Avg Shots'],['shootingPercentage','Shooting %'],['avg_assists','Avg Assists'],['avg_saves','Avg Saves'],['mvps','MVPs'],['gamesPlayed','Games'],['name_asc','Name (A-Z)'],['wins','Wins']] : [['total_score','Total Score'],['goals','Goals Total'],['shots','Shots Total'],['shootingPercentage','Shooting %'],['assists','Assists Total'],['saves','Saves Total'],['mvps','MVPs'],['gamesPlayed','Games'],['name_asc','Name (A-Z)'],['wins','Wins']];
   sortSelect.innerHTML = opts.map(([v,t]) => `<option value="${v}">${t}</option>`).join('');
-  sortSelect.value = opts.some(([v]) => v===cur) ? cur : (isAvg?'avg_score':'total_score');
+  sortSelect.value = opts.some(([v]) => v===cur) ? cur : (isAvg?'avg_score_weighted':'total_score');
+  if (window.syncWeightedTip) syncWeightedTip();
 }
 
 function updateDisplay() {
@@ -604,7 +653,7 @@ function updateDisplay() {
   const search = getMergeKey(document.getElementById('player-search-input').value);
   if (search) data = data.filter(p => getMergeKey(p.name).includes(search));
   const sort = document.getElementById('sort-select').value;
-  const map = { total_score:'score', avg_score:'avgScore', gamesPlayed:'gamesPlayed', goals:'goals', assists:'assists', saves:'saves', shots:'shots', wins:'wins', mvps:'mvps', avg_goals:'avgGoals', avg_assists:'avgAssists', avg_saves:'avgSaves', avg_shots:'avgShots', shootingPercentage:'shootingPercentage' };
+  const map = { total_score:'score', avg_score:'avgScore', avg_score_weighted:'avgScoreWeighted', gamesPlayed:'gamesPlayed', goals:'goals', assists:'assists', saves:'saves', shots:'shots', wins:'wins', mvps:'mvps', avg_goals:'avgGoals', avg_assists:'avgAssists', avg_saves:'avgSaves', avg_shots:'avgShots', shootingPercentage:'shootingPercentage' };
   data.sort((a,b) => sort==='name_asc' ? a.name.localeCompare(b.name) : (b[map[sort]||'avgScore']||0)-(a[map[sort]||'avgScore']||0));
   const mode = document.getElementById('stat-mode-select').value;
   renderTotalStats(calculateTotalStats(data), school, mode);
@@ -656,7 +705,7 @@ function renderPlayerCards(data, mode) {
     const logo=logoHtml(player.school||'','card-school-logo','card-school-logo-fallback');
     const badges=getBadges(player,masterPlayerData);
     const badgeHtml=badges.length?`<div class="badge-row">${badges.map(b=>b.unique?`<span class="badge-chip badge-unique" data-tip="${b.tip}"><span aria-hidden="true">${b.icon}</span> ${b.label}<span class="sr-only">: ${b.tip}</span></span>`:`<span class="badge-chip" data-tip="${b.tip}" style="color:${b.color};border-color:${b.color}33;background:${b.color}18"><span aria-hidden="true">${b.icon}</span> ${b.label}<span class="sr-only">: ${b.tip}</span></span>`).join('')}</div>`:'';
-    card.innerHTML=`<div class="player-left">${logo}<div class="player-details"><div class="player-name">${player.name}</div><div class="player-school">${player.school||''}${player.title?` <span class="player-title">${escapeHtml(player.title)}</span>`:''}</div><div class="player-meta">${player.gamesPlayed} GP &bull; ${player.wins}-${player.losses} &bull; ${player.shootingPercentage}% SH%${player.mvps?` &bull; <span class="meta-mvp">${player.mvps} MVP</span>`:''}</div>${badgeHtml}</div></div><div class="player-stats-row"><div class="stat-item"><div class="stat-label">${isAvg?'AVG SCORE':'SCORE'}</div><div class="stat-value stat-yellow">${sv}</div></div><div class="stat-item"><div class="stat-label">${isAvg?'AVG GOALS':'GOALS'}</div><div class="stat-value stat-red">${gv}</div></div><div class="stat-item"><div class="stat-label">${isAvg?'AVG SHOTS':'SHOTS'}</div><div class="stat-value stat-blue">${shv}</div></div><div class="stat-item"><div class="stat-label">ASSISTS</div><div class="stat-value stat-yellow">${av}</div></div><div class="stat-item"><div class="stat-label">SAVES</div><div class="stat-value stat-red">${sv2}</div></div></div>`;
+    card.innerHTML=`<div class="player-left">${logo}<div class="player-details"><div class="player-name">${player.name}</div><div class="player-school">${player.school||''}${player.title?` <span class="player-title">${escapeHtml(player.title)}</span>`:''}</div><div class="player-meta">${player.gamesPlayed} GP &bull; ${player.wins}-${player.losses} &bull; ${player.shootingPercentage}% SH%${player.mvps?` &bull; <span class="meta-mvp">${player.mvps} MVP</span>`:''}</div>${badgeHtml}</div></div><div class="player-stats-row"><div class="stat-item">${isAvg && player.avgScoreWeighted >= 0 ? `<div class="stat-label">WEIGHTED</div><div class="stat-value stat-yellow">${Math.round(player.avgScoreWeighted)}</div><div class="stat-label stat-label-sub">AVG SCORE</div><div class="stat-value stat-value-sub">${sv}</div>` : `<div class="stat-label">${isAvg?'AVG SCORE':'SCORE'}</div><div class="stat-value stat-yellow">${sv}</div>`}</div><div class="stat-item"><div class="stat-label">${isAvg?'AVG GOALS':'GOALS'}</div><div class="stat-value stat-red">${gv}</div></div><div class="stat-item"><div class="stat-label">${isAvg?'AVG SHOTS':'SHOTS'}</div><div class="stat-value stat-blue">${shv}</div></div><div class="stat-item"><div class="stat-label">ASSISTS</div><div class="stat-value stat-yellow">${av}</div></div><div class="stat-item"><div class="stat-label">SAVES</div><div class="stat-value stat-red">${sv2}</div></div></div>`;
     container.appendChild(card);
   });
 }
