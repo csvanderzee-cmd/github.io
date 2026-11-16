@@ -96,12 +96,6 @@
   var LATE_URL = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + REGISTRATION.lateEmail +
                  '&su=' + encodeURIComponent(REGISTRATION.lateSubject);
 
-  /** The Smash menu's sign-up entry: the form while it is open, then the email. */
-  var REGISTER_LINK = registrationOpen()
-    ? { text: 'Register a Team', href: REGISTRATION.url, external: true }
-    : { text: 'Late Entry or Change', href: LATE_URL, external: true,
-        title: 'Registration has closed. Email Mr. Vanderzee for a late entry or a team change (opens in a new tab)' };
-
   var SECTIONS = [
     {
       id: 'rocket-league',
@@ -154,10 +148,6 @@
             { text: 'Schedule',        href: '/smash/schedule.html' },
             { text: 'Grade 5 & Under', href: '/smash/grade-5-under.html' },
             { text: 'Grades 6–8',      href: '/smash/grades-6-8.html' },
-            /* Not last: the sign-up pill comes straight after this list in the
-               page, and two links in a row to the same form is one too many
-               for anyone tabbing through. */
-            REGISTER_LINK,
             { text: 'Rules',           href: '/smash/rules.html' }
           ]
         }
