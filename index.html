@@ -168,70 +168,7 @@
 
 <script src="/data/psd-nav.js"></script>
 <script>PSD_NAV.init();</script>
-<script src="/data/smash.js?v=20261113b"></script>
 
-    <!-- ─── SMASH WEEK HERO ───
-         Temporary. Stands in for the Rocket League hero below until the date in
-         SMASH.config.homeUntil (data/smash.js), then the page goes back on its
-         own with no code change. Both headers stay in the page because the
-         season scripts fill in the Rocket League one either way; only one is
-         ever displayed. Without JavaScript this stays hidden and the Rocket
-         League hero shows. -->
-    <header id="smash-hero" role="banner" style="display:none" class="relative min-h-[680px] flex items-center overflow-hidden">
-        <div aria-hidden="true" class="absolute inset-0 bg-[url('/smash/home-hero.jpg')] bg-cover bg-center opacity-75 blur-2xl scale-110"></div>
-        <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-esports-dark via-esports-dark/70 to-esports-dark/30"></div>
-        <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-r from-esports-dark/90 via-esports-dark/50 to-transparent"></div>
-
-        <div class="relative max-w-7xl mx-auto px-4 py-8 z-20 w-full">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-
-                <div class="lg:order-2 relative">
-                    <div aria-hidden="true" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[110%] h-[120%] bg-esports-red/30 blur-[80px] rounded-full -z-10"></div>
-                    <img src="/smash/home-hero.jpg" width="1200" height="512"
-                         alt="Mario, Link, Donkey Kong, Samus and Pikachu surrounded by flames around the words Super Smash Bros. Tournament."
-                         class="w-full h-auto rounded-2xl border border-esports-yellow/40 shadow-2xl lg:-rotate-1">
-                </div>
-
-                <div class="lg:order-1 max-w-3xl">
-                    <div class="inline-flex items-center gap-3 px-5 py-2 rounded-sm bg-esports-yellow/10 border-l-4 border-esports-yellow-text text-esports-yellow-text font-display font-bold uppercase tracking-widest mb-5">
-                        <span aria-hidden="true">⚔️</span>
-                        <span id="smash-hero-count">Coming up</span>
-                    </div>
-
-                    <h1 class="font-display font-black uppercase leading-[0.9] mb-6 tracking-tight">
-                        <span class="block text-5xl md:text-7xl lg:text-8xl text-white">Super Smash Bros.</span>
-                        <span class="block text-5xl md:text-7xl lg:text-8xl pr-3 text-transparent bg-clip-text bg-gradient-to-r from-esports-red-text to-esports-yellow-text italic">Tournament</span>
-                    </h1>
-
-                    <div class="border-l-4 border-esports-red pl-6 mb-6 bg-gradient-to-r from-esports-red/10 to-transparent py-4 rounded-r-xl">
-                        <p class="text-xl text-gray-200 font-light">
-                            <strong id="smash-hero-when" class="text-white font-bold block">Saturday, November 14 · 8:00 AM</strong>
-                            <span id="smash-hero-venue">Quail Valley Esports Arena</span>
-                        </p>
-                    </div>
-
-                    <div class="flex flex-wrap gap-3 mb-5 font-display font-bold uppercase tracking-wider">
-                        <a href="/smash/grade-5-under.html" class="smash-btn bg-esports-yellow text-black hover:bg-esports-yellow-text">Grade 5 &amp; Under<span class="sr-only"> bracket</span></a>
-                        <a href="/smash/grades-6-8.html" class="smash-btn bg-esports-yellow text-black hover:bg-esports-yellow-text">Grades 6&ndash;8<span class="sr-only"> bracket</span></a>
-                        <a href="/smash/rules.html" class="smash-btn bg-white/10 border border-white/30 text-white hover:bg-white/20">Rules</a>
-                        <a id="smash-hero-missed" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=csvanderzee@palmdalesd.org" target="_blank" rel="noopener" class="smash-btn bg-esports-red text-white hover:brightness-110">
-                            <i data-lucide="mail" class="w-4 h-4" aria-hidden="true"></i>Missed Sign-Ups?<span class="sr-only"> (opens in a new tab)</span>
-                        </a>
-                    </div>
-
-                    <p class="text-sm text-gray-300">
-                        Rocket League continues as usual:
-                        <a href="/rocket-league/promise-league.html" class="underline text-esports-blue-text hover:text-white">Late Release</a> and
-                        <a href="/rocket-league/jr-promise-league.html" class="underline text-esports-blue-text hover:text-white">Early Release</a> standings.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </header>
-    <style>
-        .smash-btn { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; padding: .5rem 1.25rem; border-radius: .5rem; transition: background-color .18s ease, filter .18s ease; }
-        .smash-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
-    </style>
     <header id="season-hero" role="banner" class="relative min-h-[680px] flex items-center overflow-hidden">
         <div aria-hidden="true" class="absolute inset-0 bg-[url('https://i.imgur.com/xJbVm81.png')] bg-cover bg-center opacity-25"></div>
         <div aria-hidden="true" class="absolute inset-0 bg-gradient-to-t from-esports-dark via-esports-dark/80 to-transparent"></div>
@@ -390,80 +327,9 @@
             </div>
         </div>
     </header>
-    <script>
-    /* Decides which hero shows, before the page paints, so a visitor never sees
-       one flash into the other. Also read by the announcement strip and the
-       particles further down. */
-    (function () {
-        'use strict';
-        var CFG = window.SMASH && window.SMASH.config;
-        var until = CFG && CFG.homeUntil && new Date(CFG.homeUntil + 'T00:00:00');
-        if (!until || isNaN(until) || new Date() >= until) return;
-        window.PSD_SMASH_WEEK = true;
-
-        document.getElementById('smash-hero').style.display = '';
-        document.getElementById('season-hero').style.display = 'none';
-        document.title = 'PSD Esports | Super Smash Bros. Tournament';
-
-        var day = new Date(CFG.eventDate + 'T00:00:00');
-        var today = new Date();
-        today.setHours(0, 0, 0, 0);
-        var daysAway = Math.round((day - today) / 86400000);
-        document.getElementById('smash-hero-count').textContent =
-            daysAway <= 0 ? 'Today' : daysAway === 1 ? 'Tomorrow' : daysAway + ' days away';
-        document.getElementById('smash-hero-when').textContent =
-            day.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) +
-            ' · ' + CFG.startTime;
-        document.getElementById('smash-hero-venue').textContent = CFG.venue;
-
-        if (window.PSD_NAV) document.getElementById('smash-hero-missed').href = PSD_NAV.lateUrl;
-    })();
-    </script>
 
 
     <main id="main-content">
-
-        <!-- ─── SMASH LIVESTREAM ───
-             Only on SMASH.config.eventDate (data/smash.js). The player is added by
-             script on the day, so on any other day the page loads nothing from
-             YouTube here. -->
-        <section id="smash-live" hidden class="bg-esports-dark py-12 border-b border-white/10 relative z-20" aria-labelledby="smash-live-heading">
-            <div class="max-w-5xl mx-auto px-4">
-                <div class="text-center mb-6">
-                    <span class="inline-flex items-center gap-2 px-3 py-1 rounded bg-red-600/15 border border-red-500/40 text-red-300 text-xs font-bold uppercase tracking-widest mb-3">
-                        <span class="relative flex h-2 w-2" aria-hidden="true">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                        </span>
-                        Live today
-                    </span>
-                    <h2 id="smash-live-heading" class="font-display text-4xl md:text-5xl font-black uppercase text-white">Watch the Tournament</h2>
-                </div>
-                <div id="smash-live-player" class="video-wrapper bg-black/60 rounded-xl overflow-hidden"></div>
-                <p class="text-gray-300 text-sm text-center mt-4">
-                    If the player says the stream is offline, it has not started yet or is between sessions.
-                    <a href="https://www.youtube.com/@LevelUpPSD/streams" target="_blank" rel="noopener noreferrer" class="underline text-esports-blue-text hover:text-white">Open the stream on YouTube<span class="sr-only"> (opens in a new tab)</span></a>
-                </p>
-            </div>
-        </section>
-        <script>
-        (function () {
-            'use strict';
-            var CFG = window.SMASH && window.SMASH.config, S = CFG && CFG.stream;
-            if (!S || !CFG.eventDate || !window.PSD_SMASH_WEEK) return;
-            var d = new Date(), today = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
-            if (today !== CFG.eventDate) return;
-            var src = S.video ? 'https://www.youtube.com/embed/' + encodeURIComponent(S.video)
-                              : 'https://www.youtube.com/embed/live_stream?channel=' + encodeURIComponent(S.channel);
-            var f = document.createElement('iframe');
-            f.src = src;
-            f.title = 'PSD Esports ' + (S.title || CFG.eventName) + ' livestream';
-            f.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-            f.setAttribute('allowfullscreen', '');
-            document.getElementById('smash-live-player').appendChild(f);
-            document.getElementById('smash-live').hidden = false;
-        })();
-        </script>
 
         <!-- ─── CONTACT BAR ─── -->
         <div class="bg-gradient-to-r from-esports-blue/20 via-esports-card to-esports-yellow/10 border-b border-white/10 relative z-30" role="complementary" aria-label="League contact information">
@@ -495,75 +361,14 @@
             </div>
         </div>
 
-        <!-- ─── SMASH TOURNAMENT ───
-             The one-day tournament is a separate title from the Rocket League season, so it
-             gets an announcement strip rather than a place in the season narrative below.
-
-             It retires itself. Everything shown is read from data/smash.js, the same config
-             the /smash/ pages use, and the strip hides once the day has passed — so nobody
-             has to remember to come back and take down a banner advertising a date in the
-             past. Change the date in one place and this follows. -->
-        <aside id="smash-strip" hidden aria-label="Smash Bros tournament"
-               class="relative z-30 border-b border-white/10 bg-gradient-to-r from-esports-yellow/15 via-esports-card to-esports-red/15">
-            <a href="/smash/tournament.html"
-               class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-center sm:text-left group">
-                <span class="text-2xl leading-none" aria-hidden="true">⚔️</span>
-                <span class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
-                    <span class="font-display font-black uppercase italic text-xl text-white tracking-wide">
-                        Super Smash Bros. Tournament
-                    </span>
-                    <span id="smash-strip-when"
-                          class="font-display font-bold uppercase tracking-[0.18em] text-sm text-esports-yellow-text"></span>
-                </span>
-                <span class="sm:ml-auto flex-shrink-0 font-display font-bold uppercase tracking-widest text-xs
-                             px-4 py-2 rounded-full border border-esports-yellow/40 text-esports-yellow-text
-                             group-hover:bg-esports-yellow group-hover:text-black transition-colors">
-                    Brackets &amp; Rules &rarr;
-                </span>
-            </a>
-        </aside>
-        <script>
-        (function () {
-            'use strict';
-            var CFG = window.SMASH && window.SMASH.config;
-            var strip = document.getElementById('smash-strip');
-            var when = document.getElementById('smash-strip-when');
-            if (!CFG || !strip || !when || window.PSD_SMASH_WEEK) return;  /* the hero already says all this */
-
-            var label = '';
-            if (CFG.eventDate) {
-                var day = new Date(CFG.eventDate + 'T00:00:00');
-                if (isNaN(day)) return;
-
-                /* Compare whole days in local time. A tournament is over at the end of its
-                   day, not at midnight UTC, and the people reading this are all in one
-                   time zone. */
-                var today = new Date();
-                today.setHours(0, 0, 0, 0);
-                var daysAway = Math.round((day - today) / 86400000);
-
-                if (daysAway < 0) return;                       /* done — retire the strip */
-                if (daysAway === 0)      label = 'Today';
-                else if (daysAway === 1) label = 'Tomorrow';
-                else label = day.toLocaleDateString(undefined,
-                        { weekday: 'long', month: 'long', day: 'numeric' });
-            } else if (CFG.eventNote) {
-                label = CFG.eventNote;
-            } else {
-                return;
-            }
-
-            when.textContent = label + (CFG.venue ? ' · ' + CFG.venue : '');
-            strip.hidden = false;
-        })();
-        </script>
-
         <!-- ─── CHAMPIONS TICKER ─── -->
         <aside aria-label="Season Champions Ticker" class="bg-black border-y border-white/20 text-white py-3 overflow-hidden relative z-30">
             <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-esports-red via-esports-yellow to-esports-blue" aria-hidden="true"></div>
             <div class="flex items-center whitespace-nowrap animate-marquee font-display font-bold text-lg uppercase tracking-widest" aria-hidden="true">
                 <div class="flex items-center gap-12 px-4">
                     <span class="text-esports-yellow-text">ROCKET LEAGUE FINALS · SATURDAY, JANUARY 16 · QUAIL VALLEY ARENA</span>
+                    <span class="text-gray-600">///</span>
+                    <span class="text-esports-red-text">SMASH BROS. CHAMPIONS: MESQUITE (GRADE 5 &amp; UNDER) · SAGE (GRADES 6–8)</span>
                     <span class="text-gray-600">///</span>
                     <span class="text-esports-blue-text">DEFENDING LATE RELEASE CHAMPIONS: SHADOW HILLS</span>
                     <span class="text-gray-600">///</span>
@@ -576,6 +381,8 @@
                 </div>
                 <div class="flex items-center gap-12 px-4">
                     <span class="text-esports-yellow-text">ROCKET LEAGUE FINALS · SATURDAY, JANUARY 16 · QUAIL VALLEY ARENA</span>
+                    <span class="text-gray-600">///</span>
+                    <span class="text-esports-red-text">SMASH BROS. CHAMPIONS: MESQUITE (GRADE 5 &amp; UNDER) · SAGE (GRADES 6–8)</span>
                     <span class="text-gray-600">///</span>
                     <span class="text-esports-blue-text">DEFENDING LATE RELEASE CHAMPIONS: SHADOW HILLS</span>
                     <span class="text-gray-600">///</span>
@@ -588,17 +395,6 @@
                 </div>
             </div>
         </aside>
-        <script>
-        /* During the Smash takeover the ticker leads with the tournament, ahead of
-           the Rocket League finals, and the line goes when the takeover ends. */
-        if (window.PSD_SMASH_WEEK) {
-            document.querySelectorAll('aside[aria-label="Season Champions Ticker"] .animate-marquee > div').forEach(function (row) {
-                row.insertAdjacentHTML('afterbegin',
-                    '<span class="text-esports-red-text">SUPER SMASH BROS. TOURNAMENT · SATURDAY, NOVEMBER 14 · QUAIL VALLEY ESPORTS ARENA</span>' +
-                    '<span class="text-gray-600">///</span>');
-            });
-        }
-        </script>
 
 
         <!-- ─── PHOTO TICKER ─── -->
@@ -1124,7 +920,8 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-                    <!-- Main: 25-26 Championship Livestream -->
+                    <!-- Main: the most recent stream. When a new one goes up, it takes this
+                         slot and the one it replaces moves to the top of the sidebar. -->
                     <div class="lg:col-span-2 flex flex-col gap-3">
                         <div class="flex items-center gap-2 mb-1">
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-esports-yellow/10 border border-esports-yellow/30 text-esports-yellow-text text-xs font-bold uppercase tracking-widest">
@@ -1132,21 +929,42 @@
                                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
                                     <span class="relative inline-flex rounded-full h-2 w-2 bg-yellow-300"></span>
                                 </span>
-                                <span id="archive-main-badge">25-26 Championship Finals</span>
+                                Super Smash Bros. Tournament
                             </span>
                         </div>
                         <div class="video-wrapper bg-black/60">
-                            <iframe id="archive-main-video" src="https://www.youtube.com/embed/WqsQoQnU0RA"
-                                    title="PSD Esports 25-26 Championship Finals Livestream"
+                            <iframe src="https://www.youtube.com/embed/aHGRPxHfveI"
+                                    title="PSD Esports Super Smash Bros. Tournament livestream, November 2026"
                                     frameborder="0"
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                                     allowfullscreen></iframe>
                         </div>
-                        <p id="archive-main-caption" class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Spring Season Championship · 25-26</p>
+                        <p class="text-gray-500 text-xs uppercase tracking-wider font-semibold">Smash Bros. Tournament · November 14, 2026</p>
                     </div>
 
                     <!-- Sidebar: past videos + channel link -->
-                    <div id="archive-sidebar" class="flex flex-col gap-5">
+                    <div class="flex flex-col gap-5">
+
+                        <div class="bg-esports-card border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-300 group">
+                            <a href="https://www.youtube.com/watch?v=WqsQoQnU0RA"
+                               target="_blank" rel="noopener noreferrer"
+                               class="block no-underline">
+                                <div class="relative aspect-video overflow-hidden">
+                                    <img src="https://img.youtube.com/vi/WqsQoQnU0RA/hqdefault.jpg"
+                                         alt="25-26 Championship Finals livestream"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                        <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                            <i data-lucide="play" class="w-5 h-5 text-white fill-white" aria-hidden="true"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <div class="text-[11px] text-gray-500 uppercase tracking-widest font-bold mb-1">Spring Season Championship</div>
+                                    <h3 class="font-display font-bold text-base text-white group-hover:text-esports-yellow-text transition-colors leading-tight">25-26 Championship Finals</h3>
+                                </div>
+                            </a>
+                        </div>
 
                         <div class="bg-esports-card border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-300 group">
                             <a href="https://www.youtube.com/watch?v=12PhyAoZbJU"
@@ -1201,42 +1019,6 @@
                 </div>
             </div>
         </section>
-        <script>
-        /* After the Smash tournament (from SMASH.config.homeUntil), its stream leads the
-           archive and the 25-26 finals move to the top of the sidebar. Waits for
-           SMASH.config.stream.video: until that is set, the archive is unchanged. */
-        (function () {
-            'use strict';
-            var CFG = window.SMASH && window.SMASH.config, S = CFG && CFG.stream;
-            if (!S || !S.video || !CFG.homeUntil) return;
-            var from = new Date(CFG.homeUntil + 'T00:00:00');
-            if (isNaN(from) || new Date() < from) return;
-            var title = S.title || CFG.eventName;
-            var year = CFG.eventDate ? new Date(CFG.eventDate + 'T00:00:00') : from;
-            var label = year.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-
-            var f = document.getElementById('archive-main-video');
-            f.src = 'https://www.youtube.com/embed/' + encodeURIComponent(S.video);
-            f.title = 'PSD Esports ' + title + ' livestream';
-            document.getElementById('archive-main-badge').textContent = title;
-            document.getElementById('archive-main-caption').textContent = 'Smash Bros. Tournament · ' + label;
-
-            var card = document.createElement('div');
-            card.className = 'bg-esports-card border border-white/10 rounded-xl overflow-hidden hover:border-white/20 transition-all duration-300 group';
-            card.innerHTML =
-                '<a href="https://www.youtube.com/watch?v=WqsQoQnU0RA" target="_blank" rel="noopener noreferrer" class="block no-underline">' +
-                  '<div class="relative aspect-video overflow-hidden">' +
-                    '<img src="https://img.youtube.com/vi/WqsQoQnU0RA/hqdefault.jpg" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">' +
-                  '</div>' +
-                  '<div class="p-4">' +
-                    '<div class="text-[11px] text-gray-400 uppercase tracking-widest font-bold mb-1">Spring Season Championship</div>' +
-                    '<h3 class="font-display font-bold text-base text-white group-hover:text-esports-yellow-text transition-colors leading-tight">25-26 Championship Finals<span class="sr-only"> (opens YouTube in a new tab)</span></h3>' +
-                  '</div>' +
-                '</a>';
-            var side = document.getElementById('archive-sidebar');
-            side.insertBefore(card, side.firstElementChild);
-        })();
-        </script>
 
     </main>
 
@@ -1879,9 +1661,7 @@
     if (!mq.matches) {
         var canvas = document.getElementById('particleCanvas'), ctx = canvas.getContext('2d');
         var w, h, p = [];
-        var C = window.PSD_SMASH_WEEK
-            ? [{r:255,g:107,b:107},{r:255,g:159,b:67},{r:255,g:209,b:102},{r:255,g:255,b:255}]   /* embers */
-            : [{r:77,g:171,b:247},{r:255,g:209,b:102},{r:255,g:107,b:107},{r:255,g:255,b:255}];
+        var C = [{r:77,g:171,b:247},{r:255,g:209,b:102},{r:255,g:107,b:107},{r:255,g:255,b:255}];
         function rs() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
         window.addEventListener('resize', rs); rs();
         function Part() { this.reset(); }

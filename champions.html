@@ -229,6 +229,36 @@
           <div class="tl-divider"></div>
         </div>
         <div class="champ-grid">
+          <div class="champ-card jrpl">
+            <div class="card-inner">
+              <div class="card-tags">
+                <div class="card-tags-row"><span class="tag league-jrpl">Grade 5 &amp; Under</span></div>
+                <div class="card-tags-row"><span class="tag game-smash">⚔️ Smash Bros</span></div>
+              </div>
+              <div class="card-school">
+                <img src="/logos/schools/mesquite.png" alt="Mesquite logo" class="school-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="school-logo-fb" style="display:none">MQ</div>
+                <span class="school-name">Mesquite</span>
+              </div>
+              <div class="runner-up"><span class="ru-medal" aria-hidden="true">🥈</span><span class="ru-lbl">Runner-up</span><img src="/logos/schools/chaparral.png" alt="" class="ru-logo" onerror="this.remove()"><span class="ru-name">Chaparral</span></div>
+            </div>
+            <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Champions</span></div>
+          </div>
+          <div class="champ-card pl">
+            <div class="card-inner">
+              <div class="card-tags">
+                <div class="card-tags-row"><span class="tag league-pl">Grades 6–8</span></div>
+                <div class="card-tags-row"><span class="tag game-smash">⚔️ Smash Bros</span></div>
+              </div>
+              <div class="card-school">
+                <img src="/logos/schools/sage.png" alt="Sage logo" class="school-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                <div class="school-logo-fb" style="display:none">SGE</div>
+                <span class="school-name">Sage</span>
+              </div>
+              <div class="runner-up"><span class="ru-medal" aria-hidden="true">🥈</span><span class="ru-lbl">Runner-up</span><img src="/logos/schools/cactus.png" alt="" class="ru-logo" onerror="this.remove()"><span class="ru-name">Cactus</span></div>
+            </div>
+            <div class="card-footer"><span class="crown-icon">👑</span><span class="card-footer-lbl">Champions</span></div>
+          </div>
           <div class="champ-card upcoming">
             <div class="card-inner">
               <div class="card-tags">
@@ -240,18 +270,6 @@
               </div>
             </div>
             <div class="card-footer upcoming-footer"><span aria-hidden="true">📅</span><span class="card-footer-lbl">Finals · Sat, Jan 16, 2027</span></div>
-          </div>
-          <div class="champ-card upcoming">
-            <div class="card-inner">
-              <div class="card-tags">
-                <div class="card-tags-row"><span class="tag game-smash">⚔️ Smash Bros</span></div>
-              </div>
-              <div class="tbd-list">
-                <div class="tbd-row"><span class="tbd-div">Grade 5 &amp; Under</span><span class="tbd-val">To be decided</span></div>
-                <div class="tbd-row"><span class="tbd-div">Grades 6–8</span><span class="tbd-val">To be decided</span></div>
-              </div>
-            </div>
-            <div class="card-footer upcoming-footer"><span aria-hidden="true">📅</span><span class="card-footer-lbl">Tournament · Sat, Nov 14, 2026</span></div>
           </div>
         </div>
       </div>
@@ -409,6 +427,8 @@
       var logo = card.querySelector('.school-logo'), rLogo = card.querySelector('.ru-logo');
       if (logo && !logos[w]) logos[w] = logo.src;
       if (r && rLogo && !logos[r]) logos[r] = rLogo.src;
+      /* The Smash grade bands are the leagues by another name: Grade 5 & Under is the
+         jrpl card, Grades 6–8 the pl card, so their titles chain for streaks. */
       var league = card.classList.contains('jrpl') ? 'jrpl' : 'pl';
       var leagueName = card.querySelector('.tag[class*="league-"]').textContent.trim();
       card.querySelectorAll('.tag[class*="game-"]').forEach(function (g) {
