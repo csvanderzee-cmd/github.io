@@ -32,7 +32,7 @@
    League plus Mesquite. Renaming the ids would break links and gain nothing.
 
    Both match workbooks and both stats workbooks are published, and the
-   championship is set for Saturday 16 January 2027. The one thing still
+   championship is set for Saturday 23 January 2027. The one thing still
    outstanding is the finals bracket tab, whose layout is expected to change —
    until it is published, the bracket pages say so rather than polling for it.
    ========================================================================== */
@@ -47,11 +47,11 @@
     seasonLabel: '2026-27 Fall Season',
 
     // Season-wide dates. Local time, not UTC.
-    // Championship is Saturday 16 January 2027, doors at 8:00 AM — 60 days
+    // Championship is Saturday 23 January 2027, doors at 8:00 AM — 67 days
     // after the regular season ends on 17 November.
-    finalsDate:    '2027-01-16',  // finals tournament day
+    finalsDate:    '2027-01-23',  // finals tournament day
     finalsTipoff:  '08:00:00',    // first match of finals day
-    seasonEndDate: '2027-01-17',  // site flips to off-season after this
+    seasonEndDate: '2027-01-24',  // site flips to off-season after this
 
     leagues: [
       {
@@ -95,7 +95,7 @@
         // Finals bracket lives on its own tab in the match workbook.
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '672839496',
-        // Run of play for 16 Jan 2027 is not set yet. Nulls keep the object
+        // Run of play for 23 Jan 2027 is not set yet. Nulls keep the object
         // shape while the bracket simply omits the time chip; fill these in
         // and the times reappear on the cards.
         finalsTimes: { s1: null, s2: null, fin: null },
