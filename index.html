@@ -1130,6 +1130,59 @@
         return out;
       }
 
+      /* Every match of a week counted the way the standings pages count it
+         (rocket-league/promise-league.html, jr-promise-league.html), so the
+         leader card can never disagree with the table: a forfeit is a win for
+         the side that showed up (a loss for both on a double forfeit), any
+         scored game counts, and bye rows are taken out before pairing.
+         seriesRows above is for showing results and skips all of that. */
+      function tallyRows(csv, leagueId) {
+        var scoreCols = [3, 4, 5], sideCol = -1, locCol = -1, play = [];
+        csv.split(/\r?\n/).map(splitCsvLine).forEach(function (r) {
+          var first = ((r[0] || '') + '').trim().toLowerCase();
+          if (!first || first.indexOf('week') === 0) return;
+          if (first === 'team') {
+            var cs = [];
+            r.forEach(function (cell, i) {
+              var h = ((cell || '') + '').trim().toLowerCase();
+              if (h === 'points' || /^game\s*\d+$/.test(h)) cs.push(i);
+              else if (h === 'location') locCol = i;
+              else if (h === 'team' && i > 0) sideCol = i;
+            });
+            if (cs.length) scoreCols = cs;
+            return;
+          }
+          if (sideCol >= 0 && /^bye$/i.test(((r[sideCol] || '') + '').trim())) return;
+          play.push(r);
+        });
+
+        var out = [];
+        for (var i = 0; i < play.length - 1; i += 2) {
+          var a = play[i], b = play[i + 1];
+          var cell = function (row, idx) { return ((row[idx] || '') + '').trim(); };
+          if (locCol >= 0 && /away/i.test(cell(a, locCol)) && /home/i.test(cell(b, locCol))) { var t = a; a = b; b = t; }
+          var one = PSD.config.canonicalSchool(leagueId, cell(a, 0));
+          var two = PSD.config.canonicalSchool(leagueId, cell(b, 0));
+          if (!one || !two) continue;
+          var m = { a: one, b: two, aGF: 0, bGF: 0, aGW: 0, bGW: 0, forfeit: false, fw: null, scored: false };
+          scoreCols.forEach(function (c) {
+            var x = cell(a, c).toUpperCase(), y = cell(b, c).toUpperCase();
+            if (x === 'F' || y === 'F') {
+              m.forfeit = true;
+              m.fw = x === 'F' && y !== 'F' ? 'b' : y === 'F' && x !== 'F' ? 'a' : null;
+              return;
+            }
+            var xn = parseInt(x, 10), yn = parseInt(y, 10);
+            if (isNaN(xn) || isNaN(yn)) return;
+            m.scored = true;
+            m.aGF += xn; m.bGF += yn;
+            if (xn > yn) m.aGW++; else if (yn > xn) m.bGW++;
+          });
+          if (m.forfeit || m.scored) out.push(m);
+        }
+        return out;
+      }
+
       /** Newest week with anything in it, walking back from the current one. */
       function newestWeek(lg, fetcher, keep) {
         var weeks = lg.weeks.slice().reverse().filter(function (w) {
@@ -1284,18 +1337,46 @@
          Division leaders, worked out from every week played so far, plus the
          next match day. It cycles so the card has something to say all season
          instead of repeating the fixtures printed above it. */
-      function leaderOf(allSeries) {
+      function leaderOf(matches) {
         var t = {};
-        var row = function (s) { return t[s] || (t[s] = { name: s, w: 0, l: 0, gf: 0, ga: 0 }); };
-        allSeries.forEach(function (s) {
-          row(s.winner).w++; row(s.loser).l++;
-          row(s.a).gf += s.aGoals; row(s.a).ga += s.bGoals;
-          row(s.b).gf += s.bGoals; row(s.b).ga += s.aGoals;
+        var row = function (n) { return t[n] || (t[n] = { name: n, w: 0, l: 0, gf: 0, ga: 0, gw: 0, gp: 0, h2h: {} }); };
+        var meet = function (x, y, won) {
+          var h = x.h2h[y.name] || (x.h2h[y.name] = { w: 0, l: 0 });
+          if (won) h.w++; else h.l++;
+        };
+        matches.forEach(function (m) {
+          var A = row(m.a), B = row(m.b);
+          if (m.forfeit) {
+            if (m.fw === 'a')      { A.w++; B.l++; meet(A, B, true);  meet(B, A, false); }
+            else if (m.fw === 'b') { B.w++; A.l++; meet(B, A, true);  meet(A, B, false); }
+            else                   { A.l++; B.l++; meet(A, B, false); meet(B, A, false); }
+            return;
+          }
+          A.gf += m.aGF; A.ga += m.bGF; B.gf += m.bGF; B.ga += m.aGF;
+          A.gw += m.aGW; B.gw += m.bGW; A.gp += m.aGW + m.bGW; B.gp += m.aGW + m.bGW;
+          if (m.aGW > m.bGW) { A.w++; B.l++; meet(A, B, true); meet(B, A, false); }
+          else               { B.w++; A.l++; meet(B, A, true); meet(A, B, false); }
         });
-        return Object.keys(t).map(function (k) { return t[k]; }).sort(function (x, y) {
-          var px = x.w + x.l ? x.w / (x.w + x.l) : 0, py = y.w + y.l ? y.w / (y.w + y.l) : 0;
-          return py - px || (y.gf - y.ga) - (x.gf - x.ga) || y.w - x.w;
-        })[0];
+
+        var pct = function (x) { return x.w + x.l ? x.w / (x.w + x.l) : 0; };
+        var list = Object.keys(t).map(function (k) { return t[k]; });
+        if (!list.length) return null;
+        list.sort(function (x, y) { return pct(y) - pct(x); });
+        var top = list.filter(function (x) { return Math.abs(pct(x) - pct(list[0])) < 1e-9; });
+        if (top.length === 1) return top[0];
+
+        // A tie at the top is broken exactly as the standings break it.
+        var names = top.map(function (x) { return x.name; });
+        var h2h = function (x) {
+          var w = 0, l = 0;
+          names.forEach(function (n) { if (n !== x.name && x.h2h[n]) { w += x.h2h[n].w; l += x.h2h[n].l; } });
+          return w + l ? w / (w + l) : 0;
+        };
+        var gpct = function (x) { return x.gp ? x.gw / x.gp : 0; };
+        top.sort(function (x, y) {
+          return (h2h(y) - h2h(x)) || (gpct(y) - gpct(x)) || ((y.gf - y.ga) - (x.gf - x.ga)) || x.name.localeCompare(y.name);
+        });
+        return top[0];
       }
 
       function nextMatchDay() {
@@ -1379,14 +1460,20 @@
                      function (csv) { return statRows(csv, meta.id); }),
           Promise.all(played.map(function (w) {
             return PSD.fetchCSV(lg.matchSheet, w.gid)
-              .then(function (csv) { return { week: w.week, rows: seriesRows(csv, meta.id) }; })
-              .catch(function () { return { week: w.week, rows: [] }; });
+              .then(function (csv) { return { week: w.week, rows: seriesRows(csv, meta.id), tally: tallyRows(csv, meta.id) }; })
+              .catch(function () { return { week: w.week, rows: [], tally: [] }; });
           }))
         ]).then(function (res) {
           if (res[0]) {
             weekShown = Math.max(weekShown, res[0].week);
             res[0].rows.forEach(function (p) { p.division = meta.label; players.push(p); });
           }
+
+          // Every played week, forfeit-only weeks included, as the standings count them.
+          var lead = leaderOf(res[1].reduce(function (acc, x) { return acc.concat(x.tally); }, []));
+          // Keyed by position so the card always reads in division order,
+          // whichever sheet answers first.
+          if (lead) leaderSlide[order] = { meta: meta, lead: lead };
 
           var weeks = res[1].filter(function (x) { return x.rows.length; });
           if (!weeks.length) return;
@@ -1395,11 +1482,6 @@
           weekShown = Math.max(weekShown, latest.week);
           latest.rows.forEach(function (s) { s.division = meta.label; series.push(s); });
 
-          var all = weeks.reduce(function (acc, x) { return acc.concat(x.rows); }, []);
-          var lead = leaderOf(all);
-          // Keyed by position so the card always reads in division order,
-          // whichever sheet answers first.
-          if (lead) leaderSlide[order] = { meta: meta, lead: lead };
         }).catch(function () {});
       })).then(function () {
         if (weekShown) render(players, series, weekShown);
