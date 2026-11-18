@@ -534,6 +534,13 @@
                     if (imgs.length === 0) { section.style.display = 'none'; return; }
                     // shuffle
                     for (var i = imgs.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = imgs[i]; imgs[i] = imgs[j]; imgs[j] = tmp; }
+                    /* The newest photos always make the cut and lead the strip;
+                       the rest are a random pick. Names as in photos/. When new
+                       photos are added, list them here (newest first). */
+                    var NEWEST = ['showcase-medals.webp', 'showcase-cactus-coyotes.webp', 'showcase-thank-you.webp'];
+                    var isNew = function(f) { return NEWEST.indexOf(f.name) !== -1; };
+                    imgs = imgs.filter(isNew).sort(function(a, b) { return NEWEST.indexOf(a.name) - NEWEST.indexOf(b.name); })
+                               .concat(imgs.filter(function(f) { return !isNew(f); }));
 
                     // A couple of dozen is plenty for a loop this long, and it
                     // halves the request count versus posting the whole folder.
