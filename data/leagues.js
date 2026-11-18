@@ -98,10 +98,11 @@
         // Run of play for 23 Jan 2027: Early Release plays the morning, Late
         // Release the afternoon. Both semifinals start together (one in the
         // arena, one on the bus); the final follows the semifinal tiebreakers.
-        // [time, stage] for each part of each match, as on the finals page. Afternoon.
+        // [time, stage] for each part of each match, as on the finals page. A
+        // tiebreaker stays on the stage of that match's ORANGE game, so no one moves. Afternoon.
         finalsRun: {
-            s1:    { blue: ['12:00 PM', 'Arena'], orange: ['12:45 PM', 'Bus'],   tb: ['1:25 PM', 'Arena'] },
-            s2:    { blue: ['12:00 PM', 'Bus'],   orange: ['12:45 PM', 'Arena'], tb: ['1:25 PM', 'Bus'] },
+            s1:    { blue: ['12:00 PM', 'Arena'], orange: ['12:45 PM', 'Bus'],   tb: ['1:25 PM', 'Bus']   },
+            s2:    { blue: ['12:00 PM', 'Bus'],   orange: ['12:45 PM', 'Arena'], tb: ['1:25 PM', 'Arena'] },
             fin:   { blue: ['1:42 PM', 'Arena'], orange: ['2:27 PM', 'Arena'], tb: ['3:07 PM', 'Arena'] },
             third: { blue: ['1:42 PM', 'Bus'],   orange: ['2:27 PM', 'Bus'],   tb: ['3:07 PM', 'Bus'] }
         },
@@ -156,10 +157,11 @@
 
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '2049340971',
-        // [time, stage] for each part of each match, as on the finals page. Morning.
+        // [time, stage] for each part of each match, as on the finals page. A
+        // tiebreaker stays on the stage of that match's ORANGE game, so no one moves. Morning.
         finalsRun: {
-            s1:    { blue: ['8:00 AM', 'Arena'], orange: ['8:45 AM', 'Bus'],   tb: ['9:25 AM', 'Arena'] },
-            s2:    { blue: ['8:00 AM', 'Bus'],   orange: ['8:45 AM', 'Arena'], tb: ['9:25 AM', 'Bus'] },
+            s1:    { blue: ['8:00 AM', 'Arena'], orange: ['8:45 AM', 'Bus'],   tb: ['9:25 AM', 'Bus']   },
+            s2:    { blue: ['8:00 AM', 'Bus'],   orange: ['8:45 AM', 'Arena'], tb: ['9:25 AM', 'Arena'] },
             fin:   { blue: ['9:42 AM', 'Arena'], orange: ['10:27 AM', 'Arena'], tb: ['11:07 AM', 'Arena'] },
             third: { blue: ['9:42 AM', 'Bus'],   orange: ['10:27 AM', 'Bus'],   tb: ['11:07 AM', 'Bus'] }
         },

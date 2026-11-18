@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>Finals Coach Schedule | PSD Esports</title>
+<meta name="description" content="Printable Rocket League championship schedule for coaches: where each school plays and when, for Early Release and Late Release.">
+<!--
+  Printable coach schedule, one Letter page per division. Everything comes
+  from data/leagues.js (finalsRun: the time and stage of every part of every
+  match) and the four semifinal schools typed in each division's Finals tab,
+  so it can never disagree with the bracket pages. Until the schools are in
+  the sheet, the seeds (#1 to #4) stand in for them.
+-->
+<style>
+  @page { size: letter portrait; margin: .4in .5in; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; color: #000; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 10pt; line-height: 1.3; }
+
+  .toolbar { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; padding: 12px 16px; background: #0B0E14; color: #e5e7eb; font-size: 11pt; }
+  .toolbar a { color: #FFD166; }
+  .toolbar button { font: inherit; font-weight: 700; padding: .4rem 1rem; border-radius: 9999px; border: 0; background: #FDB913; color: #0B0E14; cursor: pointer; }
+  .toolbar button:focus-visible, .toolbar a:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+  .toolbar .note { color: #c7cbd3; font-size: 10pt; }
+
+  .division { max-width: 7.5in; margin: 0 auto; padding: .35in 16px; }
+  .division + .division { break-before: page; page-break-before: always; }
+
+  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; border-bottom: 3px solid #000; padding-bottom: 4pt; }
+  h1 { margin: 0; font-size: 17pt; line-height: 1.1; }
+  .head .sub { font-size: 9.5pt; text-align: right; }
+  h2 { font-size: 11pt; margin: 9pt 0 3pt; text-transform: uppercase; letter-spacing: .04em; }
+
+  .matchups { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; margin-top: 8pt; }
+  .matchup { border: 1.5px solid #000; padding: 5pt 7pt; }
+  .matchup b { display: block; font-size: 9pt; text-transform: uppercase; letter-spacing: .05em; }
+  .matchup span { font-size: 11pt; font-weight: 700; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border: 1px solid #000; padding: 2.5pt 6pt; text-align: left; vertical-align: top; }
+  thead th { background: #e6e6e6; font-size: 9pt; text-transform: uppercase; letter-spacing: .04em; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  tbody th { white-space: nowrap; width: 1%; }
+  tr.gap td, tr.gap th { color: #444; font-style: italic; font-size: 9pt; padding-top: 2pt; padding-bottom: 2pt; }
+  .vs { font-size: 8.5pt; color: #333; display: block; }
+
+  .school-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; }
+  .school { border: 1.5px solid #000; padding: 5pt 7pt; font-size: 9.5pt; break-inside: avoid; }
+  .school h3 { margin: 0 0 3pt; font-size: 11pt; }
+  .school ul { margin: 0; padding-left: 12pt; }
+  .school li { margin: 1.5pt 0; }
+  .school .then { margin-top: 3pt; font-size: 9pt; }
+
+  .rules { margin-top: 8pt; border-top: 1.5px solid #000; padding-top: 5pt; columns: 2; column-gap: .3in; font-size: 8.5pt; }
+  .rules ul { margin: 0; padding-left: 12pt; }
+  .rules li { margin: 0 0 2pt; break-inside: avoid; }
+  .foot { margin-top: 8pt; font-size: 8.5pt; color: #333; }
+
+  @media print {
+    .toolbar { display: none; }
+    .division { padding: 0; max-width: none; }
+  }
+  @media (max-width: 600px) {
+    .matchups, .school-grid { grid-template-columns: 1fr; }
+    .rules { columns: 1; }
+    .head { flex-direction: column; align-items: flex-start; }
+    .head .sub { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <button type="button" onclick="window.print()">Print</button>
+  <a href="/rocket-league/finals.html">Back to Championship Finals</a>
+  <span class="note" id="status" role="status">Loading schools from the finals sheet…</span>
+</div>
+<main id="pages"></main>
+
+<script src="/data/leagues.js?v=20261118f"></script>
+<script src="/data/psd-data.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const DIVISIONS = [['jrpl', 'Early Release'], ['pl', 'Late Release']];
+
+  function parseCSV(text) {
+    const rows = []; let row = [], cell = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) { if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
+      else if (c === '"') q = true;
+      else if (c === ',') { row.push(cell.trim()); cell = ''; }
+      else if (c === '\n' || c === '\r') { if (c === '\r' && text[i + 1] === '\n') i++; row.push(cell.trim()); rows.push(row); row = []; cell = ''; }
+      else cell += c;
+    }
+    if (cell || row.length) { row.push(cell.trim()); rows.push(row); }
+    return rows;
+  }
+
+  /* The four semifinal schools, read the same way as the bracket (the tab's
+     CSV export). Seeds stand in until they are typed. */
+  async function schoolsFor(lg) {
+    const seeds = { 1: '#1 seed', 4: '#4 seed', 2: '#2 seed', 3: '#3 seed' };
+    if (!lg.finalsFastId || !lg.finalsGid) return { names: seeds, known: false };
+    try {
+      const res = await fetch('https://docs.google.com/spreadsheets/d/' + lg.finalsFastId +
+        '/export?format=csv&gid=' + lg.finalsGid + '&_=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const rows = parseCSV(await res.text());
+      const at = re => rows.findIndex(r => re.test((r[0] || '').trim()));
+      const name = (r, k) => (r >= 0 && rows[r + k] && rows[r + k][1]) || '';
+      const a = at(/^semi[- ]?final\s*1\b/i), b = at(/^semi[- ]?final\s*2\b/i);
+      const n = { 1: name(a, 1), 4: name(a, 2), 2: name(b, 1), 3: name(b, 2) };
+      const known = Object.values(n).every(Boolean);
+      Object.keys(n).forEach(k => { if (!n[k]) n[k] = seeds[k]; });
+      return { names: n, known };
+    } catch (e) {
+      console.warn('[coaches] could not read the finals sheet:', e.message);
+      return { names: seeds, known: false };
+    }
+  }
+
+  const when = w => w ? `${esc(w[0])} · ${esc(w[1])}` : '';
+
+  function divisionHtml(id, label, lg, sc) {
+    const run = lg.finalsRun, N = sc.names;
+    const s1 = `${esc(N[1])} vs ${esc(N[4])}`, s2 = `${esc(N[2])} vs ${esc(N[3])}`;
+
+    // Run of play, Arena and Bus side by side, built from finalsRun.
+    const slots = [];
+    const add = (w, text) => { if (w) slots.push({ t: w[0], stage: w[1], text }); };
+    add(run.s1.blue,   `<b>Semifinal 1 · BLUE</b><span class="vs">${s1}</span>`);
+    add(run.s2.blue,   `<b>Semifinal 2 · BLUE</b><span class="vs">${s2}</span>`);
+    add(run.s1.orange, `<b>Semifinal 1 · ORANGE</b><span class="vs">${s1}</span>`);
+    add(run.s2.orange, `<b>Semifinal 2 · ORANGE</b><span class="vs">${s2}</span>`);
+    add(run.s1.tb,     `<b>Semifinal 1 tiebreaker</b><span class="vs">only if split 1–1</span>`);
+    add(run.s2.tb,     `<b>Semifinal 2 tiebreaker</b><span class="vs">only if split 1–1</span>`);
+    add(run.fin.blue,  `<b>Championship Final · BLUE</b><span class="vs">Semi 1 winner vs Semi 2 winner</span>`);
+    add(run.third.blue,`<b>Third place · BLUE</b><span class="vs">Semi 1 loser vs Semi 2 loser</span>`);
+    add(run.fin.orange,`<b>Championship Final · ORANGE</b>`);
+    add(run.third.orange,`<b>Third place · ORANGE</b>`);
+    add(run.fin.tb,    `<b>Final tiebreaker</b><span class="vs">only if split 1–1</span>`);
+    add(run.third.tb,  `<b>Third-place tiebreaker</b><span class="vs">only if split 1–1</span>`);
+    const times = [...new Set(slots.map(s => s.t))];
+    const cell = (t, st) => slots.filter(s => s.t === t && s.stage === st).map(s => s.text).join('<br>');
+    const ropRows = times.map(t => `<tr><th scope="row">${esc(t)}</th><td>${cell(t, 'Arena')}</td><td>${cell(t, 'Bus')}</td></tr>`).join('');
+
+    // Each school's own day.
+    const schoolBox = (seed, semi, key) => `<div class="school">
+        <h3>${esc(N[seed])}${sc.known ? ` <small>(#${seed})</small>` : ''}</h3>
+        <ul>
+          <li><b>BLUE team:</b> ${when(run[key].blue)}</li>
+          <li><b>ORANGE team:</b> ${when(run[key].orange)}</li>
+          <li><b>Tiebreaker, if split 1–1:</b> ${when(run[key].tb)}</li>
+        </ul>
+        <div class="then"><b>Win ${semi}:</b> Championship Final, BLUE ${when(run.fin.blue)}, ORANGE ${esc(run.fin.orange[0])}.<br>
+        <b>Lose ${semi}:</b> Third place, BLUE ${when(run.third.blue)}, ORANGE ${esc(run.third.orange[0])}.</div>
+      </div>`;
+
+    return `<section class="division" aria-labelledby="h-${id}">
+      <div class="head">
+        <h1 id="h-${id}">${esc(label)} Finals · Coach Schedule</h1>
+        <div class="sub">Rocket League Championship<br>Saturday, January 23, 2027 · Quail Valley Esports Arena</div>
+      </div>
+
+      <div class="matchups">
+        <div class="matchup"><b>Semifinal 1 · #1 vs #4</b><span>${s1}</span></div>
+        <div class="matchup"><b>Semifinal 2 · #2 vs #3</b><span>${s2}</span></div>
+      </div>
+
+      <h2>Where to be and when</h2>
+      <table>
+        <caption class="sr-only" style="position:absolute;left:-9999px">${esc(label)} run of play by stage</caption>
+        <thead><tr><th scope="col">Time</th><th scope="col">Arena</th><th scope="col">Bus</th></tr></thead>
+        <tbody>${ropRows}</tbody>
+      </table>
+
+      <h2>Your school's day</h2>
+      <div class="school-grid">
+        ${schoolBox(1, 'Semifinal 1', 's1')}${schoolBox(4, 'Semifinal 1', 's1')}
+        ${schoolBox(2, 'Semifinal 2', 's2')}${schoolBox(3, 'Semifinal 2', 's2')}
+      </div>
+
+      <div class="rules">
+        <ul>
+          <li><b>Best of 5:</b> first team to win 3 games takes the match. BLUE plays BLUE, ORANGE plays ORANGE.</li>
+          <li><b>Win both</b> your BLUE and ORANGE matches to advance. A 1–1 split goes to <b>one tiebreaker game</b>.</li>
+          <li><b>Tiebreaker team:</b> your best 3 from all your players and subs. It is played on the stage where your ORANGE match was, so nobody moves.</li>
+          <li><b>Locked rosters:</b> players stay on their team all day. A sub who plays is locked to that team. Only the tiebreaker mixes teams.</li>
+          <li><b>No sign-ins:</b> players do not sign in to personal or school accounts. Each player gets a couple of minutes to change settings.</li>
+          <li><b>Practice before the day:</b> resetting all keybinds and putting in each player's own binds, so it takes seconds.</li>
+          <li><b>Rounds can start early:</b> the next round starts when both stages are ready. Stay close to your stage.</li>
+        </ul>
+      </div>
+      <p class="foot">Planned times. Changes will be shared through Google Classroom. Live bracket: psdesports.com/rocket-league/finals.html</p>
+    </section>`;
+  }
+
+  async function build() {
+    const out = await Promise.all(DIVISIONS.map(async ([id, label]) => {
+      const lg = PSD.config.league(id);
+      const sc = await schoolsFor(lg);
+      return { html: lg.finalsRun ? divisionHtml(id, label, lg, sc) : '', known: sc.known, label };
+    }));
+    document.getElementById('pages').innerHTML = out.map(o => o.html).join('');
+    const missing = out.filter(o => !o.known).map(o => o.label);
+    document.getElementById('status').textContent = missing.length
+      ? `Seeds shown for ${missing.join(' and ')} until the schools are in the finals sheet.`
+      : 'Schools loaded from the finals sheet. Ready to print.';
+  }
+  build();
+})();
+</script>
+</body>
+</html>
