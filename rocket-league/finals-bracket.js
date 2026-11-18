@@ -57,15 +57,55 @@
        Tiebreaker           | school 2  |
 
      Labels: "Semifinal 1", "Semifinal 2", "Championship Final", "Third Place".
-     Only labels and names are text, and only in columns A and B: on the fast
-     feed Google blanks any text that sits in a column of numbers.
+     Labels and names go in columns A and B, goals in C to G.
      ------------------------------------------------------------------------ */
 
   const GAMES = 5, TO_WIN = 3;   // best of 5
 
+  /* Read the same way as the Smash brackets: the tab's CSV export, every 30
+     seconds. It is live (seconds behind the sheet, not the minutes the
+     publish-to-web copy can lag) and, unlike the gviz feed, it returns every
+     cell exactly as typed: gviz guesses a type per column and blanks text in a
+     column of numbers, so an "F" forfeit or a "3-1" would vanish. Needs the
+     workbook shared as anyone with the link, Viewer. If the export cannot be
+     reached, the shared feed (PSD.fetchCSV) is the fallback. */
+  const TIMEOUT_MS = 9000;
+
+  function parseCSV(text) {
+    const rows = []; let row = [], cell = '', q = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+        else cell += c;
+      } else if (c === '"') q = true;
+      else if (c === ',') { row.push(cell.trim()); cell = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(cell.trim()); rows.push(row); row = []; cell = '';
+      } else cell += c;
+    }
+    if (cell || row.length) { row.push(cell.trim()); rows.push(row); }
+    return rows;
+  }
+
   async function fetchRows() {
-    const text = await PSD.fetchCSV(lg.matchSheet, lg.finalsGid);
-    return text.trim().split('\n').map(row => row.split(',').map(c => c.replace(/^"|"$/g, '').trim()));
+    if (lg.finalsFastId) {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+      try {
+        const url = 'https://docs.google.com/spreadsheets/d/' + lg.finalsFastId +
+                    '/export?format=csv&gid=' + lg.finalsGid + '&_=' + Date.now();
+        const res = await fetch(url, { cache: 'no-store', signal: ctrl.signal });
+        if (!res.ok) throw new Error('finals tab: HTTP ' + res.status);
+        return parseCSV(await res.text());
+      } catch (e) {
+        console.warn('[finals] export feed failed, using the shared feed:', e.message);
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    return parseCSV(await PSD.fetchCSV(lg.matchSheet, lg.finalsGid));
   }
 
   function parseSheet(rows) {
