@@ -128,14 +128,21 @@ body.display.idle{cursor:none;}
 .sub-bar-label.orange{color:#FBBF24;}
 .sub-bar-label.blue{color:#60A5FA;}
 .sub-result-pill{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:9999px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%;}
-.sub-result-pill.w{background:rgba(22,163,74,.25);color:#4ade80;border:1px solid rgba(74,222,128,.3);}
+.sub-result-pill.w{background:rgba(255,215,0,.14);color:#FFD166;border:1px solid rgba(255,215,0,.4);}
 .sub-result-pill.pending{background:rgba(249,115,22,.15);color:var(--orange);border:1px solid rgba(249,115,22,.3);}
 .sub-section.tb-section .sub-bar{background:var(--orange-bg);border-left:3px solid var(--orange);}
 .sub-section.tb-section .sub-bar-label{color:var(--orange);}
 
 .competitor{display:flex;align-items:center;gap:8px;padding:.5rem 1rem;border-bottom:1px solid var(--bdr);}
 .competitor:last-child{border-bottom:none;}
-.competitor.win{background:rgba(22,163,74,.12);}
+/* Winners: gold, with a slow shimmer across the row. The site's pause-animations
+   switch and reduced-motion setting both stop the shimmer and leave the gold. */
+.competitor.win{position:relative;overflow:hidden;background:linear-gradient(90deg,rgba(255,215,0,.16),rgba(255,215,0,.05));
+  box-shadow:inset 0 0 0 1px rgba(255,215,0,.5),0 0 14px rgba(255,215,0,.16);}
+.competitor.win::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 42%,rgba(255,240,170,.22) 50%,transparent 58%);background-size:250% 100%;
+  animation:winshimmer 3.6s linear infinite;}
+@keyframes winshimmer{from{background-position:150% 0}to{background-position:-50% 0}}
 /* Losing and undecided rows recede by colour, not opacity: fading them took
    their text under the 4.5:1 WCAG contrast minimum. */
 .competitor.loss .comp-name,.competitor.loss .gpill{color:#949cab!important;}
@@ -145,7 +152,7 @@ body.display.idle{cursor:none;}
 .competitor.t2-team{border-left:3px solid rgba(255,107,107,.55);}
 .competitor.t1-team .comp-name{color:var(--blue-t);}
 .competitor.t2-team .comp-name{color:var(--red-t);}
-.competitor.win .comp-name{color:#4ade80!important;}
+.competitor.win .comp-name{color:#FFD166!important;}
 .matchup-school-name.t1-name{color:var(--blue-t);}
 .matchup-school-name.t2-name{color:var(--red-t);}
 .logo-sm{width:28px;height:28px;object-fit:contain;border-radius:5px;background:rgba(255,255,255,.06);padding:2px;flex-shrink:0;}
@@ -156,14 +163,14 @@ body.display.idle{cursor:none;}
 /* Per-game scores sit on the team's own row, so a game adds no height. */
 .gscores{display:flex;gap:3px;flex-shrink:0;}
 .gpill{display:inline-flex;justify-content:center;min-width:22px;background:rgba(255,255,255,.06);border:1px solid var(--bdr);border-radius:4px;padding:0 5px;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.8rem;color:#d1d5db;}
-.gpill.gw{border-color:rgba(74,222,128,.35);color:#4ade80;background:rgba(22,163,74,.14);}
+.gpill.gw{border-color:rgba(255,215,0,.45);color:#FFD166;background:rgba(255,215,0,.12);}
 .score-disp{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.25rem;min-width:22px;text-align:right;flex-shrink:0;margin-left:4px;}
-.score-disp.win{color:#4ade80;}
+.score-disp.win{color:#FFD166;}
 .score-disp.loss{color:var(--red-t);}
 .score-disp.none{color:var(--yellow-t);}
 
 .result-bar{padding:.55rem 1rem;display:flex;align-items:center;gap:.5rem;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;}
-.result-bar.advance{background:rgba(22,163,74,.12);color:#4ade80;border-top:1px solid rgba(74,222,128,.2);}
+.result-bar.advance{background:rgba(255,215,0,.1);color:#FFD166;border-top:1px solid rgba(255,215,0,.3);}
 .result-bar.champ{background:rgba(255,215,0,.1);color:var(--gold);border-top:1px solid rgba(255,215,0,.2);}
 .result-bar.tb-needed{background:var(--orange-bg);color:var(--orange);border-top:1px solid rgba(249,115,22,.25);}
 .result-bar.waiting{background:rgba(0,0,0,.15);color:var(--muted);border-top:1px solid var(--bdr);}
