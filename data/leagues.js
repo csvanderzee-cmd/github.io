@@ -98,7 +98,13 @@
         // Run of play for 23 Jan 2027: Early Release plays the morning, Late
         // Release the afternoon. Both semifinals start together (one in the
         // arena, one on the bus); the final follows the semifinal tiebreakers.
-        finalsTimes: { s1: '12:00 PM', s2: '12:00 PM', fin: '1:42 PM', third: '1:42 PM' },   // afternoon
+        // [time, stage] for each part of each match, as on the finals page. Afternoon.
+        finalsRun: {
+            s1:    { blue: ['12:00 PM', 'Arena'], orange: ['12:45 PM', 'Bus'],   tb: ['1:25 PM', 'Arena'] },
+            s2:    { blue: ['12:00 PM', 'Bus'],   orange: ['12:45 PM', 'Arena'], tb: ['1:25 PM', 'Bus'] },
+            fin:   { blue: ['1:42 PM', 'Arena'], orange: ['2:27 PM', 'Arena'], tb: ['3:07 PM', 'Arena'] },
+            third: { blue: ['1:42 PM', 'Bus'],   orange: ['2:27 PM', 'Bus'],   tb: ['3:07 PM', 'Bus'] }
+        },
 
         // 4 schools, 9 weeks: every pair meets 3 times, 2 series per week.
         weeks: [
@@ -150,7 +156,13 @@
 
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '2049340971',
-        finalsTimes: { s1: '8:00 AM', s2: '8:00 AM', fin: '9:42 AM', third: '9:42 AM' },  // morning
+        // [time, stage] for each part of each match, as on the finals page. Morning.
+        finalsRun: {
+            s1:    { blue: ['8:00 AM', 'Arena'], orange: ['8:45 AM', 'Bus'],   tb: ['9:25 AM', 'Arena'] },
+            s2:    { blue: ['8:00 AM', 'Bus'],   orange: ['8:45 AM', 'Arena'], tb: ['9:25 AM', 'Bus'] },
+            fin:   { blue: ['9:42 AM', 'Arena'], orange: ['10:27 AM', 'Arena'], tb: ['11:07 AM', 'Arena'] },
+            third: { blue: ['9:42 AM', 'Bus'],   orange: ['10:27 AM', 'Bus'],   tb: ['11:07 AM', 'Bus'] }
+        },
 
         // 9 schools, 9 weeks: full single round robin, one bye per week. The
         // bye school is the last row on each tab, with BYE in every column.

@@ -119,6 +119,11 @@ body.display.idle{cursor:none;}
 
 .sub-section{border-bottom:1px solid var(--bdr);}
 .sub-bar{display:flex;align-items:center;justify-content:space-between;padding:.35rem 1rem .3rem;background:rgba(0,0,0,.25);gap:.5rem;}
+.sub-bar-left{display:flex;align-items:center;flex-wrap:wrap;gap:.15rem .6rem;min-width:0;}
+.sub-when{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:#d1d5db;white-space:nowrap;}
+.sub-when .stage-arena{color:var(--yellow-t);}
+.sub-when .stage-bus{color:#5eead4;}
+.champ-card .sub-when{font-size:.8rem;}
 .sub-bar-label{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);flex-shrink:0;}
 .sub-bar-label.orange{color:#FBBF24;}
 .sub-bar-label.blue{color:#60A5FA;}
@@ -189,6 +194,11 @@ body.display.idle{cursor:none;}
    the screen the cards come out about twice the size of the full bracket's. */
 .view-tabs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:.5rem;margin:-4px 0 14px;}
 .view-btns{display:flex;gap:.5rem;}
+.view-left{display:flex;align-items:center;}
+.div-switch{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:#d1d5db;text-decoration:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.16);border-radius:9999px;padding:.3rem 1rem;transition:opacity .3s;white-space:nowrap;}
+.div-switch:hover{background:rgba(255,255,255,.1);color:#fff;}
+.div-switch:focus-visible{outline:2px solid var(--yellow-t);outline-offset:2px;}
+body.display.idle .div-switch{opacity:0;}
 .view-tools{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;}
 .view-tab{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:#d1d5db;
   background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.16);border-radius:9999px;padding:.3rem 1rem;cursor:pointer;transition:opacity .3s;}
@@ -250,7 +260,6 @@ body.display.idle .view-tab{opacity:0;}
   .third-wrap{width:100%;}
   .disp-open{display:none;}
   .view-tabs{display:flex;flex-wrap:wrap;justify-content:center;}
-  .view-tabs > span:first-child{display:none;}
   .view-btns,.view-tools{flex-wrap:wrap;justify-content:center;}
 }
 

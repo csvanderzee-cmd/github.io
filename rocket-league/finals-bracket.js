@@ -194,11 +194,14 @@
     </div>`;
   }
 
-  function seriesHtml(t1, t2, res, side, higherCls, lowerCls) {
+  /** "8:00 AM · Arena": when and where this part of the match is played. */
+  const whenHtml = w => w ? `<span class="sub-when">${esc(w[0])} · <span class="stage-${esc(w[1]).toLowerCase()}">${esc(w[1])}</span></span>` : '';
+
+  function seriesHtml(t1, t2, res, side, higherCls, lowerCls, when) {
     const winName = res.winner === 1 ? schoolOf(t1.name) : res.winner === 2 ? schoolOf(t2.name) : '';
     return `<div class="sub-section">
       <div class="sub-bar">
-        <span class="sub-bar-label ${side.toLowerCase()}">${side} Team</span>
+        <span class="sub-bar-left"><span class="sub-bar-label ${side.toLowerCase()}">${side} Team</span>${whenHtml(when)}</span>
         ${winName ? `<span class="sub-result-pill w">${esc(winName)}</span>` : ''}
       </div>
       ${teamRow(t1, res, 'n1', higherCls)}
@@ -208,7 +211,9 @@
 
   const CLOCK = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
 
-  function cardHtml(m, label, seed1, seed2, kind, startTime, t1IsHigher) {
+  function cardHtml(m, label, seed1, seed2, kind, slot, t1IsHigher) {
+    slot = slot || {};
+    const startTime = slot.blue && slot.blue[0];
     const isChamp = kind === 'final', isThird = kind === 'third';
     t1IsHigher = t1IsHigher !== false;
     const higherCls = t1IsHigher ? 't1-team' : 't2-team';
@@ -228,7 +233,7 @@
       </div>`;
     const tb = r.isSplit ? `<div class="sub-section tb-section">
         <div class="sub-bar">
-          <span class="sub-bar-label">🔥 School Tiebreaker</span>
+          <span class="sub-bar-left"><span class="sub-bar-label">🔥 School Tiebreaker</span>${whenHtml(slot.tb)}</span>
           ${r.winner ? `<span class="sub-result-pill w">${esc(r.winner)} wins</span>` : hasTBData ? '<span class="sub-result-pill pending">Deciding…</span>' : ''}
         </div>
         ${tbRow(s1, r.tbN1, higherCls)}${tbRow(s2, r.tbN2, lowerCls)}
@@ -254,15 +259,15 @@
           <div class="matchup-team-row">${seedBadge(seed2)}${m.school2 ? logoHtml(s2) : ''}<span class="matchup-school-name ${nameCls(false)}" title="${esc(s2)}">${esc(s2)}</span></div>
         </div>
       </div>
-      ${seriesHtml(m.a.t1, m.a.t2, aRes, 'BLUE', higherCls, lowerCls)}
-      ${seriesHtml(m.b.t1, m.b.t2, bRes, 'ORANGE', higherCls, lowerCls)}
+      ${seriesHtml(m.a.t1, m.a.t2, aRes, 'BLUE', higherCls, lowerCls, slot.blue)}
+      ${seriesHtml(m.b.t1, m.b.t2, bRes, 'ORANGE', higherCls, lowerCls, slot.orange)}
       ${tb}
       <div class="result-bar ${barCls}">${barTxt}</div>
     </div>`;
   }
 
   function render(d) {
-    const times = lg.finalsTimes || {};
+    const times = lg.finalsRun || {};
     // Semi 1 is #1 v #4 and Semi 2 is #2 v #3, so a finalist's seed is traced back through the semis.
     const seedOf = s => !s ? 99 : s === d.s1.school1 ? 1 : s === d.s1.school2 ? 4 : s === d.s2.school1 ? 2 : s === d.s2.school2 ? 3 : 99;
     const finT1IsHigher = seedOf(d.fin.school1) <= seedOf(d.fin.school2);
@@ -281,7 +286,7 @@
             </div>
           </div>
           ${cardHtml(d.fin, 'Championship Final', null, null, 'final', times.fin, finT1IsHigher)}
-          ${d.third ? `<div class="third-wrap">${cardHtml(d.third, 'Third Place · on the bus', null, null, 'third', times.third)}</div>` : ''}
+          ${d.third ? `<div class="third-wrap">${cardHtml(d.third, 'Third Place', null, null, 'third', times.third)}</div>` : ''}
         </div>`;
 
     const view = currentView(d);
@@ -399,7 +404,8 @@
   tabs.className = 'view-tabs';
   tabs.setAttribute('role', 'group');
   tabs.setAttribute('aria-label', 'Bracket view');
-  tabs.innerHTML = '<span></span><div class="view-btns">' + VIEWS.map(([id, name]) =>
+  const OTHER = LEAGUE_ID === 'pl' ? ['finals-early-release.html', 'Early Release'] : ['finals-late-release.html', 'Late Release'];
+  tabs.innerHTML = `<div class="view-left"><a class="div-switch" href="${OTHER[0]}"><span aria-hidden="true">⇄</span> ${OTHER[1]}</a></div><div class="view-btns">` + VIEWS.map(([id, name]) =>
     `<button type="button" class="view-tab" data-view="${id}" aria-pressed="false">${name}</button>`).join('') +
     '</div><div class="view-tools"></div>';
   document.querySelector('.stage-hdr').after(tabs);
@@ -431,6 +437,12 @@
     }
     if (lastData) render(lastData);
   }
+  // The other division opens the same way this one is showing: display screen, pinned view.
+  const divSwitch = tabs.querySelector('.div-switch');
+  const syncSwitch = () => { divSwitch.href = OTHER[0] + location.search; };
+  divSwitch.addEventListener('focus', syncSwitch);
+  divSwitch.addEventListener('mouseenter', syncSwitch);
+  divSwitch.addEventListener('click', syncSwitch);
   tabs.addEventListener('click', e => {
     const b = e.target.closest('.view-tab');
     if (b) pickView(b.dataset.view);
@@ -466,7 +478,7 @@
     document.body.classList.remove('idle');
     clearTimeout(idleTimer);
     idleTimer = setTimeout(function hide() {
-      const busy = document.activeElement && document.activeElement.closest && document.activeElement.closest('.view-tabs button');
+      const busy = document.activeElement && document.activeElement.closest && document.activeElement.closest('.view-tabs button, .view-tabs a');
       if (busy || paused) { idleTimer = setTimeout(hide, 4000); return; }
       document.body.classList.add('idle');
     }, 4000);
