@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Draft. Not linked from the site and kept out of search until the
+         season is announced: remove this tag (and add the pages to
+         sitemap.xml and data/psd-nav.js) at launch. -->
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="alternate icon" href="/favicon.ico" sizes="16x16 32x32 48x48">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#0B0E14">
+    <meta name="description" content="Minecraft Education Capture the Flag season for PSD Esports: how it works, divisions and teams.">
+    <title>Overview | Minecraft Capture the Flag | PSD Esports</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: { gray: { 500: '#949cab', 600: '#8f97a5', 700: '#8b93a1' },
+                    esports: { dark: '#0B0E14', card: '#151B26', yellow: '#FDB913', 'yellow-text': '#FFD166',
+                               red: '#C8102E', 'red-text': '#FF6B6B', blue: '#005696', 'blue-text': '#4DABF7' },
+                    mc: { green: '#5DBB63', 'green-text': '#86E08B' } },
+                fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Rajdhani', 'sans-serif'] }
+            } }
+        }
+    </script>
+    <link rel="stylesheet" href="/minecraft/minecraft.css">
+</head>
+<body class="bg-esports-dark text-gray-200 font-sans antialiased">
+
+<script src="/data/psd-nav.js"></script>
+<script>PSD_NAV.init('minecraft');</script>
+
+<div class="draft-bar" role="note">Draft season pages. Not linked from the site yet; anything marked <span class="tbd">To be decided</span> is still open.</div>
+
+<header class="mc-hero">
+    <div class="max-w-6xl mx-auto px-4 pt-10 pb-6">
+        <p class="mc-kicker">Season 2026–27 · Draft</p>
+        <h1 class="font-display font-black uppercase italic text-4xl md:text-6xl leading-[0.9] text-white">Minecraft<br>Capture the Flag</h1>
+        <p class="mt-3 text-gray-400 max-w-2xl">A weekly Minecraft Education season. Teams play from their own schools, with showcase matches and finals live in the arena.</p>
+    </div>
+    <nav class="max-w-6xl mx-auto px-4 pb-4" aria-label="Minecraft Capture the Flag pages">
+        <div class="mc-tabs"><a href="/minecraft/index.html" class="mc-tab active" aria-current="page">Overview</a><a href="/minecraft/rules.html" class="mc-tab">Rules</a><a href="/minecraft/how-to-play.html" class="mc-tab">How to Play</a><a href="/minecraft/schedule.html" class="mc-tab">Schedule</a><a href="/minecraft/standings.html" class="mc-tab">Standings</a><a href="/minecraft/live-events.html" class="mc-tab">Live Events</a></div>
+    </nav>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 pb-16">
+
+<div class="grid md:grid-cols-3 gap-4 mt-6">
+  <div class="mc-stat"><span>Game</span><b>Minecraft Education</b><small>Capture the Flag map, version 1.9.5</small></div>
+  <div class="mc-stat"><span>Format</span><b>Weekly season</b><small>5v5, 20-minute matches, played from your school</small></div>
+  <div class="mc-stat"><span>Season dates</span><b><span class="tbd">To be decided</span></b><small>Registration and week 1</small></div>
+</div>
+
+<section class="mc-card "><h2>What it is</h2><p>Two teams, two castles, two flags. Grab the other team's flag, carry it home, and defend your own. Teams also score by taking down the Ravager that appears mid-match and carrying its horn back to base. Communication and strategy win matches more than fast hands.</p></section>
+
+<section class="mc-card "><h2>How the season works</h2>
+<ol class="mc-steps">
+  <li><b>Weekly matches, from your school.</b> Each week your team plays one match against another team. One school hosts the world; the other joins with the join code. No travel.</li>
+  <li><b>Results go in the same day.</b> The host takes screenshots of the scoreboards when the timer hits zero, and the result is entered in the league sheet. Standings update on the site.</li>
+  <li><b>Showcase and finals, live.</b> Some matches are played live at the Quail Valley Esports Arena with casters and a stream. See <a href="/minecraft/live-events.html">Live Events</a>. Finals format: <span class="tbd">To be decided</span></li>
+</ol></section>
+
+<div class="grid md:grid-cols-2 gap-4">
+<section class="mc-card "><h2>Divisions</h2><ul class="mc-list">
+  <li><b>Early Release:</b> Minecraft Capture the Flag.</li>
+  <li><b>Late Release:</b> <span class="tbd">To be decided</span> (may play a different game).</li>
+</ul></section>
+<section class="mc-card "><h2>Teams</h2><ul class="mc-list">
+  <li>Schools may enter <b>more than one team</b>.</li>
+  <li>Schools from <b>outside the district</b> are welcome. Their IT team may need to switch on cross-organization play first (see <a href="/minecraft/how-to-play.html#outside-schools">How to Play</a>).</li>
+  <li><b>5v5:</b> five players a side.</li>
+</ul></section>
+</div>
+
+<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4">
+  <a class="mc-link" href="/minecraft/rules.html"><b>Rules</b><span>Scoring, winning, conduct</span></a>
+  <a class="mc-link" href="/minecraft/how-to-play.html"><b>How to Play</b><span>Joining, hosting, match day</span></a>
+  <a class="mc-link" href="/minecraft/schedule.html"><b>Schedule</b><span>Weekly matchups</span></a>
+  <a class="mc-link" href="/minecraft/standings.html"><b>Standings</b><span>Updated each week</span></a>
+</div>
+
+</main>
+
+<footer class="text-center text-xs text-gray-500 pb-10">PSD Esports · Minecraft Education Capture the Flag</footer>
+</body>
+</html>
