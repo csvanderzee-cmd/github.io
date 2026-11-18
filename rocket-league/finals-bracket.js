@@ -18,7 +18,7 @@
 
   const LEAGUE_ID = document.body.dataset.league;
   const lg = PSD.config.league(LEAGUE_ID);
-  const DESIGN_W = 1280;   // must match .stage width in finals-bracket.css
+  const DESIGN_W = 1640;   // must match .stage width in finals-bracket.css
   const PHONE_MAX = 899;   // must match the phone media query
 
   const params = new URLSearchParams(location.search);
@@ -301,7 +301,7 @@
     const top = nav && nav.offsetParent !== null ? nav.getBoundingClientRect().bottom : 0;
     const availH = Math.max(200, innerHeight - Math.max(0, top));
     fitEl.style.height = availH + 'px';
-    const scale = Math.min(innerWidth / DESIGN_W, availH / stage.offsetHeight);
+    const scale = Math.min(innerWidth / (stage.offsetWidth || DESIGN_W), availH / stage.offsetHeight);
     // Centred vertically too, so a short bracket does not hug the top of the stream.
     const offsetY = Math.max(0, (availH - stage.offsetHeight * scale) / 2);
     stage.style.transform = `translate(-50%, ${offsetY}px) scale(${scale})`;

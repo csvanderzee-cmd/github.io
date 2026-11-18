@@ -3,7 +3,7 @@
 
    Shared by finals-late-release.html and finals-early-release.html.
 
-   The bracket is laid out on a fixed 1280px-wide stage and then scaled, like
+   The bracket is laid out on a fixed 1640px-wide stage and then scaled, like
    a slide, to fill whatever window it is in (see fit() in finals-bracket.js).
    A card grows when a tiebreaker or game scores appear, so a layout that
    merely "fits most of the time" would scroll mid-stream; scaling the whole
@@ -40,7 +40,7 @@ html.display,body.display{overflow:hidden;}
 
 /* ── FIT-TO-SCREEN STAGE ── */
 .fit{position:relative;overflow:hidden;}
-.stage{position:absolute;top:0;left:50%;width:1280px;padding:18px 24px 20px;transform-origin:50% 0;}
+.stage{position:absolute;top:0;left:50%;width:1640px;padding:18px 24px 20px;transform-origin:50% 0;}
 
 /* ── TITLE ROW ── */
 .stage-hdr{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:1rem;margin-bottom:14px;}
@@ -183,6 +183,23 @@ body.display.idle{cursor:none;}
 .champ-card .result-bar{padding:.8rem 1.4rem;font-size:1.05rem;letter-spacing:.12em;}
 
 .loader,.notice{padding:3rem 1rem;font-size:1rem;color:var(--muted);text-align:center;font-family:'Rajdhani',sans-serif;letter-spacing:.1em;text-transform:uppercase;}
+
+/* ── ALL FOUR MATCHES IN ONE ROW (screens 900px and wider) ──
+   Stacked, the final and third place made the middle column so tall that a
+   full bracket shrank to 75%. In one row the stage is roughly 16:9 itself, so
+   it fills a screen far larger. Order follows the day: both semifinals, then
+   the final (champion above it) and third place, played at the same time. */
+@media(min-width:900px){
+  .bracket{grid-template-columns:1fr 1fr 1.22fr 1fr;grid-template-rows:auto auto;
+    grid-template-areas:"s1 s2 head third" "s1 s2 fin third";align-items:center;gap:8px 22px;}
+  .champ-col{display:contents;}
+  .left-semi{grid-area:s1;align-self:end;}
+  .right-semi{grid-area:s2;align-self:end;}
+  .semi-col::after{display:none;}
+  .champ-head{grid-area:head;justify-self:center;}
+  .champ-col > .matchup-card{grid-area:fin;}
+  .third-wrap{grid-area:third;align-self:end;width:auto;margin:0;}
+}
 
 /* ── PHONE: normal flow, stacked ── */
 @media(max-width:899px){
