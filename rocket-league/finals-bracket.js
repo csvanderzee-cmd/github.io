@@ -270,10 +270,9 @@
     const finA = calcMatch(d.fin.a.t1, d.fin.a.t2), finB = calcMatch(d.fin.b.t1, d.fin.b.t2);
     const champion = solveMatchup(d.fin.school1, d.fin.school2, finA, finB, d.fin.tb1, d.fin.tb2).winner;
 
-    document.getElementById('bracket').innerHTML = `
-      <div class="bracket">
-        <div class="semi-col left-semi">${cardHtml(d.s1, 'Semifinal 1 · #1 vs #4', 1, 4, 'semi', times.s1)}</div>
-        <div class="champ-col${champion ? ' crowned' : ''}">
+    const s1Card = `<div class="semi-col left-semi">${cardHtml(d.s1, 'Semifinal 1 · #1 vs #4', 1, 4, 'semi', times.s1)}</div>`;
+    const s2Card = `<div class="semi-col right-semi">${cardHtml(d.s2, 'Semifinal 2 · #2 vs #3', 2, 3, 'semi', times.s2)}</div>`;
+    const champCol = `<div class="champ-col${champion ? ' crowned' : ''}">
           <div class="champ-head">
             <span class="champ-trophy" aria-hidden="true">🏆</span>
             <div>
@@ -283,9 +282,14 @@
           </div>
           ${cardHtml(d.fin, 'Championship Final', null, null, 'final', times.fin, finT1IsHigher)}
           ${d.third ? `<div class="third-wrap">${cardHtml(d.third, 'Third Place · on the bus', null, null, 'third', times.third)}</div>` : ''}
-        </div>
-        <div class="semi-col right-semi">${cardHtml(d.s2, 'Semifinal 2 · #2 vs #3', 2, 3, 'semi', times.s2)}</div>
-      </div>`;
+        </div>`;
+
+    const view = currentView(d);
+    stage.dataset.view = view;
+    document.getElementById('bracket').innerHTML =
+      view === 'semis'  ? `<div class="bracket view-semis">${s1Card}${s2Card}</div>` :
+      view === 'finals' ? `<div class="bracket view-finals">${champCol}</div>` :
+                          `<div class="bracket view-full">${s1Card}${s2Card}${champCol}</div>`;
     fit();
   }
 
@@ -377,6 +381,61 @@
     history.replaceState(null, '', u.toString());
   }
 
+  /* ---- views ----------------------------------------------------------------
+
+     Semifinals, Finals, or the Full bracket. Only one stage is played at a
+     time, so the screen shows that stage's two matches at about twice the size
+     the full bracket allows. "Auto" follows the day: Semifinals until both are
+     decided, then Finals. Picking a view pins it; picking the one auto would
+     show anyway goes back to following the day, so a screen can never be left
+     stuck on the semifinals by mistake. ?view=semis|finals|full pins it from
+     the address, for a bookmarked screen. */
+
+  const VIEWS = [['semis', 'Semifinals'], ['finals', 'Finals'], ['full', 'Full bracket']];
+  let pinned = VIEWS.some(v => v[0] === params.get('view')) ? params.get('view') : null;
+  let lastData = null;
+
+  const tabs = document.createElement('div');
+  tabs.className = 'view-tabs';
+  tabs.setAttribute('role', 'group');
+  tabs.setAttribute('aria-label', 'Bracket view');
+  tabs.innerHTML = '<span></span><div class="view-btns">' + VIEWS.map(([id, name]) =>
+    `<button type="button" class="view-tab" data-view="${id}" aria-pressed="false">${name}</button>`).join('') +
+    '</div><div class="view-tools"></div>';
+  document.querySelector('.stage-hdr').after(tabs);
+  // Pause and Display sit on this row, so the title row stays one line on every view.
+  tabs.querySelector('.view-tools').append(...[pauseBtn, openBtn, exitBtn].filter(Boolean));
+
+  function winnerOf(m) {
+    const a = calcMatch(m.a.t1, m.a.t2), b = calcMatch(m.b.t1, m.b.t2);
+    return solveMatchup(m.school1, m.school2, a, b, m.tb1, m.tb2).winner;
+  }
+  function autoView(d) { return winnerOf(d.s1) && winnerOf(d.s2) ? 'finals' : 'semis'; }
+
+  function currentView(d) {
+    lastData = d;
+    const auto = autoView(d);
+    const view = pinned || auto;
+    tabs.querySelectorAll('.view-tab').forEach(b => {
+      b.setAttribute('aria-pressed', String(b.dataset.view === view));
+    });
+    return view;
+  }
+
+  function pickView(id) {
+    pinned = lastData && id === autoView(lastData) ? null : id;
+    if (!STREAM && history.replaceState) {
+      const u = new URL(location.href);
+      if (pinned) u.searchParams.set('view', pinned); else u.searchParams.delete('view');
+      history.replaceState(null, '', u.toString());
+    }
+    if (lastData) render(lastData);
+  }
+  tabs.addEventListener('click', e => {
+    const b = e.target.closest('.view-tab');
+    if (b) pickView(b.dataset.view);
+  });
+
   function setDisplay(on) {
     document.body.classList.toggle('display', on);
     document.documentElement.classList.toggle('display', on);
@@ -388,6 +447,14 @@
   openBtn.addEventListener('click', () => setDisplay(true));
   exitBtn.addEventListener('click', () => setDisplay(false));
   document.addEventListener('keydown', e => {
+    /* On the display screen the arrow keys step through the views. */
+    if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && document.body.classList.contains('display') && lastData) {
+      const order = VIEWS.map(v => v[0]);
+      const at = order.indexOf(stage.dataset.view);
+      pickView(order[(at + (e.key === 'ArrowRight' ? 1 : order.length - 1)) % order.length]);
+      e.preventDefault();
+      return;
+    }
     if (e.key === 'Escape' && !STREAM && document.body.classList.contains('display')) { e.preventDefault(); setDisplay(false); }
   });
 
@@ -399,7 +466,7 @@
     document.body.classList.remove('idle');
     clearTimeout(idleTimer);
     idleTimer = setTimeout(function hide() {
-      const busy = document.activeElement && document.activeElement.closest && document.activeElement.closest('.stage-hdr .right button');
+      const busy = document.activeElement && document.activeElement.closest && document.activeElement.closest('.view-tabs button');
       if (busy || paused) { idleTimer = setTimeout(hide, 4000); return; }
       document.body.classList.add('idle');
     }, 4000);

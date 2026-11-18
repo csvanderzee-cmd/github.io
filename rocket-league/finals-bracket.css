@@ -184,21 +184,56 @@ body.display.idle{cursor:none;}
 
 .loader,.notice{padding:3rem 1rem;font-size:1rem;color:var(--muted);text-align:center;font-family:'Rajdhani',sans-serif;letter-spacing:.1em;text-transform:uppercase;}
 
-/* ── ALL FOUR MATCHES IN ONE ROW (screens 900px and wider) ──
-   Stacked, the final and third place made the middle column so tall that a
-   full bracket shrank to 75%. In one row the stage is roughly 16:9 itself, so
-   it fills a screen far larger. Order follows the day: both semifinals, then
-   the final (champion above it) and third place, played at the same time. */
+/* ── VIEWS: Semifinals, Finals, Full bracket ──
+   The stage is narrower for the two-match views, so when fit() scales it to
+   the screen the cards come out about twice the size of the full bracket's. */
+.view-tabs{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:.5rem;margin:-4px 0 14px;}
+.view-btns{display:flex;gap:.5rem;}
+.view-tools{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;}
+.view-tab{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:#d1d5db;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.16);border-radius:9999px;padding:.3rem 1rem;cursor:pointer;transition:opacity .3s;}
+.view-tab:hover{background:rgba(255,255,255,.1);color:#fff;}
+.view-tab[aria-pressed="true"]{color:#0B0E14;background:var(--yellow);border-color:var(--yellow);}
+.view-tab:focus-visible{outline:2px solid var(--yellow-t);outline-offset:2px;}
+body.stream .view-tabs{display:none;}
+body.display.idle .view-tab{opacity:0;}
+
+.view-semis .semi-col::after,.view-finals .semi-col::after{display:none;}
+
 @media(min-width:900px){
-  .bracket{grid-template-columns:1fr 1fr 1.22fr 1fr;grid-template-rows:auto auto;
+  .stage[data-view="semis"],.stage[data-view="finals"]{width:1180px;}
+  /* The division and date stack, so the narrower stage keeps a one-line header. */
+  .stage-hdr{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);}
+  .stage-hdr .left{flex-direction:column;align-items:flex-start;gap:.3rem;}
+
+  .view-semis{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px;align-items:start;}
+
+  .view-finals{display:block;}
+  .view-finals .champ-col{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);grid-template-areas:"head head" "fin third";
+    align-items:end;gap:10px 34px;}
+  .view-finals .champ-head{grid-area:head;justify-self:center;}
+  .view-finals .champ-col > .matchup-card{grid-area:fin;}
+  .view-finals .third-wrap{grid-area:third;width:auto;margin:0;}
+
+  /* Full bracket: all four in one row, in playing order. */
+  .view-full{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr);grid-template-rows:auto auto;
     grid-template-areas:"s1 s2 head third" "s1 s2 fin third";align-items:center;gap:8px 22px;}
-  .champ-col{display:contents;}
-  .left-semi{grid-area:s1;align-self:end;}
-  .right-semi{grid-area:s2;align-self:end;}
-  .semi-col::after{display:none;}
-  .champ-head{grid-area:head;justify-self:center;}
-  .champ-col > .matchup-card{grid-area:fin;}
-  .third-wrap{grid-area:third;align-self:end;width:auto;margin:0;}
+  .view-full .champ-col{display:contents;}
+  .view-full .left-semi{grid-area:s1;align-self:end;}
+  .view-full .right-semi{grid-area:s2;align-self:end;}
+  .view-full .semi-col::after{display:none;}
+  .view-full .champ-head{grid-area:head;justify-self:center;}
+  .view-full .champ-col > .matchup-card{grid-area:fin;}
+  .view-full .third-wrap{grid-area:third;align-self:end;width:auto;margin:0;}
+  /* The final's larger type does not fit a quarter of the row with five game
+     scores, so in this view it matches the other cards; gold marks it out. */
+  .view-full .champ-card .comp-name{font-size:.95rem;}
+  .view-full .champ-card .gpill{font-size:.8rem;min-width:20px;}
+  .view-full .champ-card .score-disp{font-size:1.25rem;}
+  .view-full .champ-card .competitor{padding:.5rem .9rem;}
+  /* A quarter of the row is tight beside five game scores: long names wrap to a second line rather than being cut off. */
+  .view-full .competitor{padding:.5rem .7rem;gap:6px;}
+  .view-full .comp-name{white-space:normal;line-height:1.05;text-overflow:clip;}
 }
 
 /* ── PHONE: normal flow, stacked ── */
@@ -214,6 +249,9 @@ body.display.idle{cursor:none;}
   .champ-col{order:3;}
   .third-wrap{width:100%;}
   .disp-open{display:none;}
+  .view-tabs{display:flex;flex-wrap:wrap;justify-content:center;}
+  .view-tabs > span:first-child{display:none;}
+  .view-btns,.view-tools{flex-wrap:wrap;justify-content:center;}
 }
 
 @media(prefers-reduced-motion:reduce){
