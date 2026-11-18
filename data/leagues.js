@@ -95,10 +95,10 @@
         // Finals bracket lives on its own tab in the match workbook.
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '672839496',
-        // Run of play for 23 Jan 2027 is not set yet. Nulls keep the object
-        // shape while the bracket simply omits the time chip; fill these in
-        // and the times reappear on the cards.
-        finalsTimes: { s1: null, s2: null, fin: null },
+        // Run of play for 23 Jan 2027: Early Release plays the morning, Late
+        // Release the afternoon. Both semifinals start together (one in the
+        // arena, one on the bus); the final follows the semifinal tiebreakers.
+        finalsTimes: { s1: '12:00 PM', s2: '12:00 PM', fin: '1:42 PM', third: '1:42 PM' },   // afternoon
 
         // 4 schools, 9 weeks: every pair meets 3 times, 2 series per week.
         weeks: [
@@ -150,7 +150,7 @@
 
         // Formatting on this tab is expected to change for 2026-27.
         finalsGid: '2049340971',
-        finalsTimes: { s1: null, s2: null, fin: null },
+        finalsTimes: { s1: '8:00 AM', s2: '8:00 AM', fin: '9:42 AM', third: '9:42 AM' },  // morning
 
         // 9 schools, 9 weeks: full single round robin, one bye per week. The
         // bye school is the last row on each tab, with BYE in every column.

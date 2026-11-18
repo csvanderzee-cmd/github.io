@@ -88,6 +88,35 @@
   .ss-value{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1rem;color:#fff;line-height:1.3;}
   .sched-note{margin:1rem 0 0;font-size:.82rem;color:var(--muted);line-height:1.5;}
 
+  /* ── HOW THE FINALS WORK ── */
+  .how-section{border-top:1px solid var(--bdr);padding-top:2rem;margin-bottom:3rem;}
+  .how-intro{margin:0 0 1.25rem;font-size:.92rem;color:#d1d5db;line-height:1.6;max-width:62ch;}
+  .how-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.9rem;counter-reset:how;}
+  .how-item{position:relative;background:var(--card);border:1px solid var(--bdr2);border-radius:12px;padding:1.1rem 1.1rem 1.1rem 3.4rem;counter-increment:how;}
+  .how-item::before{content:counter(how);position:absolute;left:1rem;top:1rem;width:1.7rem;height:1.7rem;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);color:var(--yellow-t);font-family:'Rajdhani',sans-serif;font-weight:900;font-size:.95rem;}
+  .how-item h3{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.05rem;text-transform:uppercase;letter-spacing:.08em;color:#fff;margin:0 0 .35rem;}
+  .how-item p{margin:0;font-size:.86rem;color:#d1d5db;line-height:1.55;}
+  .t-blue{color:#60A5FA;font-weight:700;}
+  .t-orange{color:#FBBF24;font-weight:700;}
+  .how-more{margin:1rem 0 0;font-size:.82rem;color:var(--muted);}
+  .how-more a{color:var(--yellow-t);}
+
+  /* ── RUN OF PLAY ── */
+  .rop-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem;margin-top:1rem;}
+  .rop{background:var(--card);border:1px solid var(--bdr2);border-radius:12px;padding:1rem 1rem .75rem;position:relative;overflow:hidden;}
+  .rop::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+  .rop.pl::before{background:linear-gradient(90deg,var(--blue),var(--blue-t));}
+  .rop.jrpl::before{background:linear-gradient(90deg,var(--red),var(--red-t));}
+  .rop h3{font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.05rem;text-transform:uppercase;letter-spacing:.1em;color:#fff;margin:.2rem 0 .6rem;}
+  .rop-scroll{overflow-x:auto;}
+  .rop table{width:100%;border-collapse:collapse;font-size:.84rem;}
+  .rop th,.rop td{text-align:left;padding:.45rem .5rem;border-top:1px solid var(--bdr);vertical-align:top;}
+  .rop thead th{border-top:0;font-family:'Rajdhani',sans-serif;font-weight:800;font-size:.6875rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);}
+  .rop tbody th{font-family:'Rajdhani',sans-serif;font-weight:700;color:var(--yellow-t);white-space:nowrap;}
+  .rop td{color:#d1d5db;}
+  .rop tr.gap td,.rop tr.gap th{color:var(--muted);font-size:.78rem;}
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+
   footer{text-align:center;margin-top:2rem;font-size:.74rem;color:var(--muted);font-family:'Rajdhani',sans-serif;letter-spacing:.1em;text-transform:uppercase;}
 
   @media(prefers-reduced-motion:reduce){
@@ -122,15 +151,54 @@
     <a class="div-card pl" href="/rocket-league/finals-late-release.html">
       <div class="div-eyebrow">Promise: Late Release</div>
       <div class="div-title">Late Release Bracket</div>
-      <div class="div-meta">Top 4 schools · Semifinals and the Championship Final, updated live.</div>
+      <div class="div-meta">Top 4 schools · Semifinals, the Championship Final and third place, updated live.</div>
       <span class="div-go">View bracket →</span>
     </a>
     <a class="div-card jrpl" href="/rocket-league/finals-early-release.html">
       <div class="div-eyebrow">Promise: Early Release</div>
       <div class="div-title">Early Release Bracket</div>
-      <div class="div-meta">Top 4 schools · Semifinals and the Championship Final, updated live.</div>
+      <div class="div-meta">Top 4 schools · Semifinals, the Championship Final and third place, updated live.</div>
       <span class="div-go">View bracket →</span>
     </a>
+  </section>
+
+  <section id="how-it-works" class="how-section" aria-labelledby="how-heading">
+    <div class="sched-hdr">
+      <span style="font-size:1.1rem" aria-hidden="true">🏁</span>
+      <h2 id="how-heading">How the Finals Work</h2>
+    </div>
+    <p class="how-intro">The top 4 schools in each division play semifinals, then the Championship Final and a third-place match. Each school brings its <span class="t-blue">BLUE</span> and <span class="t-orange">ORANGE</span> teams, just like the regular season.</p>
+    <ol class="how-list">
+      <li class="how-item">
+        <h3>Best of 5</h3>
+        <p>Every match is a best of 5. The first team to win 3 games wins the match.</p>
+      </li>
+      <li class="how-item">
+        <h3><span class="t-blue">Blue</span> and <span class="t-orange">Orange</span> both play</h3>
+        <p>In each series, <span class="t-blue">BLUE</span> plays <span class="t-blue">BLUE</span> and <span class="t-orange">ORANGE</span> plays <span class="t-orange">ORANGE</span>. A school that wins both matches wins the series.</p>
+      </li>
+      <li class="how-item">
+        <h3>Tiebreaker game</h3>
+        <p>If the series is split 1–1, one tiebreaker game decides it. Each school picks its best team of 3 from all of its players and subs.</p>
+      </li>
+      <li class="how-item">
+        <h3>Rosters are locked</h3>
+        <p>Players stay on the team they start with for the whole day. Subs are allowed, but once a sub plays for a team they are locked to that team. The tiebreaker game is the only exception.</p>
+      </li>
+      <li class="how-item">
+        <h3>Two stages</h3>
+        <p>The semifinals share the arena and the bus. All <span class="t-blue">BLUE</span> teams play first: Semifinal 1 in the arena, Semifinal 2 on the bus. Then the <span class="t-orange">ORANGE</span> teams swap: Semifinal 2 in the arena, Semifinal 1 on the bus. A school's two teams never play at the same time.</p>
+      </li>
+      <li class="how-item">
+        <h3>Final and third place</h3>
+        <p>The two semifinal tiebreakers are played at the same time, one in the arena and one on the bus. The Championship Final is played entirely in the arena, <span class="t-blue">BLUE</span> then <span class="t-orange">ORANGE</span>, while the two semifinal losers play for third place on the bus.</p>
+      </li>
+      <li class="how-item">
+        <h3>Settings, not sign-ins</h3>
+        <p>Players do not sign in to personal or school accounts at the tournament. Each player gets a couple of minutes before a match to change settings. Coaches: practice resetting all keybinds and putting in each player's own binds, so it takes seconds on the day.</p>
+      </li>
+    </ol>
+    <p class="how-more">Full details are in <a href="/rocket-league/rules.html#section7">Section 7 of the rules</a>.</p>
   </section>
 
   <section id="day-of-schedule" class="schedule-section" aria-label="Championship Day">
@@ -159,8 +227,35 @@
         <div class="ss-label">Format</div>
         <div class="ss-value">Best of 5 · Top 4 per division</div>
       </div>
+      <div class="ss-item">
+        <div class="ss-label">Stages</div>
+        <div class="ss-value">Arena &amp; Bus</div>
+      </div>
     </div>
-    <p class="sched-note">The full run of play — check-in, semifinals and finals times for each division — will be posted here and shared through Google Classroom.</p>
+    <p class="sched-note">Planned times. Each match slot allows for all 5 games (about 8 minutes a game, with goal stoppages and time between games), so rounds will often finish early; the next round starts when both stages are ready. Tiebreaker games only happen when a series is split 1–1.</p>
+    <div class="rop-grid">
+    <div class="rop jrpl">
+      <h3>Early Release · Morning</h3>
+      <div class="rop-scroll">
+        <table>
+          <caption class="sr-only">Early Release run of play, morning</caption>
+          <thead><tr><th scope="col">Time</th><th scope="col">Arena</th><th scope="col">Bus</th></tr></thead>
+          <tbody><tr><th scope="row">8:00</th><td>Semifinal 1 <span class="t-blue">Blue</span></td><td>Semifinal 2 <span class="t-blue">Blue</span></td></tr><tr class="gap"><th scope="row">8:40</th><td><em>Changeover</em></td><td></td></tr><tr><th scope="row">8:45</th><td>Semifinal 2 <span class="t-orange">Orange</span></td><td>Semifinal 1 <span class="t-orange">Orange</span></td></tr><tr><th scope="row">9:25</th><td>Semifinal 1 tiebreaker</td><td>Semifinal 2 tiebreaker</td></tr><tr class="gap"><th scope="row">9:37</th><td><em>Break</em></td><td></td></tr><tr><th scope="row">9:42</th><td>Championship Final <span class="t-blue">Blue</span></td><td>Third place <span class="t-blue">Blue</span></td></tr><tr class="gap"><th scope="row">10:22</th><td><em>Changeover</em></td><td></td></tr><tr><th scope="row">10:27</th><td>Championship Final <span class="t-orange">Orange</span></td><td>Third place <span class="t-orange">Orange</span></td></tr><tr><th scope="row">11:07</th><td>Final tiebreaker</td><td>Third-place tiebreaker</td></tr><tr><th scope="row">11:20</th><td>Awards</td><td></td></tr><tr class="gap"><th scope="row">11:30</th><td><em>Done</em></td><td></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="rop pl">
+      <h3>Late Release · Afternoon</h3>
+      <div class="rop-scroll">
+        <table>
+          <caption class="sr-only">Late Release run of play, afternoon</caption>
+          <thead><tr><th scope="col">Time</th><th scope="col">Arena</th><th scope="col">Bus</th></tr></thead>
+          <tbody><tr><th scope="row">12:00</th><td>Semifinal 1 <span class="t-blue">Blue</span></td><td>Semifinal 2 <span class="t-blue">Blue</span></td></tr><tr class="gap"><th scope="row">12:40</th><td><em>Changeover</em></td><td></td></tr><tr><th scope="row">12:45</th><td>Semifinal 2 <span class="t-orange">Orange</span></td><td>Semifinal 1 <span class="t-orange">Orange</span></td></tr><tr><th scope="row">1:25</th><td>Semifinal 1 tiebreaker</td><td>Semifinal 2 tiebreaker</td></tr><tr class="gap"><th scope="row">1:37</th><td><em>Break</em></td><td></td></tr><tr><th scope="row">1:42</th><td>Championship Final <span class="t-blue">Blue</span></td><td>Third place <span class="t-blue">Blue</span></td></tr><tr class="gap"><th scope="row">2:22</th><td><em>Changeover</em></td><td></td></tr><tr><th scope="row">2:27</th><td>Championship Final <span class="t-orange">Orange</span></td><td>Third place <span class="t-orange">Orange</span></td></tr><tr><th scope="row">3:07</th><td>Final tiebreaker</td><td>Third-place tiebreaker</td></tr><tr><th scope="row">3:20</th><td>Awards</td><td></td></tr><tr class="gap"><th scope="row">3:30</th><td><em>Done</em></td><td></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    </div>
+    <p class="sched-note">Lunch and turnover run from 11:30 AM to 12:00 PM. Changes will be shared through Google Classroom.</p>
   </section>
 
   <footer><p>PSD Esports · Championship Finals</p></footer>

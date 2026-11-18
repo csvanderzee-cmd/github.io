@@ -5,8 +5,12 @@
    else (sheet, tab, times, school logos) comes from data/leagues.js. Load
    leagues.js and psd-data.js first.
 
-   Add ?stream to the URL for the livestream: the site nav goes, leaving only
-   the bracket, scaled to fill the window.
+   Display screen (the button in the header, or ?display=1): for the big
+   screen in the arena. The site nav goes, the page stops scrolling, the
+   bracket is scaled to fill the screen, and a clock shows. The controls fade
+   when nobody is using them; Escape or Exit puts the page back.
+
+   ?stream is the same screen for the livestream, with no controls at all.
    ========================================================================== */
 
 (function () {
@@ -17,7 +21,9 @@
   const DESIGN_W = 1280;   // must match .stage width in finals-bracket.css
   const PHONE_MAX = 899;   // must match the phone media query
 
-  if (/[?&]stream\b/.test(location.search)) document.body.classList.add('stream');
+  const params = new URLSearchParams(location.search);
+  const STREAM = params.has('stream');
+  if (STREAM) document.body.classList.add('stream', 'display');
 
   /* ---- helpers ----------------------------------------------------------- */
 
@@ -40,14 +46,22 @@
 
   /* ---- reading the bracket tab --------------------------------------------
 
-     Fixed cells, as the finals tab has always been read:
-       Semi 1  rows 4–7,  cols B–E (name, three games), tiebreaker col F
-       Semi 2  rows 8–11, same columns
-       Final   rows 4–7,  cols I–L, tiebreaker col M
-     Within each block the first two rows are the ORANGE teams, the next two
-     BLUE. The tab's layout is expected to change for 2026-27; this function is
-     the only place that knows where anything sits.
+     Each match is a block found by its label in column A, so rows can move:
+
+       Semifinal 1 ...      | School | Game 1 ... Game 5     <- label row
+       Blue                 | school 1  | goals per game
+       Blue                 | school 2  |
+       Orange               | school 1  |
+       Orange               | school 2  |
+       Tiebreaker           | school 1  | goals (Game 1 column)
+       Tiebreaker           | school 2  |
+
+     Labels: "Semifinal 1", "Semifinal 2", "Championship Final", "Third Place".
+     Only labels and names are text, and only in columns A and B: on the fast
+     feed Google blanks any text that sits in a column of numbers.
      ------------------------------------------------------------------------ */
+
+  const GAMES = 5, TO_WIN = 3;   // best of 5
 
   async function fetchRows() {
     const text = await PSD.fetchCSV(lg.matchSheet, lg.finalsGid);
@@ -56,16 +70,22 @@
 
   function parseSheet(rows) {
     const g = (r, c) => (rows[r] && rows[r][c]) || '';
-    const block = (r, c) => ({
-      school1: schoolOf(g(r, c)),
-      school2: schoolOf(g(r + 1, c)),
-      a: { t1: { name: g(r, c),     sc: [g(r, c+1),   g(r, c+2),   g(r, c+3)] },
-           t2: { name: g(r+1, c),   sc: [g(r+1, c+1), g(r+1, c+2), g(r+1, c+3)] } },
-      b: { t1: { name: g(r+2, c),   sc: [g(r+2, c+1), g(r+2, c+2), g(r+2, c+3)] },
-           t2: { name: g(r+3, c),   sc: [g(r+3, c+1), g(r+3, c+2), g(r+3, c+3)] } },
-      tb1: cleanTB(g(r, c + 4)), tb2: cleanTB(g(r + 1, c + 4))
-    });
-    return { s1: block(3, 1), s2: block(7, 1), fin: block(3, 8) };
+    const find = re => rows.findIndex(row => re.test((row[0] || '').trim()));
+    const team = r => ({ name: g(r, 1), sc: Array.from({ length: GAMES }, (_, k) => g(r, 2 + k)) });
+    const block = r => r < 0 ? null : {
+      school1: schoolOf(g(r + 1, 1)),
+      school2: schoolOf(g(r + 2, 1)),
+      a: { t1: team(r + 1), t2: team(r + 2) },   // BLUE, played first
+      b: { t1: team(r + 3), t2: team(r + 4) },   // ORANGE
+      tb1: cleanTB(g(r + 5, 2)), tb2: cleanTB(g(r + 6, 2))
+    };
+    const d = {
+      s1: block(find(/^semi[- ]?final\s*1\b/i)),
+      s2: block(find(/^semi[- ]?final\s*2\b/i)),
+      fin: block(find(/^(championship\s+)?final\b/i)),
+      third: block(find(/^third\b|^3rd\b/i))
+    };
+    return d.s1 && d.s2 && d.fin ? d : null;
   }
 
   /* ---- scoring ----------------------------------------------------------- */
@@ -80,11 +100,11 @@
       if (n2 > n1) { w2++; return { n1, n2, gw: 2 }; }
       return { n1, n2, gw: 0 };
     });
-    const winner = w1 >= 2 ? 1 : w2 >= 2 ? 2 : 0;
+    const winner = w1 >= TO_WIN ? 1 : w2 >= TO_WIN ? 2 : 0;
     return { w1, w2, gp, games, winner };
   }
 
-  /** A school advances by winning both its ORANGE and BLUE series, or the tiebreaker on a split. */
+  /** A school takes a series by winning both its BLUE and ORANGE matches, or the tiebreaker on a split. */
   function solveMatchup(s1, s2, aRes, bRes, tb1, tb2) {
     const aWin = aRes.winner === 1 ? s1 : aRes.winner === 2 ? s2 : null;
     const bWin = bRes.winner === 1 ? s1 : bRes.winner === 2 ? s2 : null;
@@ -148,12 +168,13 @@
 
   const CLOCK = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
 
-  function cardHtml(m, label, seed1, seed2, isChamp, startTime, t1IsHigher) {
+  function cardHtml(m, label, seed1, seed2, kind, startTime, t1IsHigher) {
+    const isChamp = kind === 'final', isThird = kind === 'third';
     t1IsHigher = t1IsHigher !== false;
     const higherCls = t1IsHigher ? 't1-team' : 't2-team';
     const lowerCls  = t1IsHigher ? 't2-team' : 't1-team';
-    const s1 = m.school1 || (isChamp ? 'Winner Semi 1' : `Seed ${seed1}`);
-    const s2 = m.school2 || (isChamp ? 'Winner Semi 2' : `Seed ${seed2}`);
+    const s1 = m.school1 || (isChamp ? 'Winner Semi 1' : isThird ? 'Loser Semi 1' : `Seed ${seed1}`);
+    const s2 = m.school2 || (isChamp ? 'Winner Semi 2' : isThird ? 'Loser Semi 2' : `Seed ${seed2}`);
 
     const aRes = calcMatch(m.a.t1, m.a.t2);
     const bRes = calcMatch(m.b.t1, m.b.t2);
@@ -174,16 +195,16 @@
       </div>` : '';
 
     let barCls = 'waiting', barTxt = '⏳ Awaiting results';
-    if (r.winner)                    { barCls = isChamp ? 'champ' : 'advance'; barTxt = isChamp ? `👑 ${esc(r.winner)}: Champions!` : `🏆 ${esc(r.winner)} advances`; }
+    if (r.winner)                    { barCls = isChamp ? 'champ' : 'advance'; barTxt = isChamp ? `👑 ${esc(r.winner)}: Champions!` : isThird ? `🥉 ${esc(r.winner)} takes third` : `🏆 ${esc(r.winner)} advances`; }
     else if (r.needsTB && hasTBData) { barCls = 'tb-needed'; barTxt = '🔥 Tiebreaker: score incomplete'; }
     else if (r.needsTB)              { barCls = 'tb-needed'; barTxt = '🔥 Tiebreaker needed'; }
-    else if (r.aWin || r.bWin)       { barTxt = `⏳ Waiting for ${!r.aWin ? 'ORANGE' : 'BLUE'} Team result`; }
+    else if (r.aWin || r.bWin)       { barTxt = `⏳ Waiting for ${!r.aWin ? 'BLUE' : 'ORANGE'} Team result`; }
     else if (aRes.gp || bRes.gp)     { barTxt = '⏳ In progress'; }
 
     const seedBadge = s => s ? `<span class="sb s${s}">#${s}</span>` : '';
     const nameCls = hi => (hi === t1IsHigher) ? 't1-name' : 't2-name';
 
-    return `<div class="matchup-card${isChamp ? ' champ-card' : ''}">
+    return `<div class="matchup-card${isChamp ? ' champ-card' : isThird ? ' third-card' : ''}">
       <div class="matchup-hdr">
         <span class="matchup-hdr-title">${label}</span>
         ${startTime ? `<span class="matchup-start-time">${CLOCK}${esc(startTime)}</span>` : ''}
@@ -193,8 +214,8 @@
           <div class="matchup-team-row">${seedBadge(seed2)}${m.school2 ? logoHtml(s2) : ''}<span class="matchup-school-name ${nameCls(false)}" title="${esc(s2)}">${esc(s2)}</span></div>
         </div>
       </div>
-      ${seriesHtml(m.a.t1, m.a.t2, aRes, 'ORANGE', higherCls, lowerCls)}
-      ${seriesHtml(m.b.t1, m.b.t2, bRes, 'BLUE', higherCls, lowerCls)}
+      ${seriesHtml(m.a.t1, m.a.t2, aRes, 'BLUE', higherCls, lowerCls)}
+      ${seriesHtml(m.b.t1, m.b.t2, bRes, 'ORANGE', higherCls, lowerCls)}
       ${tb}
       <div class="result-bar ${barCls}">${barTxt}</div>
     </div>`;
@@ -211,7 +232,7 @@
 
     document.getElementById('bracket').innerHTML = `
       <div class="bracket">
-        <div class="semi-col left-semi">${cardHtml(d.s1, 'Semifinal 1 · #1 vs #4', 1, 4, false, times.s1)}</div>
+        <div class="semi-col left-semi">${cardHtml(d.s1, 'Semifinal 1 · #1 vs #4', 1, 4, 'semi', times.s1)}</div>
         <div class="champ-col${champion ? ' crowned' : ''}">
           <div class="champ-head">
             <span class="champ-trophy" aria-hidden="true">🏆</span>
@@ -220,9 +241,10 @@
               <div class="champ-name">${champion ? esc(champion) : ''}</div>
             </div>
           </div>
-          ${cardHtml(d.fin, 'Championship Final', null, null, true, times.fin, finT1IsHigher)}
+          ${cardHtml(d.fin, 'Championship Final', null, null, 'final', times.fin, finT1IsHigher)}
+          ${d.third ? `<div class="third-wrap">${cardHtml(d.third, 'Third Place · on the bus', null, null, 'third', times.third)}</div>` : ''}
         </div>
-        <div class="semi-col right-semi">${cardHtml(d.s2, 'Semifinal 2 · #2 vs #3', 2, 3, false, times.s2)}</div>
+        <div class="semi-col right-semi">${cardHtml(d.s2, 'Semifinal 2 · #2 vs #3', 2, 3, 'semi', times.s2)}</div>
       </div>`;
     fit();
   }
@@ -234,7 +256,7 @@
 
   /** Scales the stage to fill the space below the nav, like a slide. */
   function fit() {
-    if (innerWidth <= PHONE_MAX) { stage.style.transform = ''; fitEl.style.height = ''; return; }
+    if (innerWidth <= PHONE_MAX && !document.body.classList.contains('display')) { stage.style.transform = ''; fitEl.style.height = ''; return; }
     const nav = document.getElementById('psd-nav');
     const top = nav && nav.offsetParent !== null ? nav.getBoundingClientRect().bottom : 0;
     const availH = Math.max(200, innerHeight - Math.max(0, top));
@@ -282,6 +304,74 @@
     });
   }
 
+  /* ---- display screen ------------------------------------------------------ */
+
+  const hdrRight = document.querySelector('.stage-hdr .right');
+  const clock = document.createElement('span');
+  clock.className = 'clock';
+  clock.setAttribute('aria-hidden', 'true');   // decoration on a wall screen; the OS clock is the accessible one
+  const openBtn = document.createElement('button');
+  openBtn.type = 'button';
+  openBtn.className = 'disp-btn disp-open';
+  openBtn.innerHTML = '<span aria-hidden="true">🖵</span> Display screen';
+  const exitBtn = document.createElement('button');
+  exitBtn.type = 'button';
+  exitBtn.className = 'disp-btn disp-exit';
+  exitBtn.textContent = 'Exit display';
+  hdrRight.prepend(clock);
+  hdrRight.append(openBtn, exitBtn);
+
+  function tick() {
+    if (window.PSD_NAV && PSD_NAV.still && PSD_NAV.still()) return;   // held by the pause-animations switch
+    clock.textContent = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+  }
+  tick();
+  setInterval(tick, 20000);
+
+  /* The address carries the state, so a screen set up on the day can be
+     bookmarked or reopened after a reboot exactly as it was. */
+  function writeUrl(on) {
+    if (STREAM || !history.replaceState) return;
+    const u = new URL(location.href);
+    if (on) u.searchParams.set('display', '1'); else u.searchParams.delete('display');
+    history.replaceState(null, '', u.toString());
+  }
+
+  function setDisplay(on) {
+    document.body.classList.toggle('display', on);
+    document.documentElement.classList.toggle('display', on);
+    writeUrl(on);
+    fit();
+    (on ? exitBtn : openBtn).focus();
+    wake();
+  }
+  openBtn.addEventListener('click', () => setDisplay(true));
+  exitBtn.addEventListener('click', () => setDisplay(false));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !STREAM && document.body.classList.contains('display')) { e.preventDefault(); setDisplay(false); }
+  });
+
+  /* The controls stay out of the picture until someone reaches for them. Not
+     while one has focus, where a keyboard user is working, and not while
+     updates are paused, which nobody should be able to leave on unseen. */
+  let idleTimer = null;
+  function wake() {
+    document.body.classList.remove('idle');
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(function hide() {
+      const busy = document.activeElement && document.activeElement.closest && document.activeElement.closest('.stage-hdr .right button');
+      if (busy || paused) { idleTimer = setTimeout(hide, 4000); return; }
+      document.body.classList.add('idle');
+    }, 4000);
+  }
+  ['mousemove', 'mousedown', 'keydown', 'touchstart', 'focusin'].forEach(t => document.addEventListener(t, wake));
+
+  if (!STREAM && params.get('display') === '1') {
+    document.body.classList.add('display');
+    document.documentElement.classList.add('display');
+    wake();
+  }
+
   function initHeader() {
     const d = PSD.finalsStart();
     document.getElementById('finals-date').textContent = d
@@ -302,7 +392,16 @@
     try {
       const rows = await fetchRows();
       if (paused) return;
-      render(parseSheet(rows));
+      const d = parseSheet(rows);
+      if (!d) {
+        // The tab has not been set up in the 2026-27 layout yet.
+        live.classList.add('stale');
+        setState('Bracket not set up yet');
+        document.getElementById('bracket').innerHTML = '<div class="notice">The bracket will appear here once the finals sheet is set up.</div>';
+        fit();
+        return;
+      }
+      render(d);
       loadedOnce = true;
       live.classList.remove('stale');
       const time = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });

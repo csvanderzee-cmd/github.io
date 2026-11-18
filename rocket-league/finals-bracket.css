@@ -33,8 +33,10 @@ body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
     linear-gradient(to bottom,rgba(11,14,20,.55),rgba(11,14,20,.97)),
     url("https://cdn.cloudflare.steamstatic.com/steam/apps/252950/ss_d2042ecd8d2c63e9dc2a3c7344a4a9ab04dd360c.600x338.jpg") center/cover;}
 
-/* Stream mode (?stream): no site nav, nothing but the bracket. */
-body.stream #psd-nav, body.stream #psd-nav-drawer{display:none!important;}
+/* Display screen (?display=1, or the header button) and stream mode (?stream):
+   no site nav, no scrolling, nothing but the bracket. */
+body.display #psd-nav, body.display #psd-nav-drawer{display:none!important;}
+html.display,body.display{overflow:hidden;}
 
 /* ── FIT-TO-SCREEN STAGE ── */
 .fit{position:relative;overflow:hidden;}
@@ -62,6 +64,18 @@ body.stream #psd-nav, body.stream #psd-nav-drawer{display:none!important;}
 .live-pause[aria-pressed="true"]{color:#0B0E14;background:var(--yellow);border-color:var(--yellow);}
 .live-pause:focus-visible{outline:2px solid var(--yellow-t);outline-offset:2px;}
 body.stream .live-pause{display:none;}
+.disp-btn{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:#e5e7eb;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18);border-radius:9999px;padding:.25rem .7rem;cursor:pointer;white-space:nowrap;
+  display:inline-flex;align-items:center;gap:.35rem;transition:opacity .3s;}
+.disp-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
+.disp-btn:focus-visible{outline:2px solid var(--yellow-t);outline-offset:2px;}
+.disp-exit,body.display .disp-open,body.stream .disp-btn{display:none;}
+body.display:not(.stream) .disp-exit{display:inline-flex;}
+.clock{display:none;font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1rem;letter-spacing:.06em;color:#fff;}
+body.display .clock{display:inline;}
+.live-pause{transition:opacity .3s;}
+body.display.idle .live-pause,body.display.idle .disp-btn{opacity:0;}
+body.display.idle{cursor:none;}
 @keyframes livepulse{0%,100%{opacity:.6}50%{opacity:1}}
 
 /* ── BRACKET GRID ── */
@@ -72,6 +86,10 @@ body.stream .live-pause{display:none;}
 .semi-col.right-semi::after{left:-34px;background:linear-gradient(270deg,rgba(255,215,0,.55),rgba(255,215,0,.15));}
 
 .champ-col{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;}
+/* Third place plays on the bus while the final is in the arena: shown under it, smaller. */
+.third-wrap{width:82%;margin-top:6px;}
+.third-card::before{background:linear-gradient(90deg,#8a5a2b,#cd7f32,#8a5a2b);}
+.third-card .matchup-hdr-title{color:#e2a66b;}
 .champ-head{display:flex;align-items:center;gap:.8rem;}
 .champ-trophy{font-size:2.6rem;line-height:1;animation:tpulse 2s ease-in-out infinite;}
 @keyframes tpulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 12px rgba(255,215,0,.6))}50%{transform:scale(1.1);filter:drop-shadow(0 0 28px rgba(255,215,0,1))}}
@@ -177,6 +195,8 @@ body.stream .live-pause{display:none;}
   .bracket{grid-template-columns:minmax(0,1fr);gap:18px;}
   .semi-col::after{display:none;}
   .champ-col{order:3;}
+  .third-wrap{width:100%;}
+  .disp-open{display:none;}
 }
 
 @media(prefers-reduced-motion:reduce){
