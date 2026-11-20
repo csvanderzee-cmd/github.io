@@ -27,7 +27,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Press+Start+2P&family=Rajdhani:wght@500;700;900&display=swap" rel="stylesheet">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -79,6 +79,15 @@
         @media (prefers-reduced-motion: no-preference) {
             .animate-marquee { display: flex; width: fit-content; animation: marquee 40s linear infinite; }
             .animate-float { animation: float 6s ease-in-out infinite; }
+            /* ── Next-season teaser ── a pixel font and square bullets for the hints */
+            .tease-pixel { font-family: 'Press Start 2P', monospace; line-height: 1.6; font-size: .95rem; }
+            .tease-hint { display: flex; align-items: center; gap: .6rem; }
+            .tease-block { display: inline-block; width: 10px; height: 10px; flex-shrink: 0; box-shadow: inset -2px -2px 0 rgba(0,0,0,.3); }
+            .tease-cursor { display: inline-block; width: .6em; height: .9em; margin-left: .25em; background: #86E08B; vertical-align: -.1em; animation: tease-blink 1.1s steps(1) infinite; }
+            .tease-bob { animation: tease-bob 3s ease-in-out infinite; }
+            @keyframes tease-blink { 50% { opacity: 0; } }
+            @keyframes tease-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+            @media (prefers-reduced-motion: reduce) { .tease-cursor, .tease-bob { animation: none; } }
         }
         @media (prefers-reduced-motion: reduce) {
             .animate-marquee { display: flex; width: 100%; overflow-x: auto; transform: none; animation: none; }
@@ -208,10 +217,21 @@
                     </div>
                     <div id="hero-copy-live" class="hidden flex-col md:flex-row gap-8 items-start md:items-center border-l-4 border-esports-red pl-6 mb-6 bg-gradient-to-r from-esports-red/10 to-transparent py-4 rounded-r-xl">
                         <p class="text-xl text-gray-200 font-light max-w-xl">
-                            The race for the championship is on.
-                            <strong class="text-white font-bold block mt-1">Season is live — championship finals ahead.</strong>
+                            <span id="hero-live-line1">The race for the championship is on.</span>
+                            <strong id="hero-live-line2" class="text-white font-bold block mt-1">Season is live — championship finals ahead.</strong>
                         </p>
                     </div>
+                    <!-- Once the regular season is over, the finals are the only thing
+                         left to send people to, so the hero says so in a button. -->
+                    <a id="hero-finals-cta" href="/rocket-league/finals.html"
+                       class="hidden group items-center gap-4 mb-6 max-w-lg rounded-xl px-5 py-4 bg-esports-yellow text-esports-dark hover:bg-esports-yellow-text focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors shadow-[0_0_40px_rgba(253,185,19,0.25)]">
+                        <i data-lucide="trophy" class="w-8 h-8 flex-shrink-0" aria-hidden="true"></i>
+                        <span class="flex-1">
+                            <span class="block font-display font-black uppercase tracking-wider text-2xl leading-none">Championship Finals</span>
+                            <span id="hero-finals-cta-sub" class="block text-sm font-bold mt-1">Brackets, schedule and how the finals work</span>
+                        </span>
+                        <i data-lucide="arrow-right" class="w-6 h-6 flex-shrink-0 transition-transform group-hover:translate-x-1" aria-hidden="true"></i>
+                    </a>
 
                     <div class="max-w-lg mb-4">
                       <!-- Countdown to first match of the season -->
@@ -294,32 +314,38 @@
                     </div>
                 </div>
 
-                <!-- Season-at-a-glance card -->
+                <!-- Next-season teaser card -->
                 <div class="hidden lg:flex justify-center lg:justify-end relative">
-                    <div aria-hidden="true" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-esports-blue/20 blur-[80px] rounded-full -z-10"></div>
+                    <div aria-hidden="true" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-[#5DBB63]/15 blur-[80px] rounded-full -z-10"></div>
                     <div class="animate-float relative w-full max-w-md bg-esports-dark/80 backdrop-blur-xl border border-white/20 rounded-3xl p-7 shadow-2xl transform -rotate-1 hover:rotate-0 transition-all duration-500">
+                        <!-- Next-season teaser. It only hints: the season is not
+                             announced yet, so no name and no link to its pages. -->
                         <div class="flex items-center gap-2 mb-5 pb-3 border-b border-white/20">
-                            <i data-lucide="calendar-days" class="w-5 h-5 text-esports-yellow-text" aria-hidden="true"></i>
-                            <span class="text-white font-display font-bold uppercase tracking-widest text-sm">Season at a Glance</span>
-                            <span id="glance-weeks" class="ml-auto text-esports-blue-text text-xs uppercase tracking-widest font-bold px-2 py-1 rounded border border-esports-blue/40 bg-esports-blue/10">9 Weeks</span>
+                            <svg viewBox="0 0 8 8" class="w-5 h-5" shape-rendering="crispEdges" aria-hidden="true"><rect x="1" y="0" width="1" height="1" fill="#9FD8E0"/><rect x="2" y="0" width="1" height="1" fill="#9FD8E0"/><rect x="3" y="0" width="1" height="1" fill="#9FD8E0"/><rect x="4" y="0" width="1" height="1" fill="#9FD8E0"/><rect x="0" y="1" width="1" height="1" fill="#9FD8E0"/><rect x="5" y="1" width="1" height="1" fill="#9FD8E0"/><rect x="4" y="2" width="1" height="1" fill="#A0703C"/><rect x="6" y="2" width="1" height="1" fill="#9FD8E0"/><rect x="3" y="3" width="1" height="1" fill="#A0703C"/><rect x="7" y="3" width="1" height="1" fill="#9FD8E0"/><rect x="2" y="4" width="1" height="1" fill="#A0703C"/><rect x="7" y="4" width="1" height="1" fill="#9FD8E0"/><rect x="1" y="5" width="1" height="1" fill="#A0703C"/><rect x="0" y="6" width="1" height="1" fill="#A0703C"/></svg>
+                            <span class="text-white font-display font-bold uppercase tracking-widest text-sm">Next Season</span>
+                            <span class="ml-auto text-[#86E08B] text-xs uppercase tracking-widest font-bold px-2 py-1 rounded border border-[#5DBB63]/50 bg-[#5DBB63]/10">Spring 2027</span>
                         </div>
 
-                        <!-- Standings at the top of each division, filled in from
-                             the match sheets. Hidden until a week has results. -->
-                        <div id="glance-leaders" class="space-y-2 mb-3" hidden></div>
-
-                        <!-- Live rail: cycles through the week's standouts and the
-                             next match day. Hidden until there is something to
-                             put in it, so the card never shows an empty row. -->
-                        <div id="glance-live" class="mb-4 h-[58px] relative" hidden>
-                            <div id="glance-live-slide" class="absolute inset-0 flex items-center gap-3 bg-white/[0.03] border border-white/10 rounded-lg px-4 transition-opacity duration-500">
+                        <div class="flex items-center gap-5">
+                            <svg viewBox="0 0 8 8" class="w-20 h-20 flex-shrink-0 drop-shadow-[0_6px_14px_rgba(93,187,99,0.35)] tease-bob" shape-rendering="crispEdges" aria-hidden="true"><rect x="0" y="0" width="1" height="1" fill="#5DBB63"/><rect x="1" y="0" width="1" height="1" fill="#4A9A4F"/><rect x="2" y="0" width="1" height="1" fill="#5DBB63"/><rect x="3" y="0" width="1" height="1" fill="#5DBB63"/><rect x="4" y="0" width="1" height="1" fill="#4A9A4F"/><rect x="5" y="0" width="1" height="1" fill="#5DBB63"/><rect x="6" y="0" width="1" height="1" fill="#5DBB63"/><rect x="7" y="0" width="1" height="1" fill="#4A9A4F"/><rect x="0" y="1" width="1" height="1" fill="#5DBB63"/><rect x="1" y="1" width="1" height="1" fill="#5DBB63"/><rect x="2" y="1" width="1" height="1" fill="#4A9A4F"/><rect x="3" y="1" width="1" height="1" fill="#5DBB63"/><rect x="4" y="1" width="1" height="1" fill="#5DBB63"/><rect x="5" y="1" width="1" height="1" fill="#5DBB63"/><rect x="6" y="1" width="1" height="1" fill="#4A9A4F"/><rect x="7" y="1" width="1" height="1" fill="#5DBB63"/><rect x="0" y="2" width="1" height="1" fill="#4A9A4F"/><rect x="1" y="2" width="1" height="1" fill="#8B5A2B"/><rect x="2" y="2" width="1" height="1" fill="#5DBB63"/><rect x="3" y="2" width="1" height="1" fill="#8B5A2B"/><rect x="4" y="2" width="1" height="1" fill="#4A9A4F"/><rect x="5" y="2" width="1" height="1" fill="#5DBB63"/><rect x="6" y="2" width="1" height="1" fill="#8B5A2B"/><rect x="7" y="2" width="1" height="1" fill="#4A9A4F"/><rect x="0" y="3" width="1" height="1" fill="#8B5A2B"/><rect x="1" y="3" width="1" height="1" fill="#8B5A2B"/><rect x="2" y="3" width="1" height="1" fill="#6E4520"/><rect x="3" y="3" width="1" height="1" fill="#8B5A2B"/><rect x="4" y="3" width="1" height="1" fill="#8B5A2B"/><rect x="5" y="3" width="1" height="1" fill="#8B5A2B"/><rect x="6" y="3" width="1" height="1" fill="#6E4520"/><rect x="7" y="3" width="1" height="1" fill="#8B5A2B"/><rect x="0" y="4" width="1" height="1" fill="#8B5A2B"/><rect x="1" y="4" width="1" height="1" fill="#6E4520"/><rect x="2" y="4" width="1" height="1" fill="#8B5A2B"/><rect x="3" y="4" width="1" height="1" fill="#8B5A2B"/><rect x="4" y="4" width="1" height="1" fill="#6E4520"/><rect x="5" y="4" width="1" height="1" fill="#8B5A2B"/><rect x="6" y="4" width="1" height="1" fill="#8B5A2B"/><rect x="7" y="4" width="1" height="1" fill="#8B5A2B"/><rect x="0" y="5" width="1" height="1" fill="#8B5A2B"/><rect x="1" y="5" width="1" height="1" fill="#8B5A2B"/><rect x="2" y="5" width="1" height="1" fill="#8B5A2B"/><rect x="3" y="5" width="1" height="1" fill="#6E4520"/><rect x="4" y="5" width="1" height="1" fill="#8B5A2B"/><rect x="5" y="5" width="1" height="1" fill="#8B5A2B"/><rect x="6" y="5" width="1" height="1" fill="#6E4520"/><rect x="7" y="5" width="1" height="1" fill="#8B5A2B"/><rect x="0" y="6" width="1" height="1" fill="#6E4520"/><rect x="1" y="6" width="1" height="1" fill="#8B5A2B"/><rect x="2" y="6" width="1" height="1" fill="#8B5A2B"/><rect x="3" y="6" width="1" height="1" fill="#8B5A2B"/><rect x="4" y="6" width="1" height="1" fill="#8B5A2B"/><rect x="5" y="6" width="1" height="1" fill="#6E4520"/><rect x="6" y="6" width="1" height="1" fill="#8B5A2B"/><rect x="7" y="6" width="1" height="1" fill="#8B5A2B"/><rect x="0" y="7" width="1" height="1" fill="#8B5A2B"/><rect x="1" y="7" width="1" height="1" fill="#8B5A2B"/><rect x="2" y="7" width="1" height="1" fill="#6E4520"/><rect x="3" y="7" width="1" height="1" fill="#8B5A2B"/><rect x="4" y="7" width="1" height="1" fill="#8B5A2B"/><rect x="5" y="7" width="1" height="1" fill="#8B5A2B"/><rect x="6" y="7" width="1" height="1" fill="#8B5A2B"/><rect x="7" y="7" width="1" height="1" fill="#6E4520"/></svg>
+                            <div>
+                                <p class="tease-pixel text-white text-lg leading-snug">Are you ready<br>for next season?<span class="tease-cursor" aria-hidden="true"></span></p>
+                                <p class="text-gray-400 text-sm mt-2">Something is being built.</p>
                             </div>
                         </div>
 
-                        <div class="pt-3 border-t border-white/20">
+                        <ul class="mt-5 space-y-2 text-sm text-gray-200" aria-label="Hints">
+                            <li class="tease-hint"><span class="tease-block" style="background:#9FD8E0" aria-hidden="true"></span>Bring a pickaxe.</li>
+                            <li class="tease-hint"><span class="tease-block" style="background:#FF6B6B" aria-hidden="true"></span>Two castles. Two flags.<span class="tease-block ml-1" style="background:#4DABF7" aria-hidden="true"></span></li>
+                            <li class="tease-hint"><span class="tease-block" style="background:#FFD166" aria-hidden="true"></span>Five a side.</li>
+                            <li class="tease-hint"><span class="tease-block" style="background:#5DBB63" aria-hidden="true"></span>Something stirs in the forest at minute nine.</li>
+                        </ul>
+
+                        <div class="mt-5 pt-3 border-t border-white/20">
                             <div class="flex items-center justify-center gap-2 text-xs text-gray-500 uppercase tracking-wider font-bold">
-                                <i data-lucide="map-pin" class="w-3 h-3" aria-hidden="true"></i>
-                                <span id="glance-finals">Finals · Sat Jan 23 · Quail Valley Arena</span>
+                                <span class="tease-block" style="background:#8B5A2B" aria-hidden="true"></span>
+                                <span>Details drop soon</span>
+                                <span class="tease-block" style="background:#5DBB63" aria-hidden="true"></span>
                             </div>
                         </div>
                     </div>
@@ -537,7 +563,7 @@
                     /* The newest photos always make the cut and lead the strip;
                        the rest are a random pick. Names as in photos/. When new
                        photos are added, list them here (newest first). */
-                    var NEWEST = ['showcase-medals.webp', 'showcase-cactus-coyotes.webp', 'showcase-thank-you.webp'];
+                    var NEWEST = ['smash-medals-ceremony.jpg', 'showcase-medals.webp', 'showcase-cactus-coyotes.webp', 'showcase-thank-you.webp'];
                     var isNew = function(f) { return NEWEST.indexOf(f.name) !== -1; };
                     imgs = imgs.filter(isNew).sort(function(a, b) { return NEWEST.indexOf(a.name) - NEWEST.indexOf(b.name); })
                                .concat(imgs.filter(function(f) { return !isNew(f); }));
@@ -606,17 +632,17 @@
         })();
         </script>
 
-        <!-- ─── WEEK SPOTLIGHT ─── filled by renderSpotlight(); hidden until the
-             week's sheets have something in them. -->
+        <!-- ─── SEASON ALL-STARS ─── filled by renderAllStars(); hidden until the
+             stats sheets have something in them. -->
         <section id="spotlight" class="py-14 bg-esports-dark border-t border-white/10 relative z-20" aria-labelledby="spotlight-heading" hidden>
             <div class="max-w-7xl mx-auto px-4">
                 <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
                     <div>
                         <span id="spotlight-week" class="text-esports-yellow-text text-sm font-bold tracking-[0.2em] uppercase block mb-2"></span>
-                        <h2 id="spotlight-heading" class="font-display text-4xl md:text-5xl font-black uppercase text-white">Week Spotlight</h2>
+                        <h2 id="spotlight-heading" class="font-display text-4xl md:text-5xl font-black uppercase text-white">Season All-Stars</h2>
                     </div>
                     <p class="text-gray-400 text-sm max-w-sm">
-                        The standout performances from the latest week of play, across both divisions.
+                        The top ten in each division: every holder of a Unique badge (the league leaders in score, goals, saves, assists, wins and more), then the best by Average Score (weighted).
                     </p>
                 </div>
                 <!-- A ticker rather than a grid: both divisions get their own
@@ -625,8 +651,8 @@
                 <div id="spotlight-ticker" class="spot-ticker">
                     <div id="spotlight-track" class="spot-track"></div>
                 </div>
-                <p class="text-center text-[11px] uppercase tracking-widest text-gray-600 font-bold mt-5">
-                    Late Release &middot; Early Release
+                <p class="text-center text-[11px] uppercase tracking-widest text-gray-500 font-bold mt-5">
+                    Late Release &middot; Early Release &middot; <a href="/rocket-league/badges.html" class="text-esports-yellow-text hover:underline">How badges work</a>
                 </p>
             </div>
         </section>
@@ -1010,15 +1036,14 @@
 
     <script src="/data/leagues.js"></script>
     <script src="/data/psd-data.js"></script>
+    <script src="/data/badges.js"></script>
     <script>
     lucide.createIcons();
 
-    /* ── Week spotlight ─────────────────────────────────────────────────────
-       Reads the newest week that actually has numbers in it — the stats tabs
-       for the players, the match tabs for the series — and picks out three
-       things worth showing: the best single game, the week's leading scorer,
-       and the closest series. Nothing published yet means the whole section
-       stays hidden rather than showing empty frames.
+    /* ── Season All-Stars ───────────────────────────────────────────────────
+       The top ten in each division, read from every stats tab of the season.
+       Nothing published yet means the whole section stays hidden rather than
+       showing empty frames.
        ---------------------------------------------------------------------- */
     (function () {
       var LEAGUES = [
@@ -1044,185 +1069,11 @@
         });
       }
 
-      // Same rules the stats pages use: drop a [TAG] prefix, tidy the spacing.
-      function playerName(raw) {
-        return String(raw || '').replace(/\[[^\]]*\]/g, ' ').replace(/[-_]+/g, ' ')
-                                .replace(/\s+/g, ' ').trim().toUpperCase();
-      }
-
-      /** Player rows out of one stats tab. */
-      function statRows(csv, leagueId) {
-        var lines = csv.split(/\r?\n/);
-        var head = lines.findIndex(function (l) { return l.indexOf('Student Name') !== -1; });
-        if (head === -1) return [];
-        var cols = splitCsvLine(lines[head]).map(function (h) { return h.trim(); });
-        var at = function (name) { return cols.indexOf(name); };
-        var iName = at('Student Name'), iSchool = at('School'), iScore = at('Score'),
-            iGoals = at('Goals'), iAssists = at('Assists'), iSaves = at('Saves'),
-            iColor = at('Color');
-        if (iName === -1 || iScore === -1) return [];
-        return lines.slice(head + 1).map(splitCsvLine).map(function (r) {
-          var name = playerName(r[iName]);
-          var score = parseInt((r[iScore] || '').trim(), 10);
-          if (!name || isNaN(score)) return null;
-          return {
-            name: name,
-            school: PSD.config.canonicalSchool(leagueId, (r[iSchool] || '').trim()),
-            side: iColor === -1 ? '' : (r[iColor] || '').trim(),
-            score: score,
-            goals:   parseInt((r[iGoals]   || '').trim(), 10) || 0,
-            assists: parseInt((r[iAssists] || '').trim(), 10) || 0,
-            saves:   parseInt((r[iSaves]   || '').trim(), 10) || 0
-          };
-        }).filter(Boolean);
-      }
-
-      /** Decided series out of one match tab, with the goals scored in them. */
-      function seriesRows(csv, leagueId) {
-        var rows = csv.split(/\r?\n/).map(splitCsvLine);
-        var headIdx = rows.findIndex(function (r) { return (r[0] || '').trim().toLowerCase() === 'team'; });
-        var header = headIdx === -1 ? [] : rows[headIdx];
-        var scoreCols = [], locCol = -1, sideCol = -1;
-        header.forEach(function (cell, i) {
-          var h = (cell || '').trim().toLowerCase();
-          if (h === 'points' || /^game\s*\d+$/.test(h)) scoreCols.push(i);
-          else if (h === 'location') locCol = i;
-          else if (h === 'team' && i > 0) sideCol = i;   // Blue or Orange
-        });
-        if (!scoreCols.length) scoreCols = [3, 4, 5];
-
-        var data = rows.slice(headIdx === -1 ? 3 : headIdx + 1)
-                       .filter(function (r) { return (r[0] || '').trim() && !/^week/i.test(r[0]); });
-        var out = [];
-        for (var i = 0; i < data.length; i += 2) {
-          var a = data[i], b = data[i + 1] || [];
-          var cell = function (row, idx) { return ((row && row[idx]) || '').trim(); };
-          if (locCol >= 0 && /away/i.test(cell(a, locCol)) && /home/i.test(cell(b, locCol))) { var s = a; a = b; b = s; }
-          var one = PSD.config.canonicalSchool(leagueId, cell(a, 0));
-          var two = PSD.config.canonicalSchool(leagueId, cell(b, 0));
-          if (!one || !two) continue;                       // bye
-
-          var games = [], aWins = 0, bWins = 0, goals = 0, forfeit = false;
-          scoreCols.forEach(function (c) {
-            var x = cell(a, c).toUpperCase(), y = cell(b, c).toUpperCase();
-            if (x === 'F' || y === 'F') { forfeit = true; return; }
-            var xn = parseInt(x, 10), yn = parseInt(y, 10);
-            if (isNaN(xn) || isNaN(yn)) return;
-            if (aWins === 2 || bWins === 2) return;         // series already decided
-            games.push(xn + '-' + yn);
-            goals += xn + yn;
-            if (xn > yn) aWins++; else if (yn > xn) bWins++;
-          });
-          if (forfeit || !games.length || (aWins < 2 && bWins < 2)) continue;
-          var aGoals = 0, bGoals = 0;
-          games.forEach(function (g) {
-            var p = g.split('-');
-            aGoals += parseInt(p[0], 10) || 0;
-            bGoals += parseInt(p[1], 10) || 0;
-          });
-          // Game scores read winner-first, to match the name order shown.
-          if (bWins > aWins) {
-            games = games.map(function (g) { return g.split('-').reverse().join('-'); });
-          }
-          out.push({
-            winner: aWins > bWins ? one : two,
-            loser:  aWins > bWins ? two : one,
-            wins:   Math.max(aWins, bWins),
-            losses: Math.min(aWins, bWins),
-            games: games, goals: goals,
-            side: sideCol >= 0 ? cell(a, sideCol) : '',
-            a: one, b: two, aGoals: aGoals, bGoals: bGoals
-          });
-        }
-        return out;
-      }
-
-      /* Every match of a week counted the way the standings pages count it
-         (rocket-league/promise-league.html, jr-promise-league.html), so the
-         leader card can never disagree with the table: a forfeit is a win for
-         the side that showed up (a loss for both on a double forfeit), any
-         scored game counts, and bye rows are taken out before pairing.
-         seriesRows above is for showing results and skips all of that. */
-      function tallyRows(csv, leagueId) {
-        var scoreCols = [3, 4, 5], sideCol = -1, locCol = -1, play = [];
-        csv.split(/\r?\n/).map(splitCsvLine).forEach(function (r) {
-          var first = ((r[0] || '') + '').trim().toLowerCase();
-          if (!first || first.indexOf('week') === 0) return;
-          if (first === 'team') {
-            var cs = [];
-            r.forEach(function (cell, i) {
-              var h = ((cell || '') + '').trim().toLowerCase();
-              if (h === 'points' || /^game\s*\d+$/.test(h)) cs.push(i);
-              else if (h === 'location') locCol = i;
-              else if (h === 'team' && i > 0) sideCol = i;
-            });
-            if (cs.length) scoreCols = cs;
-            return;
-          }
-          if (sideCol >= 0 && /^bye$/i.test(((r[sideCol] || '') + '').trim())) return;
-          play.push(r);
-        });
-
-        var out = [];
-        for (var i = 0; i < play.length - 1; i += 2) {
-          var a = play[i], b = play[i + 1];
-          var cell = function (row, idx) { return ((row[idx] || '') + '').trim(); };
-          if (locCol >= 0 && /away/i.test(cell(a, locCol)) && /home/i.test(cell(b, locCol))) { var t = a; a = b; b = t; }
-          var one = PSD.config.canonicalSchool(leagueId, cell(a, 0));
-          var two = PSD.config.canonicalSchool(leagueId, cell(b, 0));
-          if (!one || !two) continue;
-          var m = { a: one, b: two, aGF: 0, bGF: 0, aGW: 0, bGW: 0, forfeit: false, fw: null, scored: false };
-          scoreCols.forEach(function (c) {
-            var x = cell(a, c).toUpperCase(), y = cell(b, c).toUpperCase();
-            if (x === 'F' || y === 'F') {
-              m.forfeit = true;
-              m.fw = x === 'F' && y !== 'F' ? 'b' : y === 'F' && x !== 'F' ? 'a' : null;
-              return;
-            }
-            var xn = parseInt(x, 10), yn = parseInt(y, 10);
-            if (isNaN(xn) || isNaN(yn)) return;
-            m.scored = true;
-            m.aGF += xn; m.bGF += yn;
-            if (xn > yn) m.aGW++; else if (yn > xn) m.bGW++;
-          });
-          if (m.forfeit || m.scored) out.push(m);
-        }
-        return out;
-      }
-
-      /** Newest week with anything in it, walking back from the current one. */
-      function newestWeek(lg, fetcher, keep) {
-        var weeks = lg.weeks.slice().reverse().filter(function (w) {
-          return PSD.localDate(w.startDate) <= new Date();
-        }).slice(0, 3);
-        var step = function (i) {
-          if (i >= weeks.length) return Promise.resolve(null);
-          return fetcher(weeks[i])
-            .then(function (csv) {
-              var rows = keep(csv);
-              return rows.length ? { week: weeks[i].week, rows: rows } : step(i + 1);
-            })
-            .catch(function () { return step(i + 1); });
-        };
-        return step(0);
-      }
-
       function logoHtml(school) {
         var url = PSD.config.schoolLogo(school);
         return url
           ? '<img src="' + esc(url) + '" alt="" class="w-10 h-10 rounded-lg object-contain bg-white/5 p-1 flex-shrink-0" onerror="this.remove()">'
           : '';
-      }
-
-      function card(tag, color, icon, headline, sub, foot) {
-        return '<article class="bg-esports-card border border-white/10 rounded-2xl p-6 flex flex-col gap-3 hover:border-white/25 transition-colors">' +
-          '<div class="flex items-center gap-2">' +
-            '<span aria-hidden="true">' + icon + '</span>' +
-            '<span class="text-[11px] font-display font-bold uppercase tracking-[0.2em]" style="color:' + esc(color) + '">' + esc(tag) + '</span>' +
-          '</div>' + headline +
-          '<p class="text-gray-400 text-sm">' + sub + '</p>' +
-          (foot ? '<p class="text-[11px] uppercase tracking-widest text-gray-600 font-bold mt-auto pt-2">' + foot + '</p>' : '') +
-        '</article>';
       }
 
       /* Every school fields a BLUE and an ORANGE team, so a name on its own is
@@ -1250,88 +1101,118 @@
         '</div>';
       }
 
-      /** The tiles for one division: best game, top scorer, best keeper, closest series. */
-      function divisionCards(label, color, players, series) {
-        var cards = [];
-        // The division always gets its own line, so a long name like "Early
-        // Release" can never be split across two of them.
-        var foot = function (text) {
-          return text + '<br><span class="whitespace-nowrap" style="color:' + esc(color) + '">' + esc(label) + '</span>';
-        };
-
-        var star = players.slice().sort(function (a, b) { return b.score - a.score; })[0];
-        if (star) {
-          cards.push(card('Star of the Week', '#FFD166', '⭐',
-            nameLine(star.school, esc(star.name), star.score.toLocaleString(), star.side, 'Points'),
-            star.goals + ' goals &bull; ' + star.assists + ' assists &bull; ' + star.saves + ' saves',
-            foot('Highest single-game score')));
-        }
-
-        var byPlayer = {};
-        players.forEach(function (p) {
-          var k = p.name + '|' + p.school;
-          var e = byPlayer[k] || (byPlayer[k] = { name: p.name, school: p.school, side: p.side, goals: 0, saves: 0, assists: 0, games: 0 });
-          e.goals += p.goals; e.saves += p.saves; e.assists += p.assists; e.games++;
-        });
-        var totals = Object.keys(byPlayer).map(function (k) { return byPlayer[k]; });
-
-        var scorer = totals.slice().sort(function (a, b) { return b.goals - a.goals; })[0];
-        if (scorer && scorer.goals > 0) {
-          cards.push(card('Top Scorer', '#FF6B6B', '🥅',
-            nameLine(scorer.school, esc(scorer.name), scorer.goals, scorer.side, 'Goals'),
-            scorer.goals + ' goals in ' + scorer.games + (scorer.games === 1 ? ' game' : ' games'),
-            foot('Most goals this week')));
-        }
-
-        var keeper = totals.slice().sort(function (a, b) { return b.saves - a.saves; })[0];
-        if (keeper && keeper.saves > 0) {
-          cards.push(card('Brick Wall', '#4ADE80', '🧱',
-            nameLine(keeper.school, esc(keeper.name), keeper.saves, keeper.side, 'Saves'),
-            keeper.saves + ' saves &bull; ' + keeper.assists + ' assists',
-            foot('Most saves this week')));
-        }
-
-        // The closest series wins; among 2-1s, the one with the most goals.
-        var match = series.slice().sort(function (a, b) {
-          return (a.wins - a.losses) - (b.wins - b.losses) || b.goals - a.goals;
-        })[0];
-        if (match) {
-          cards.push(card('Match of the Week', '#4DABF7', '🎮',
-            '<div class="flex items-center gap-3">' + logoHtml(match.winner) +
-              '<div class="min-w-0">' +
-                '<div class="font-display font-black text-lg uppercase text-white leading-tight">' + esc(match.winner) +
-                  ' <span class="text-esports-yellow-text">' + match.wins + '&ndash;' + match.losses + '</span> ' + esc(match.loser) + '</div>' +
-                '<div class="text-[11px] uppercase tracking-widest text-gray-500 font-bold">' + sideChip(match.side) + '</div>' +
-              '</div>' +
-            '</div>',
-            'Games: ' + esc(match.games.join(' · ')) + ' &bull; ' + match.goals + ' goals',
-            foot(match.wins - match.losses === 1 ? 'Went the distance' : 'Series win')));
-        }
-        return cards;
+      /* ---- Season All-Stars ---------------------------------------------
+         The holders of the Unique badges in each division. Players are totalled
+         exactly as the stats pages total them (rocket-league/promise-league-
+         stats.html and jr-promise-league-stats.html: aggregateStats), and the
+         badges come from data/badges.js, the same code that draws them there,
+         so a player is an all-star here only if the stats page shows them the
+         badge. A player holding several gets one card listing them all. */
+      function normalizeResult(v) {
+        var r = (v || '').trim().toUpperCase();
+        if (/^(W|WIN|WINS|WON)$/.test(r)) return 'W';
+        if (/^(L|LOSE|LOSS|LOST)$/.test(r)) return 'L';
+        return (v || '').trim();
+      }
+      function stripTag(n) { return String(n || '').replace(/\[[^\]]*\]/g, ' ').replace(/\s+/g, ' ').trim(); }
+      function isForfeitRow(row) {
+        return ['Score','Goals','Assists','Saves','Shots'].every(function (k) { return String(row[k] == null ? '' : row[k]).trim() === ''; });
       }
 
-      function render(players, series, week) {
-        // Divisions alternate through the strip, so whichever tile is on
-        // screen, the other division is never far behind it.
-        var byDivision = LEAGUES.map(function (meta) {
-          return divisionCards(meta.label, meta.color,
-            players.filter(function (p) { return p.division === meta.label; }),
-            series.filter(function (s) { return s.division === meta.label; }));
-        });
+      function statsTab(text) {
+        var all = text.split(/\r?\n/);
+        if (all.length < 2) return [];
+        var first = splitCsvLine(all[0]);
+        var week = first.length && first[0].trim() ? first[0].trim() : '—';
+        var h = all.findIndex(function (r) { return r.indexOf('Student Name') !== -1; });
+        if (h === -1) return [];
+        var heads = splitCsvLine(all[h]).map(function (x) { return x.trim(); });
+        return all.slice(h + 1).map(splitCsvLine)
+          .filter(function (r) { return r.length === heads.length && r.some(function (f) { return f.trim() !== ''; }); })
+          .map(function (r) {
+            var o = {};
+            heads.forEach(function (hd, k) { o[hd] = r[k] ? r[k].trim() : ''; });
+            o['Win/Lose'] = normalizeResult(o['Win/Lose']);
+            o['Week'] = week;
+            return o;
+          });
+      }
 
-        var cards = [];
-        for (var i = 0; i < 4; i++) {
-          byDivision.forEach(function (set) { if (set[i]) cards.push(set[i]); });
+      function seasonPlayers(rows, leagueId) {
+        var t = {};
+        rows.forEach(function (row) {
+          var raw = row['Student Name']; if (!raw) return;
+          var key = stripTag(raw).toUpperCase().replace(/[^A-Z0-9]/g, '');
+          var name = stripTag(raw).toUpperCase().replace(/[\-_]/g, ' ').replace(/\s+/g, ' ').trim();
+          var school = PSD.config.canonicalSchool(leagueId, row['School'] || '');
+          var k = key + '||' + school;
+          var res = row['Win/Lose'] ? row['Win/Lose'].toUpperCase() : 'N/A';
+          var ff = isForfeitRow(row);
+          var p = t[k] || (t[k] = { name: name, school: school, side: '', wins: 0, losses: 0, score: 0, goals: 0, assists: 0, saves: 0, shots: 0, mvps: 0, statGames: 0, games: [] });
+          if (name.indexOf(' ') !== -1 && p.name.indexOf(' ') === -1) p.name = name;
+          if (row['Color']) p.side = row['Color'];
+          if (res === 'W') p.wins++; else if (res === 'L') p.losses++;
+          if (!ff) {
+            p.score += parseInt(row['Score'], 10) || 0;   p.goals += parseInt(row['Goals'], 10) || 0;
+            p.assists += parseInt(row['Assists'], 10) || 0; p.saves += parseInt(row['Saves'], 10) || 0;
+            p.shots += parseInt(row['Shots'], 10) || 0;
+            if (PSD_BADGES.isMvp(row['MVP'])) p.mvps++;
+            p.statGames++;
+          }
+          var g = {}; for (var f in row) g[f] = row[f]; g.__forfeit = ff;
+          p.games.push(g);
+        });
+        return Object.keys(t).map(function (k) {
+          var p = t[k];
+          return { name: p.name, school: p.school, side: p.side, wins: p.wins, losses: p.losses,
+                   score: p.score, goals: p.goals, assists: p.assists, saves: p.saves, shots: p.shots, mvps: p.mvps,
+                   gamesPlayed: p.statGames,
+                   shootingPercentage: p.shots > 0 ? Math.round(p.goals / p.shots * 100) : 0,
+                   games: p.games };
+        });
+      }
+
+      function allStarCard(meta, p, badges, rank) {
+        if (!badges.length) {
+          return '<article class="spot-card bg-esports-card border border-white/10 rounded-2xl p-6 flex flex-col gap-3 hover:border-white/25 transition-colors">' +
+            '<div class="flex items-center gap-2"><span aria-hidden="true">⭐</span>' +
+              '<span class="text-[11px] font-display font-bold uppercase tracking-[0.2em] text-esports-blue-text">Top 10 · #' + rank + ' in the division</span></div>' +
+            nameLine(p.school, esc(p.name), Math.round(p.weighted).toLocaleString(), p.side, 'Avg score (weighted)') +
+            '<p class="text-gray-400 text-sm">' + p.score.toLocaleString() + ' season score &bull; ' + p.goals + ' goals &bull; ' +
+              p.assists + ' assists &bull; ' + p.saves + ' saves &bull; ' + p.gamesPlayed + (p.gamesPlayed === 1 ? ' game' : ' games') + '</p>' +
+            '<p class="text-[11px] uppercase tracking-widest font-bold mt-auto pt-2 whitespace-nowrap" style="color:' + esc(meta.color) + '">' + esc(meta.label) + '</p>' +
+          '</article>';
         }
+        var list = badges.map(function (b) {
+          return '<li class="flex items-start gap-2"><span aria-hidden="true">' + b.icon + '</span>' +
+                 '<span><b class="text-white">' + esc(b.label) + '</b><span class="block text-xs text-gray-400">' + esc(b.tip) + '</span></span></li>';
+        }).join('');
+        return '<article class="spot-card bg-esports-card border border-white/10 rounded-2xl p-6 flex flex-col gap-3 hover:border-white/25 transition-colors">' +
+          '<div class="flex items-center gap-2"><span aria-hidden="true">💠</span>' +
+            '<span class="text-[11px] font-display font-bold uppercase tracking-[0.2em] text-esports-yellow-text">' +
+              (badges.length > 1 ? badges.length + ' Unique Badges' : 'Unique Badge') + '</span></div>' +
+          nameLine(p.school, esc(p.name), p.score.toLocaleString(), p.side, 'Season score') +
+          '<ul class="space-y-2 text-sm">' + list + '</ul>' +
+          '<p class="text-gray-400 text-sm">' + p.goals + ' goals &bull; ' + p.assists + ' assists &bull; ' + p.saves + ' saves &bull; ' +
+            p.gamesPlayed + (p.gamesPlayed === 1 ? ' game' : ' games') + '</p>' +
+          '<p class="text-[11px] uppercase tracking-widest font-bold mt-auto pt-2 whitespace-nowrap" style="color:' + esc(meta.color) + '">' + esc(meta.label) + '</p>' +
+        '</article>';
+      }
+
+      function renderAllStars(byDivision) {
+        // Divisions alternate through the strip, so whichever card is on
+        // screen, the other division is never far behind it.
+        var cards = [], most = Math.max.apply(null, byDivision.map(function (d) { return d.length; }).concat(0));
+        for (var i = 0; i < most; i++) byDivision.forEach(function (d) { if (d[i]) cards.push(d[i]); });
         if (!cards.length) return;
 
         var track = document.getElementById('spotlight-track');
         // Two copies: the animation slides exactly one copy's width, so the
-        // strip loops without a visible seam.
-        track.innerHTML = (cards.join('') + cards.join(''))
-          .replace(/<article class="/g, '<article class="spot-card ');
+        // strip loops without a visible seam. The copy is hidden from screen
+        // readers so each all-star is read once.
+        track.innerHTML = cards.join('') + cards.join('').replace(/<article /g, '<article aria-hidden="true" ');
         track.style.animationDuration = Math.max(40, cards.length * 11) + 's';
-        document.getElementById('spotlight-week').textContent = 'Week ' + week + ' · Both divisions';
+        document.getElementById('spotlight-week').textContent = '2026-27 Regular Season · Both divisions';
         document.getElementById('spotlight').hidden = false;
 
         // Measured after the section is visible: a hidden element has no layout,
@@ -1340,242 +1221,40 @@
         track.style.setProperty('--spot-shift', ((track.scrollWidth + gap) / 2) + 'px');
       }
 
-      /* ---- the floating card's live rail ----
-         Division leaders, worked out from every week played so far, plus the
-         next match day. It cycles so the card has something to say all season
-         instead of repeating the fixtures printed above it. */
-      function leaderOf(matches) {
-        var t = {};
-        var row = function (n) { return t[n] || (t[n] = { name: n, w: 0, l: 0, gf: 0, ga: 0, gw: 0, gp: 0, h2h: {} }); };
-        var meet = function (x, y, won) {
-          var h = x.h2h[y.name] || (x.h2h[y.name] = { w: 0, l: 0 });
-          if (won) h.w++; else h.l++;
-        };
-        matches.forEach(function (m) {
-          var A = row(m.a), B = row(m.b);
-          if (m.forfeit) {
-            if (m.fw === 'a')      { A.w++; B.l++; meet(A, B, true);  meet(B, A, false); }
-            else if (m.fw === 'b') { B.w++; A.l++; meet(B, A, true);  meet(A, B, false); }
-            else                   { A.l++; B.l++; meet(A, B, false); meet(B, A, false); }
-            return;
-          }
-          A.gf += m.aGF; A.ga += m.bGF; B.gf += m.bGF; B.ga += m.aGF;
-          A.gw += m.aGW; B.gw += m.bGW; A.gp += m.aGW + m.bGW; B.gp += m.aGW + m.bGW;
-          if (m.aGW > m.bGW) { A.w++; B.l++; meet(A, B, true); meet(B, A, false); }
-          else               { B.w++; A.l++; meet(B, A, true); meet(A, B, false); }
-        });
-
-        var pct = function (x) { return x.w + x.l ? x.w / (x.w + x.l) : 0; };
-        var list = Object.keys(t).map(function (k) { return t[k]; });
-        if (!list.length) return null;
-        list.sort(function (x, y) { return pct(y) - pct(x); });
-        var top = list.filter(function (x) { return Math.abs(pct(x) - pct(list[0])) < 1e-9; });
-        if (top.length === 1) return top[0];
-
-        // A tie at the top is broken exactly as the standings break it.
-        var names = top.map(function (x) { return x.name; });
-        var h2h = function (x) {
-          var w = 0, l = 0;
-          names.forEach(function (n) { if (n !== x.name && x.h2h[n]) { w += x.h2h[n].w; l += x.h2h[n].l; } });
-          return w + l ? w / (w + l) : 0;
-        };
-        var gpct = function (x) { return x.gp ? x.gw / x.gp : 0; };
-        top.sort(function (x, y) {
-          return (h2h(y) - h2h(x)) || (gpct(y) - gpct(x)) || ((y.gf - y.ga) - (x.gf - x.ga)) || x.name.localeCompare(y.name);
-        });
-        return top[0];
-      }
-
-      function nextMatchDay() {
-        var now = new Date(); now.setHours(0, 0, 0, 0);
-        var best = null;
-        LEAGUES.forEach(function (meta) {
+      if (window.PSD_BADGES) {
+        Promise.all(LEAGUES.map(function (meta) {
           var lg = PSD.config.league(meta.id);
-          lg.weeks.forEach(function (w) {
-            var d = PSD.localDate(w.startDate);
-            if (d >= now && (!best || d < best.date)) {
-              best = { date: d, week: w.week, label: meta.label, time: lg.matchTimeLabel, color: meta.color };
-            }
-          });
-        });
-        return best;
+          if (!PSD.config.hasLiveStats(meta.id)) return [];
+          return PSD.fetchAllCSV(lg.statsSheet, PSD.config.statsGids(meta.id)).then(function (texts) {
+            var rows = texts.reduce(function (acc, t) { return t ? acc.concat(statsTab(t)) : acc; }, []);
+            var players = seasonPlayers(rows, meta.id);
+            /* Average Score (weighted), as the stats pages work it out: every
+               player starts with WEIGHT_GAMES games at the division average. */
+            var WEIGHT_GAMES = 5;
+            var games = players.reduce(function (a, p) { return a + p.gamesPlayed; }, 0);
+            var avg = games ? players.reduce(function (a, p) { return a + p.score; }, 0) / games : 0;
+            players.forEach(function (p) {
+              p.weighted = p.gamesPlayed ? (p.score + WEIGHT_GAMES * avg) / (p.gamesPlayed + WEIGHT_GAMES) : -1;
+            });
+            var ranked = players.slice().sort(function (a, b) { return b.weighted - a.weighted; });
+            var rankOf = function (p) { return ranked.indexOf(p) + 1; };
+
+            // Every Unique badge holder, then the division's top players by
+            // weighted average until there are ten.
+            var holders = players.map(function (p) {
+              return { p: p, badges: PSD_BADGES.award(p, players, {}).filter(function (b) { return b.unique; }) };
+            }).filter(function (x) { return x.badges.length; })
+              .sort(function (a, b) { return b.badges.length - a.badges.length || b.p.score - a.p.score; });
+            var picked = holders.map(function (x) { return x.p; });
+            var rest = ranked.filter(function (p) { return p.gamesPlayed && picked.indexOf(p) === -1; })
+                             .slice(0, Math.max(0, 10 - holders.length))
+                             .map(function (p) { return { p: p, badges: [] }; });
+            return holders.concat(rest).map(function (x) { return allStarCard(meta, x.p, x.badges, rankOf(x.p)); });
+          }).catch(function () { return []; });
+        })).then(renderAllStars);
       }
 
-      function renderLeaders(rows) {
-        var box = document.getElementById('glance-leaders');
-        if (!box || !rows.length) return;
-        box.innerHTML = rows.map(function (r) {
-          var pct = r.lead.w + r.lead.l ? Math.round(r.lead.w / (r.lead.w + r.lead.l) * 100) : 0;
-          var gd = r.lead.gf - r.lead.ga;
-          return '<div class="flex items-center gap-3 bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2">' +
-            (PSD.config.schoolLogo(r.lead.name)
-              ? '<img src="' + esc(PSD.config.schoolLogo(r.lead.name)) + '" alt="" class="w-9 h-9 rounded-md object-contain bg-white/5 p-1 flex-shrink-0" onerror="this.remove()">'
-              : '') +
-            '<div class="min-w-0">' +
-              '<div class="text-[11px] uppercase tracking-[0.2em] font-bold" style="color:' + esc(r.meta.color) + '">' +
-                esc(r.meta.label) + ' Leader</div>' +
-              '<div class="font-display font-black uppercase text-white text-base leading-tight break-words">' + esc(r.lead.name) + '</div>' +
-            '</div>' +
-            '<div class="ml-auto text-right">' +
-              '<div class="font-display font-black text-white text-lg leading-none">' + r.lead.w + '–' + r.lead.l + '</div>' +
-              '<div class="text-[11px] uppercase tracking-widest text-gray-500 font-bold">' + pct + '% · ' +
-                (gd >= 0 ? '+' : '') + gd + ' GD</div>' +
-            '</div>' +
-          '</div>';
-        }).join('');
-        box.hidden = false;
-      }
-
-      function startRail(slides) {
-        if (!slides.length) return;
-        var wrap = document.getElementById('glance-live'),
-            slide = document.getElementById('glance-live-slide');
-        if (!wrap || !slide) return;
-        wrap.hidden = false;
-        var i = 0;
-        var paint = function () {
-          var s = slides[i % slides.length];
-          slide.innerHTML =
-            '<span class="text-lg" aria-hidden="true">' + s.icon + '</span>' +
-            '<div class="min-w-0">' +
-              '<div class="text-[11px] uppercase tracking-[0.2em] font-bold" style="color:' + esc(s.color) + '">' + esc(s.tag) + '</div>' +
-              '<div class="font-display font-black uppercase text-white text-base leading-tight break-words">' + s.text + '</div>' +
-            '</div>' +
-            (s.right
-              ? '<div class="ml-auto text-right whitespace-nowrap">' +
-                  '<div class="font-display font-black text-white text-lg leading-none">' + esc(s.right) + '</div>' +
-                  (s.rightSub ? '<div class="text-[11px] uppercase tracking-widest text-gray-500 font-bold mt-0.5">' + esc(s.rightSub) + '</div>' : '') +
-                '</div>'
-              : '');
-        };
-        paint();
-        if (slides.length < 2) return;
-        setInterval(function () {
-          if (window.PSD_NAV && PSD_NAV.still()) return;   // held still by the pause-animations switch
-          slide.style.opacity = '0';
-          setTimeout(function () { i++; paint(); slide.style.opacity = '1'; }, 500);
-        }, 6000);
-      }
-
-      var players = [], series = [], weekShown = 0, leaderSlide = [];
-      Promise.all(LEAGUES.map(function (meta, order) {
-        var lg = PSD.config.league(meta.id);
-        var played = lg.weeks.filter(function (w) { return PSD.localDate(w.startDate) <= new Date(); });
-
-        return Promise.all([
-          newestWeek(lg, function (w) { return PSD.fetchCSV(lg.statsSheet, w.statsGid); },
-                     function (csv) { return statRows(csv, meta.id); }),
-          Promise.all(played.map(function (w) {
-            return PSD.fetchCSV(lg.matchSheet, w.gid)
-              .then(function (csv) { return { week: w.week, rows: seriesRows(csv, meta.id), tally: tallyRows(csv, meta.id) }; })
-              .catch(function () { return { week: w.week, rows: [], tally: [] }; });
-          }))
-        ]).then(function (res) {
-          if (res[0]) {
-            weekShown = Math.max(weekShown, res[0].week);
-            res[0].rows.forEach(function (p) { p.division = meta.label; players.push(p); });
-          }
-
-          // Every played week, forfeit-only weeks included, as the standings count them.
-          var lead = leaderOf(res[1].reduce(function (acc, x) { return acc.concat(x.tally); }, []));
-          // Keyed by position so the card always reads in division order,
-          // whichever sheet answers first.
-          if (lead) leaderSlide[order] = { meta: meta, lead: lead };
-
-          var weeks = res[1].filter(function (x) { return x.rows.length; });
-          if (!weeks.length) return;
-
-          var latest = weeks[weeks.length - 1];
-          weekShown = Math.max(weekShown, latest.week);
-          latest.rows.forEach(function (s) { s.division = meta.label; series.push(s); });
-
-        }).catch(function () {});
-      })).then(function () {
-        if (weekShown) render(players, series, weekShown);
-
-        renderLeaders(leaderSlide.filter(Boolean));
-
-        // The rail carries the things that change week to week; the leaders
-        // above it carry the season-long picture.
-        var slides = [];
-        var next = nextMatchDay();
-        if (next) {
-          slides.push({
-            tag: 'Next Match Day', color: '#FFD166', icon: '📅',
-            text: esc(next.date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })) +
-                  ' · ' + esc(next.label),
-            right: next.time, rightSub: 'First kickoff'
-          });
-        }
-
-        var star = players.slice().sort(function (a, b) { return b.score - a.score; })[0];
-        if (star) {
-          slides.push({
-            tag: 'Star of Week ' + weekShown, color: '#FFD166', icon: '⭐',
-            text: esc(star.name) + sideChip(star.side),
-            right: star.score.toLocaleString(), rightSub: 'Best single game'
-          });
-        }
-
-        var totals = {};
-        players.forEach(function (p) {
-          var k = p.name + '|' + p.school;
-          var e = totals[k] || (totals[k] = { name: p.name, side: p.side, goals: 0 });
-          e.goals += p.goals;
-        });
-        var scorer = Object.keys(totals).map(function (k) { return totals[k]; })
-                       .sort(function (a, b) { return b.goals - a.goals; })[0];
-        if (scorer && scorer.goals) {
-          slides.push({
-            tag: 'Top Scorer · Week ' + weekShown, color: '#FF6B6B', icon: '🥅',
-            text: esc(scorer.name) + sideChip(scorer.side),
-            right: String(scorer.goals), rightSub: 'Goals this week'
-          });
-        }
-
-        var match = series.slice().sort(function (a, b) {
-          return (a.wins - a.losses) - (b.wins - b.losses) || b.goals - a.goals;
-        })[0];
-        if (match) {
-          slides.push({
-            tag: 'Match of Week ' + weekShown, color: '#4DABF7', icon: '🎮',
-            text: esc(match.winner) + ' def. ' + esc(match.loser) + sideChip(match.side),
-            right: match.wins + '–' + match.losses, rightSub: 'Series'
-          });
-        }
-
-        startRail(slides);
-      });
     })();
-
-    /* ── Season at a glance ─────────────────────────────────────────────────
-       Every figure on the card comes from data/leagues.js, so a school added
-       to a division or a time moved shows up here without touching this page.
-       The badge counts the weeks down as the season runs.
-       ---------------------------------------------------------------------- */
-    function renderGlance() {
-      var set = function (id, text) {
-        var el = document.getElementById(id);
-        if (el && text) el.textContent = text;
-      };
-      var phase = PSD.seasonPhase();
-      var weeks = PSD.config.league('pl').weeks.length;
-
-      if (phase === 'preseason')        set('glance-weeks', weeks + ' Weeks');
-      else if (phase === 'postseason')  set('glance-weeks', 'Season Complete');
-      else if (phase === 'finals-day')  set('glance-weeks', 'Finals Today');
-      else {
-        var wk = PSD.currentWeek('pl');
-        set('glance-weeks', wk >= weeks ? 'Finals Ahead' : 'Week ' + wk + ' of ' + weeks);
-      }
-
-      var finals = PSD.localDate(PSD.config.finalsDate);
-      if (finals) {
-        set('glance-finals', 'Finals · ' +
-          finals.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) +
-          ' · Quail Valley Arena');
-      }
-    }
 
     /* ── Season timeline ────────────────────────────────────────────────────
        Both divisions run the same nine weeks, one day apart, so the strip
@@ -1648,6 +1327,7 @@
      'hero-copy-preseason','hero-copy-live','countdown-wrapper','finals-hero-wrapper',
      'finals-tba-banner','finals-day-banner','finals-banner-text','finals-banner-sub',
      'hero-week-label','days','hours','minutes','seconds',
+     'hero-live-line1','hero-live-line2','hero-finals-cta','hero-finals-cta-sub',
      'finals-days','finals-hours','finals-minutes','finals-seconds'
     ].forEach(function (id) { EL[id] = document.getElementById(id); });
 
@@ -1690,6 +1370,26 @@
       var over        = phase === 'postseason';
       var counting    = !pre && phase === 'live' && !!finals && now < finals;
 
+      /* The regular season is over once the last week's match day has passed
+         in both divisions (each week's startDate is that division's match
+         day), and from then on the hero points at the finals. */
+      var lastMatch = null;
+      ['pl', 'jrpl'].forEach(function (id) {
+        PSD.config.league(id).weeks.forEach(function (w) {
+          var d = PSD.localDate(w.startDate);
+          if (d && (!lastMatch || d > lastMatch)) lastMatch = d;
+        });
+      });
+      var regularOver = !pre && !!lastMatch && now >= new Date(lastMatch.getTime() + 86400000);
+      show(EL['hero-finals-cta'], regularOver, 'flex');
+      if (regularOver && !over && !onFinalsDay) {
+        EL['hero-live-line1'].textContent = 'The regular season is in the books.';
+        EL['hero-live-line2'].textContent = finals
+          ? 'The top four schools in each division play for the title on ' +
+            finals.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) + '.'
+          : 'The top four schools in each division play for the title at the Championship Finals.';
+      }
+
       show(EL['finals-hero-wrapper'], counting);
       show(EL['finals-tba-banner'],   !pre && phase === 'live' && !finals, 'flex');
       show(EL['finals-day-banner'],   onFinalsDay || over);
@@ -1702,13 +1402,16 @@
       if (counting) {
         writeClock(finals - now, ['finals-days','finals-hours','finals-minutes','finals-seconds']);
         if (EL['hero-week-label']) {
-          EL['hero-week-label'].textContent = 'Week ' + PSD.currentWeek('pl') + ' in progress';
+          EL['hero-week-label'].textContent = regularOver
+            ? 'Regular season complete'
+            : 'Week ' + PSD.currentWeek('pl') + ' in progress';
         }
       }
 
       if (EL['status-badge-live-text']) {
         EL['status-badge-live-text'].textContent =
-          over ? 'SEASON COMPLETE' : onFinalsDay ? 'CHAMPIONSHIP FINALS TODAY' : 'SEASON LIVE';
+          over ? 'SEASON COMPLETE' : onFinalsDay ? 'CHAMPIONSHIP FINALS TODAY' :
+          regularOver ? 'REGULAR SEASON COMPLETE' : 'SEASON LIVE';
       }
 
       if (over && EL['finals-banner-text']) {
@@ -1717,7 +1420,6 @@
       }
     }
 
-    renderGlance();
     renderWeekStrip();
     renderHero();
     /* Paused animations (the switch in the nav bar) also hold the countdown still. */
