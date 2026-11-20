@@ -180,7 +180,7 @@
        the match rows on a tab are ever reordered, reorder its list to match.
        Station 1 is the big screen; the knockout rounds are worked out in
        data/smash-bracket.js. schedule.groupRounds is the same idea for which
-       round each match is in; smash/schedule.html is built from all of this. */
+       round each match is in; the (retired) smash/schedule.html was built from all of this. */
     divisions: [
       { id: 'jr', name: 'Grade 5 & Under', accent: '#FF6B6B',
         page: 'grade-5-under.html', gid: '0', testGid: null,

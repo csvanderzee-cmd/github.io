@@ -145,7 +145,6 @@
           label: 'One-Day Tournament · Sat 14 Nov',
           accent: '#FDB913',
           links: [
-            { text: 'Schedule',        href: '/smash/schedule.html' },
             { text: 'Grade 5 & Under', href: '/smash/grade-5-under.html' },
             { text: 'Grades 6–8',      href: '/smash/grades-6-8.html' },
             { text: 'Rules',           href: '/smash/rules.html' }
