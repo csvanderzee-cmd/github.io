@@ -106,15 +106,6 @@
         .contact-bar-link { flex-wrap: wrap; justify-content: center; max-width: 100%; min-width: 0; }
         .contact-email { overflow-wrap: anywhere; min-width: 0; }
 
-        /* ── Season timeline ──
-           A grid, not a scroller. Nine chips in a scrolling row only ever hid
-           one week past the right edge, so the scrollbar bought nothing and
-           the last week was easy to miss. 5 over 4 on desktop shows the whole
-           season at once. */
-        .week-strip { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
-        @media (min-width: 640px)  { .week-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-        @media (min-width: 1024px) { .week-strip { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
-
         /* ── Week spotlight ticker ──
            The track holds the tiles twice over and slides exactly half its
            width, so the loop restarts on an identical frame with no jump.
@@ -131,29 +122,6 @@
         @media (prefers-reduced-motion: reduce) {
             .spot-ticker { overflow-x: auto; }
             .spot-track { animation: none; }
-        }
-
-        .week-chip { position: relative; background: #151B26; border: 1px solid rgba(255,255,255,.08); border-radius: .85rem; padding: 1rem; overflow: hidden; transition: border-color .2s, transform .2s, background .2s; }
-        .week-chip::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 3px; background: rgba(255,255,255,.12); }
-        .week-chip:hover { transform: translateY(-2px); border-color: rgba(255,255,255,.18); }
-
-        .week-chip.is-next { border-color: rgba(253,185,19,.55); background: linear-gradient(135deg, rgba(253,185,19,.12), rgba(21,27,38,.9)); }
-        .week-chip.is-next::before { background: linear-gradient(180deg, #FDB913, #FF6B6B); }
-        /* Played weeks recede by colour rather than opacity: fading the whole
-           chip took its text below the 4.5:1 WCAG contrast minimum. */
-        .week-chip.is-done .wk-num, .week-chip.is-done .wk-date { color: #949cab; }
-        .week-chip.is-done::before { background: rgba(74,222,128,.5); }
-
-        .week-chip .wk-num { font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: 1.5rem; line-height: 1; color: #fff; letter-spacing: .02em; }
-        .week-chip.is-next .wk-num { color: #FFD166; }
-        .week-chip .wk-date { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: .92rem; color: #d1d5db; line-height: 1.35; margin-top: .5rem; }
-        .week-chip .wk-badge { position: absolute; top: .6rem; right: .6rem; font-family: 'Rajdhani', sans-serif; font-weight: 900; font-size: .6875rem; letter-spacing: .14em; text-transform: uppercase; padding: 2px 6px; border-radius: 9999px; background: linear-gradient(90deg, #FDB913, #facc15); color: #0B0E14; }
-        .week-chip .wk-tick { position: absolute; top: .7rem; right: .7rem; color: #4ade80; font-size: .8rem; font-weight: 900; }
-        /* Two chips to a row on a phone leaves no room beside "Week 1" for a
-           corner tag, so "Up Next" drops into the flow above the week instead
-           of sitting on top of it. */
-        @media (max-width: 639px) {
-            .week-chip .wk-badge { position: static; display: inline-block; margin-bottom: .45rem; }
         }
 
         /* ── School pills ── */
@@ -649,164 +617,6 @@
             </div>
         </section>
 
-        <!-- ─── SEASON TIMELINE ─── -->
-        <section class="py-14 bg-esports-dark border-t border-white/10 relative z-20" aria-labelledby="timeline-heading">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
-                    <div>
-                        <span class="text-esports-yellow-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">September 21 – November 17</span>
-                        <h2 id="timeline-heading" class="font-display text-4xl md:text-5xl font-black uppercase text-white">The Road to the Arena</h2>
-                    </div>
-                    <p class="text-gray-400 text-sm max-w-sm">
-                        Nine weeks of regular season play. The top four schools in each division earn a spot at the
-                        championship event at Quail Valley Esports Arena.
-                    </p>
-                </div>
-
-                <div class="week-strip custom-scrollbar" id="week-strip" role="list" aria-label="Regular season weeks">
-                    <!-- filled by renderWeekStrip() -->
-                </div>
-            </div>
-        </section>
-
-        <!-- ─── LEAGUE HUB ─── -->
-        <section class="py-14 bg-esports-dark border-t border-white/10 relative z-20" aria-labelledby="hub-heading">
-            <div class="max-w-7xl mx-auto px-4">
-
-                <div class="text-center mb-10">
-                    <span class="text-esports-blue-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">🚀 Rocket League</span>
-                    <h2 id="hub-heading" class="font-display text-4xl md:text-6xl font-black uppercase text-white">Explore the League</h2>
-                    <p class="text-gray-400 text-sm mt-3 max-w-2xl mx-auto">
-                        The Promise League splits into two divisions by release time. Every school fields an
-                        <span class="text-orange-400 font-bold">ORANGE</span> and a
-                        <span class="text-esports-blue-text font-bold">BLUE</span> team, and both records count toward the standings.
-                    </p>
-                </div>
-
-                <!-- Division cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-
-                    <!-- Early Release -->
-                    <article class="group relative flex flex-col bg-esports-card border border-esports-red/30 rounded-2xl overflow-hidden shadow-2xl hover:border-esports-red/60 transition-all duration-300">
-                        <img src="https://wallpapers.com/images/featured/rocket-league-q83tcwb7har0kh5h.webp" alt="" class="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:scale-105 transition-all duration-700" loading="lazy">
-                        <div class="absolute inset-0 bg-gradient-to-br from-esports-red/20 via-transparent to-transparent" aria-hidden="true"></div>
-                        <div class="relative p-8 z-10 flex flex-col flex-1">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-10 h-10 rounded-xl bg-esports-red/20 border border-esports-red/40 flex items-center justify-center flex-shrink-0">
-                                    <i data-lucide="star" class="w-5 h-5 text-esports-red-text" aria-hidden="true"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-display font-black text-2xl uppercase text-white leading-none">Early Release</h3>
-                                    <span class="text-red-200 text-[11px] font-bold uppercase tracking-widest">Tuesdays · 2:00 PM · 9 Schools</span>
-                                </div>
-                            </div>
-
-                            <div class="school-pills flex flex-wrap gap-2 mb-5" role="group" aria-label="Early Release schools">
-                                <a class="school-pill" href="rocket-league/jr-promise-league.html?school=Cimarron" aria-label="Cimarron record">Cimarron</a>
-                                <a class="school-pill" href="rocket-league/jr-promise-league.html?school=Desert%20Rose" aria-label="Desert Rose record">Desert Rose</a>
-                                <a class="school-pill" href="rocket-league/jr-promise-league.html?school=Innovations%20Academy" aria-label="Innovations Academy record">Innovations Academy</a>
-                                <a class="school-pill" href="rocket-league/jr-promise-league.html?school=Los%20Amigos" aria-label="Los Amigos record">Los Amigos</a>
-                                <a class="school-pill" href="rocket-league/jr-promise-league.html?school=Manzanita" aria-label="Manzanita record">Manzanita</a>
-                                <a class="school-pill" href="rocket-league/jr-promise-league.html?school=Mesquite" aria-label="Mesquite record">Mesquite</a>
-                                <a class="school-pill" href="rocket-league/jr-promise-league.html?school=Palm%20Tree" aria-label="Palm Tree record">Palm Tree</a>
-                                <a class="school-pill" href="rocket-league/jr-promise-league.html?school=Tumbleweed" aria-label="Tumbleweed record">Tumbleweed</a>
-                                <a class="school-pill" href="rocket-league/jr-promise-league.html?school=Yucca" aria-label="Yucca record">Yucca</a>
-                            </div>
-
-                            <div class="grid grid-cols-3 gap-3 mt-auto">
-                                <a href="rocket-league/jr-promise-league.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-red/20 hover:border-esports-red/40 transition-all duration-200 no-underline group/link">
-                                    <i data-lucide="bar-chart-2" class="w-5 h-5 text-esports-red-text" aria-hidden="true"></i>
-                                    <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Standings</span>
-                                </a>
-                                <a href="rocket-league/jr-promise-league-schedule.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-red/20 hover:border-esports-red/40 transition-all duration-200 no-underline group/link">
-                                    <i data-lucide="calendar" class="w-5 h-5 text-esports-red-text" aria-hidden="true"></i>
-                                    <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Schedule</span>
-                                </a>
-                                <a href="rocket-league/jr-promise-league-stats.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-red/20 hover:border-esports-red/40 transition-all duration-200 no-underline group/link">
-                                    <i data-lucide="user" class="w-5 h-5 text-esports-red-text" aria-hidden="true"></i>
-                                    <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Player Stats</span>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-
-                    <!-- Late Release -->
-                    <article class="group relative flex flex-col bg-esports-card border border-esports-blue/30 rounded-2xl overflow-hidden shadow-2xl hover:border-esports-blue/60 transition-all duration-300">
-                        <img src="https://wallpapers.com/images/hd/rocket-league-rocket-powered-car-1920x1080-xbjxok5dk6itr8eo.jpg" alt="" class="absolute inset-0 w-full h-full object-cover opacity-15 group-hover:scale-105 transition-all duration-700" loading="lazy">
-                        <div class="absolute inset-0 bg-gradient-to-br from-esports-blue/20 via-transparent to-transparent" aria-hidden="true"></div>
-                        <div class="relative p-8 z-10 flex flex-col flex-1">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-10 h-10 rounded-xl bg-esports-blue/20 border border-esports-blue/40 flex items-center justify-center flex-shrink-0">
-                                    <i data-lucide="trophy" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-display font-black text-2xl uppercase text-white leading-none">Late Release</h3>
-                                    <span class="text-blue-200 text-[11px] font-bold uppercase tracking-widest">Mondays · 4:00 PM · 4 Schools</span>
-                                </div>
-                            </div>
-
-                            <div class="school-pills flex flex-wrap gap-2 mb-5" role="group" aria-label="Late Release schools">
-                                <a class="school-pill" href="rocket-league/promise-league.html?school=Cactus" aria-label="Cactus record">Cactus</a>
-                                <a class="school-pill" href="rocket-league/promise-league.html?school=David%20G%20Millen" aria-label="David G Millen record">David G Millen</a>
-                                <a class="school-pill" href="rocket-league/promise-league.html?school=Sage" aria-label="Sage record">Sage</a>
-                                <a class="school-pill" href="rocket-league/promise-league.html?school=Shadow%20Hills" aria-label="Shadow Hills record">Shadow Hills</a>
-                            </div>
-
-                            <div class="grid grid-cols-3 gap-3 mt-auto">
-                                <a href="rocket-league/promise-league.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-blue/20 hover:border-esports-blue/40 transition-all duration-200 no-underline group/link">
-                                    <i data-lucide="bar-chart-2" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
-                                    <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Standings</span>
-                                </a>
-                                <a href="rocket-league/promise-league-schedule.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-blue/20 hover:border-esports-blue/40 transition-all duration-200 no-underline group/link">
-                                    <i data-lucide="calendar" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
-                                    <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Schedule</span>
-                                </a>
-                                <a href="rocket-league/promise-league-stats.html" class="flex flex-col items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-esports-blue/20 hover:border-esports-blue/40 transition-all duration-200 no-underline group/link">
-                                    <i data-lucide="user" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
-                                    <span class="font-display font-bold text-xs uppercase tracking-wider text-gray-300 group-hover/link:text-white transition-colors">Player Stats</span>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-                </div>
-
-                <!-- Feature cards row -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <a href="rocket-league/rules.html" class="group flex items-center gap-4 p-5 bg-esports-card border border-esports-blue/20 rounded-xl hover:border-esports-blue/50 hover:bg-esports-blue/5 transition-all duration-200 no-underline">
-                        <div class="w-10 h-10 rounded-xl bg-esports-blue/10 border border-esports-blue/30 flex items-center justify-center flex-shrink-0 group-hover:bg-esports-blue/20 transition-colors">
-                            <i data-lucide="book-open" class="w-5 h-5 text-esports-blue-text" aria-hidden="true"></i>
-                        </div>
-                        <div>
-                            <div class="font-display font-black text-base uppercase text-white group-hover:text-esports-blue-text transition-colors leading-tight">Rulebook</div>
-                            <div class="text-gray-500 text-xs uppercase tracking-wider font-bold mt-0.5">2026-27 official rules</div>
-                        </div>
-                        <i data-lucide="arrow-right" class="w-4 h-4 text-gray-600 group-hover:text-esports-blue-text group-hover:translate-x-1 transition-all ml-auto flex-shrink-0" aria-hidden="true"></i>
-                    </a>
-                    <a href="champions.html" class="group flex items-center gap-4 p-5 bg-esports-card border border-esports-yellow/20 rounded-xl hover:border-esports-yellow/50 hover:bg-esports-yellow/5 transition-all duration-200 no-underline">
-                        <div class="w-10 h-10 rounded-xl bg-esports-yellow/10 border border-esports-yellow/30 flex items-center justify-center flex-shrink-0 group-hover:bg-esports-yellow/20 transition-colors">
-                            <i data-lucide="award" class="w-5 h-5 text-esports-yellow-text" aria-hidden="true"></i>
-                        </div>
-                        <div>
-                            <div class="font-display font-black text-base uppercase text-white group-hover:text-esports-yellow-text transition-colors leading-tight">Champions</div>
-                            <div class="text-gray-500 text-xs uppercase tracking-wider font-bold mt-0.5">Season winners</div>
-                        </div>
-                        <i data-lucide="arrow-right" class="w-4 h-4 text-gray-600 group-hover:text-esports-yellow-text group-hover:translate-x-1 transition-all ml-auto flex-shrink-0" aria-hidden="true"></i>
-                    </a>
-                    <a href="rocket-league/badges.html" class="group flex items-center gap-4 p-5 bg-esports-card border border-purple-500/20 rounded-xl hover:border-purple-500/50 hover:bg-purple-500/5 transition-all duration-200 no-underline">
-                        <div class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center flex-shrink-0 group-hover:bg-purple-500/20 transition-colors">
-                            <i data-lucide="shield" class="w-5 h-5 text-purple-400" aria-hidden="true"></i>
-                        </div>
-                        <div>
-                            <div class="font-display font-black text-base uppercase text-white group-hover:text-purple-400 transition-colors leading-tight">Badges</div>
-                            <div class="text-gray-500 text-xs uppercase tracking-wider font-bold mt-0.5">Player achievements</div>
-                        </div>
-                        <i data-lucide="arrow-right" class="w-4 h-4 text-gray-600 group-hover:text-purple-400 group-hover:translate-x-1 transition-all ml-auto flex-shrink-0" aria-hidden="true"></i>
-                    </a>
-                </div>
-
-            </div>
-        </section>
-
         <!-- ─── IN THE NEWS ───
              The All Stars are the district-wide team rule 4.5 governs, so this
              is the league's own selection process showing its work. -->
@@ -853,44 +663,6 @@
                         </div>
                     </div>
                 </article>
-            </div>
-        </section>
-
-        <!-- ─── HOW IT WORKS ─── -->
-        <section class="py-14 bg-esports-dark border-t border-white/10 relative z-20" aria-labelledby="format-heading">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="text-center mb-10">
-                    <span class="text-esports-blue-text text-sm font-bold tracking-[0.2em] uppercase block mb-2">Match Format</span>
-                    <h2 id="format-heading" class="font-display text-4xl md:text-6xl font-black uppercase text-white">How a Match Day Works</h2>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6" role="list">
-                    <div class="bg-esports-card rounded-2xl p-7 border border-white/10" role="listitem">
-                        <div class="font-display font-black text-5xl text-esports-blue-text/70 leading-none mb-3">01</div>
-                        <h3 class="text-lg font-display font-black text-white uppercase mb-2">Six Players, Two Teams</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Each school fields three players on ORANGE and three on BLUE. A player sticks with one color for the whole series.</p>
-                    </div>
-                    <div class="bg-esports-card rounded-2xl p-7 border border-white/10" role="listitem">
-                        <div class="font-display font-black text-5xl text-esports-yellow-text/70 leading-none mb-3">02</div>
-                        <h3 class="text-lg font-display font-black text-white uppercase mb-2">Check In</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Coaches confirm readiness 15 minutes before the match over Gmail Chat. The home team creates the lobby.</p>
-                    </div>
-                    <div class="bg-esports-card rounded-2xl p-7 border border-white/10" role="listitem">
-                        <div class="font-display font-black text-5xl text-esports-red-text/70 leading-none mb-3">03</div>
-                        <h3 class="text-lg font-display font-black text-white uppercase mb-2">Best of Three</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Both series run at the same time on DFH Stadium. A third game only happens if the series is tied 1-1.</p>
-                    </div>
-                    <div class="bg-esports-card rounded-2xl p-7 border border-white/10" role="listitem">
-                        <div class="font-display font-black text-5xl text-purple-400/70 leading-none mb-3">04</div>
-                        <h3 class="text-lg font-display font-black text-white uppercase mb-2">Report Scores</h3>
-                        <p class="text-gray-400 text-sm leading-relaxed">Both coaches post final stats to Google Classroom. Combined ORANGE and BLUE records set the standings.</p>
-                    </div>
-                </div>
-                <div class="text-center mt-8">
-                    <a href="rocket-league/rules.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-esports-blue/30 bg-esports-blue/10 text-esports-blue-text hover:bg-esports-blue/20 transition-all duration-200 font-display font-bold text-sm uppercase tracking-widest no-underline">
-                        Read the full rulebook
-                        <i data-lucide="arrow-right" class="w-4 h-4" aria-hidden="true"></i>
-                    </a>
-                </div>
             </div>
         </section>
 
@@ -1248,60 +1020,6 @@
 
     })();
 
-    /* ── Season timeline ────────────────────────────────────────────────────
-       Both divisions run the same nine weeks, one day apart, so the strip
-       shows a week at a time with both match days on it. Built from config so
-       it can never drift from what the schedule pages say.
-       ---------------------------------------------------------------------- */
-    function renderWeekStrip() {
-      var strip = document.getElementById('week-strip');
-      if (!strip) return;
-
-      var fmt = { month: 'short', day: 'numeric' };
-      var today = new Date(); today.setHours(0, 0, 0, 0);
-
-      // Pair each week number with every division's date for that week.
-      var byWeek = {};
-      PSD.config.leagues.forEach(function (lg) {
-        lg.weeks.forEach(function (w) {
-          (byWeek[w.week] = byWeek[w.week] || []).push({
-            day:  lg.matchDay.slice(0, 3),
-            date: PSD.localDate(w.startDate)
-          });
-        });
-      });
-
-      var weekNums = Object.keys(byWeek).map(Number).sort(function (a, b) { return a - b; });
-
-      // The "next" week is the first whose last match day has not passed.
-      var nextWeek = null;
-      weekNums.forEach(function (n) {
-        if (nextWeek !== null) return;
-        var latest = byWeek[n].reduce(function (m, d) { return d.date > m ? d.date : m; }, byWeek[n][0].date);
-        if (today <= latest) nextWeek = n;
-      });
-
-      strip.innerHTML = weekNums.map(function (n) {
-        var days = byWeek[n].slice().sort(function (a, b) { return a.date - b.date; });
-        var done = nextWeek === null || n < nextWeek;
-        var cls  = 'week-chip' + (n === nextWeek ? ' is-next' : done ? ' is-done' : '');
-
-        var dateLine = days.map(function (d) {
-          return d.day + ' ' + d.date.toLocaleDateString('en-US', fmt);
-        }).join('<br>');
-
-        var marker = n === nextWeek ? '<span class="wk-badge">Up Next</span>'
-                   : done          ? '<span class="wk-tick" aria-hidden="true">✓</span>'
-                   : '';
-
-        return '<div class="' + cls + '" role="listitem">' +
-                 marker +
-                 '<div class="wk-num">Week ' + n + '</div>' +
-                 '<div class="wk-date">' + dateLine + '</div>' +
-               '</div>';
-      }).join('');
-    }
-
     /* ── Hero state machine ─────────────────────────────────────────────────
        Four states, driven entirely by dates in data/leagues.js:
 
@@ -1412,7 +1130,6 @@
       }
     }
 
-    renderWeekStrip();
     renderHero();
     /* Paused animations (the switch in the nav bar) also hold the countdown still. */
     setInterval(function () { if (!(window.PSD_NAV && PSD_NAV.still())) renderHero(); }, 1000);
